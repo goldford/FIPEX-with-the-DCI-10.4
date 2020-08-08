@@ -1,0 +1,47 @@
+ArcGIS Code Migration analyzer run on 4/3/2012 at 12:33 PM
+--------------------------------------------------------------
+Analyzing project: FiPEX_AddIn_dotNet35_2
+
+The solution platform should be set to x86 so it can run properly on 64-bit machines.
+
+Replace assembly reference ESRI.ArcGIS.ADF with ESRI.ArcGIS.ADF.Local.
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.ADF
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.ArcCatalogUI
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.ArcMap
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Carto
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.CartoUI
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Catalog
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.CatalogUI
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.DataSourcesGDB
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.DataSourcesOleDB
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Display
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Editor
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Geodatabase
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.GeoDatabaseUI
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Geometry
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.Geoprocessing
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.NetworkAnalysis
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.SystemUI
+
+Set Version Specific to false for assembly reference ESRI.ArcGIS.EditorExt
+
+-------------------------
+
+Finished analysis. Check the Warnings in the Visual Studio Error List window for migration issues. 2 migration issues found.

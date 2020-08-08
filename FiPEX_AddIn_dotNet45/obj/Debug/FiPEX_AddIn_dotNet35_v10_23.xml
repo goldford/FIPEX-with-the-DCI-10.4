@@ -1,0 +1,123 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+FiPEX_AddIn_dotNet35_v10_23
+</name>
+</assembly>
+<members>
+<member name="M:FiPEX_AddIn_dotNet35_v10_23.cmdBulkSnap.snapFeature(ESRI.ArcGIS.Geodatabase.IFeature,ESRI.ArcGIS.Editor.ISnapEnvironment)">
+	<summary>
+ This method stores all the features points in a collection 
+ and attempts to snap each point.
+ </summary>
+	<param name="featureToSnap">feature to snap</param>
+	<param name="snapEnvironment">Editors snap environment</param>
+	<returns>The resulting geometry from snapping the feature.</returns>
+</member><member name="M:FiPEX_AddIn_dotNet35_v10_23.cmdBulkSnap.checkGeometry(ESRI.ArcGIS.Geometry.IGeometry)">
+	<summary>
+ This method checks the geometry to make sure that it is not empty and is correct. the
+ </summary>
+	<param name="snapGeometry">Geometry from the point collection that was snapped.</param>
+	<returns>The simplified geometry</returns>
+</member><member name="M:FiPEX_AddIn_dotNet35_v10_23.cmdBulkSnap.SnapPoint(ESRI.ArcGIS.Geometry.IPoint,ESRI.ArcGIS.Editor.ISnapEnvironment)">
+	<summary>
+ This method snaps a point by passing this point to 
+ ISnapEnvironment:SnapPoint where every selected SnapAgent
+ is asked to perform the snapjob.
+ </summary>
+	<param name="currentPoint">Point to snap.</param>
+	<param name="snapEnvironment">Which snap agents are turned on.</param>
+	<returns>The snapped point.</returns>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.cmdOpenOptions">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_cmdOpenOptions', the id declared for Add-in Button class 'cmdOpenOptions'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.PlaceRemoveFlag">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_PlaceRemoveFlag', the id declared for Add-in Tool class 'PlaceRemoveFlag'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.Combo1">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_Combo1', the id declared for Add-in ComboBox class 'Combo1'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.MultiItem1">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_MultiItem1', the id declared for Add-in MultiItem class 'MultiItem1'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.PlaceRemoveBarrier">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_PlaceRemoveBarrier', the id declared for Add-in Tool class 'PlaceRemoveBarrier'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.ClearBarriersAndLabels">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_ClearBarriersAndLabels', the id declared for Add-in Button class 'ClearBarriersAndLabels'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.ClearFlagsAndLabels">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_ClearFlagsAndLabels', the id declared for Add-in Button class 'ClearFlagsAndLabels'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.FlagsOnSelected">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_FlagsOnSelected', the id declared for Add-in Button class 'FlagsOnSelected'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.BarriersOnSelected">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_BarriersOnSelected', the id declared for Add-in Button class 'BarriersOnSelected'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.PlaceFlagAndRunTool">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_PlaceFlagAndRunTool', the id declared for Add-in Tool class 'PlaceFlagAndRunTool'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.Analysis">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_Analysis', the id declared for Add-in Button class 'Analysis'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.cmdBulkSnap">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_cmdBulkSnap', the id declared for Add-in Button class 'cmdBulkSnap'
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs.FishPassageExtension">
+	<summary>
+Returns 'DFO_Maritimes__FiPEX_AddIn_dotNet35_2_FishPassageExtension', the id declared for Add-in Extension class 'FishPassageExtension'
+</summary>
+</member><member name="T:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn.IDs">
+	<summary>
+A class for looking up Add-in id strings declared in the associated configuration xml file (.esriaddinx).
+</summary>
+</member><member name="T:FiPEX_AddIn_dotNet35_v10_23.My.ThisAddIn">
+	<summary>
+A class for looking up declarative information in the associated configuration xml file (.esriaddinx).
+</summary>
+</member><member name="M:FiPEX_AddIn_dotNet35_v10_23.My.Internal.AddInStartupObject.GetThis">
+	<summary>
+ Expose this instance of Add-in class externally
+ </summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.Resources.Resources.FiPex_LOGOv2_90">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.Resources.Resources.FiPex_LOGOv3b_180x180">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_AddIn_dotNet35_v10_23.My.Resources.Resources.FiPEx_LOGOv3b_90x90">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="T:FiPEX_AddIn_dotNet35_v10_23.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+</members>
+</doc>
