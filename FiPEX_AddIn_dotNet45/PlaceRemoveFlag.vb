@@ -81,7 +81,14 @@ Public Class PlaceRemoveFlag
         If Me.Enabled = True Then
             If m_FiPEx__1.m_bFlagsLoaded = False Then
 
-                Dim iFlagEIDCount As Integer = m_FiPEx__1.pPropset.GetProperty("numFlagEIDs")
+                Dim iFlagEIDCount As Integer = 0
+                Try
+                    iFlagEIDCount = m_FiPEx__1.pPropset.GetProperty("numFlagEIDs")
+                Catch ex As Exception
+                    MsgBox(ex.Message)
+                    iFlagEIDCount = 0
+                End Try
+
                 If iFlagEIDCount > 0 Then
 
                     ' Get the active network

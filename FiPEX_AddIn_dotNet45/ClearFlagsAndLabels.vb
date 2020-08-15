@@ -76,10 +76,10 @@ Public Class ClearFlagsAndLabels
         Next
 
         ' No edge flag support yet
-        Dim pOriginalBarriersList As IEnumNetEID
+        Dim pOriginalBarriersList, pOriginalBarriersListSaved As IEnumNetEID
+
         ' QI to and get an array object that has 'count' and 'next' methods
         pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
-
         ' Save the flags
         i = 0
         For i = 0 To pNetworkAnalysisExtFlags.JunctionFlagCount - 1

@@ -198,7 +198,8 @@ Public Class Analysis
         End If
 
     End Sub
-    Protected Sub RunAnalysis()
+    Private Sub RunAnalysis()
+        ' 2020 changed from was 'Protected' sub due to debugging problem
 
         ' ==================================================================
         ' Command:       AnalysisCMD
@@ -618,11 +619,16 @@ Public Class Analysis
         pNetworkAnalysisExtFlags = CType(m_UNAExt, INetworkAnalysisExtFlags)
         pNetworkAnalysisExtBarriers = CType(m_UNAExt, INetworkAnalysisExtBarriers)
 
-        ' Was using ArrayList because of advantage of 'count' and 'add' properties
-        ' but EnumNetEIDBuilderGEN addition to 9.2 has this functionality
         pOriginalBarriersListGEN = New EnumNetEIDArray
         pOriginalEdgeFlagsListGEN = New EnumNetEIDArray
         pOriginaljuncFlagsListGEN = New EnumNetEIDArray
+
+        ' 2020 note - these saved' objects are for the 'advanced connectivity' 
+        '             'saved' is so if user selects advanced connectivity table 
+        '              this object will not be modified and can be user to restor
+        Dim pOriginalBarriersListSaved As IEnumNetEID
+        Dim pOriginalBarriersListSavedGEN As IEnumNetEIDBuilderGEN
+        pOriginalBarriersListSavedGEN = New EnumNetEIDArray
 
         Dim iOriginalJunctionBarrierCount As Integer
         iOriginalJunctionBarrierCount = pNetworkAnalysisExtBarriers.JunctionBarrierCount
@@ -633,11 +639,18 @@ Public Class Analysis
             bFlagDisplay = CType(pNetworkAnalysisExtBarriers.JunctionBarrier(i), IFlagDisplay)
             bEID = pNetElements.GetEID(bFlagDisplay.FeatureClassID, bFlagDisplay.FID, bFlagDisplay.SubID, esriElementType.esriETJunction)
             pOriginalBarriersListGEN.Add(bEID)
+            pOriginalBarriersListSavedGEN.Add(bEID)
             'originalBarriersList(i) = bEID
         Next
 
         ' QI to and get an array object that has 'count' and 'next' methods
         pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
+
+        ' 2020: for branch connectivity feature - GO
+        ' save the original list so it can be restored later
+        pOriginalBarriersListSaved = CType(pOriginalBarriersListSavedGEN, IEnumNetEID)
+        MsgBox("Number of original barriers: " & Str(pOriginalBarriersListSaved.Count))
+
 
         ' Save the flags
         i = 0
@@ -682,7 +695,7 @@ Public Class Analysis
         sFlagCheck = flagcheck(pOriginalBarriersList, pOriginalEdgeFlagsList, pOriginaljuncFlagsList)
         '    MsgBox "FlagCheck may be null and crash..."
         '    MsgBox "sFlagcheck: " + sFlagCheck
-        If sFlagCheck = "error" Then
+        If sFlagCheck = "error thrown because some flags are apparently on barriers while some are not" Then
             Exit Sub
         End If
         ' ============= END FLAG CONSISTENCY CHECK ==================
@@ -831,8 +844,8 @@ Public Class Analysis
         Next
 
         ' ============== Begin DBF Table Preparation =======================
-        ' 1.0 If tables are to be output in DBF format
-        '   2.0 For each of the line layers included
+        ' 1 If tables are to be output in DBF format
+        '   2 For each of the line layers included
         '     2.1 Get a table name (tablename function)
         '     2.2 Add that table name to a list for use... 
         '     2.3 Set up the fields for that table
@@ -984,7 +997,7 @@ Public Class Analysis
             'Next ' polygon layer
         End If ' DBF layers are included
 
-      
+
 
 
         ' ========================== Begin Traces ====================
@@ -1093,7 +1106,9 @@ Public Class Analysis
         ' Created Aug 2020
         ' Purpose: testing, debugging of finding all junctions representing 
         '          a branch _in addition_ to the junctions representing 
-        '          sinks or barriers
+        '          sinks or barriers. Create list of junctions that will 
+        '          be treated like 'barriers' for purpose of connectivity 
+        '          table generation; amend list of original junction barriers
         ' Logic: 
         ' If 'Advanced Connectivity is checked' 
         ' Clear All Flags and Barriers
@@ -1106,14 +1121,60 @@ Public Class Analysis
 
         ' will need: pOriginaljuncFlagsList.Reset() see below
         'MsgBox("Debug2020: bAdvConnectTab is set " & Str(bAdvConnectTab))
+        Dim pNetTopology As INetTopology
+        Dim iEdges As Integer
+        Dim iEdgeEID As Integer = 0
+        Dim iFromEID As Integer = 0 ' referring to dig. direction
+        Dim iToEID As Integer = 0
+        Dim iThisEID As Integer = 0
+        Dim iNextEID As Integer = 0
+        Dim iEID_j As Integer = 0
+        Dim iEID_k As Integer = 0
+        Dim iLastEID As Integer = 0
+        Dim iActualFromEID As Integer = 0 ' for actual flow direction
+        Dim iActualToEID As Integer = 0
+        Dim iFlowDir As Integer = 0 ' esriFlowDirection 
+        Dim bOrientation As Boolean = False
+        Dim bUpstream As Boolean = False
+        Dim bMatch As Boolean = False
+        Dim iUpstreamEdges As Integer = 0
+        Dim pAdjacentEdges As IEnumNetEID
+        Dim pAdjacentEdgesGEN As IEnumNetEIDBuilderGEN
+        Dim pBranchJunctions As IEnumNetEID
+        Dim pBranchJunctionsGEN As IEnumNetEIDBuilderGEN
+
+        ' next junctions upstream direction
+        Dim pNextJunctions As IEnumNetEID
+        Dim pNextJunctionsGEN As IEnumNetEIDBuilderGEN
+        Dim pJunctions As IEnumNetEID
+        Dim pJunctionsGEN As IEnumNetEIDBuilderGEN
+
+
+        Dim iUpstreamJunctionCount As Integer = 0
+
+        Dim pUtilityNetwork As IUtilityNetwork ' need to get flow direction relative to dig. direction
+
+        Dim pForwardStar As IForwardStar
+        Dim pForwardStarGEN As IForwardStarGEN
+
+        Dim pNetEdge As INetworkEdge
+        Dim iNetEdgeDirection As Integer ' the direction of flow relative to digitized direction
+
+
+
+       
+
 
         If bAdvConnectTab = True Then
+
             '   If this is the first iteration
             lHabStatsList = New List(Of StatisticsObject_2) ' set the habitat stats list
 
             pOriginaljuncFlagsList.Reset()
 
-            ' for each flag the user has set (usually assuming the flag is on the furthest downstream nodes 
+
+            ' for each flag the user has set (usually assuming the flag is on the furthest
+            ' downstream nodes
             ' i.e., the outflow(s) or sink(s) of the network(s)
             For i = 0 To pOriginaljuncFlagsList.Count - 1
 
@@ -1140,223 +1201,205 @@ Public Class Analysis
                 'pGeometricNetwork already set
                 'pNetwork already set,
                 'pNetwork = pGeometricNetwork.Network
-                Dim pNetTopology As INetTopology
+
+                pBranchJunctionsGEN = New EnumNetEIDArray
+
+
                 pNetTopology = CType(pNetwork, INetTopology)
 
                 fEID = pOriginaljuncFlagsList.Next
-                pNextOriginalJuncFlagGEN = New EnumNetEIDArray
-                pNextOriginalJuncFlagGEN.Add(fEID)
-                pNextOriginalJuncFlag = CType(pNextOriginalJuncFlagGEN, IEnumNetEID)
 
-                ' use EnumNetEIDBuilderGEN to enumerate
-                If pNetTopology.GetAdjacentEdgeCount(fEID) > 0 Then
-                    'pEnumNetEIDBuilder.Add(lEID)
-                    MsgBox("Debug2020: neighbours found for flag " & Str(fEID))
+                ' Use Do loop until no upstream neighbours are found
+                pJunctionsGEN = New EnumNetEIDArray
+                pJunctionsGEN.Add(fEID) ' initialize this object before first loop
+                pJunctions = CType(pJunctionsGEN, IEnumNetEID)
 
-                End If
+                iUpstreamJunctionCount = pJunctions.Count ' initialize for first loop
 
-                'pNetElements = CType(pNetwork, INetElements)
+                pUtilityNetwork = CType(pGeometricNetwork.Network, IUtilityNetwork)
 
-
-                ' ##### END NEW CODE #####
-
-                'bNaturalY = False
-
-                '' reset statistics lists
-                'lConnectivity = New List(Of BarrierAndDownstreamID)
-                'lDCIStatsList = New List(Of DCIStatisticsObject)
-
-                '' reset the flow end elements tracker (barriers tracker)
-                '' this variable prevents infinite looping but can be reset
-                '' for each original flag.  
-                'pAllFlowEndBarriersGEN = New EnumNetEIDArray
-                'pAllFlowEndBarriers = CType(pAllFlowEndBarriersGEN, IEnumNetEID)
-
-                'fEID = pOriginaljuncFlagsList.Next
-                'pNextOriginalJuncFlagGEN = New EnumNetEIDArray
-                'pNextOriginalJuncFlagGEN.Add(fEID)
-                'pNextOriginalJuncFlag = CType(pNextOriginalJuncFlagGEN, IEnumNetEID)
-
-                'For orderLoop = 0 To iOrderNum
-
-                '    'MsgBox("Debug:9")
-                '    If orderLoop = 0 Then
-
-                '        ' Change variable on first iteration for filtering next
-                '        pFlowEndJunctions = pNextOriginalJuncFlag
-                '    ElseIf orderLoop > 0 Then
-                '        ' check if we reached 'end' of network (sources of river)
-                '        If pFlowEndJunctions.Count = 0 Or pFlowEndJunctions Is Nothing Then
-                '            Exit For
-                '        End If
-                '    End If
-
-                '    'MsgBox("Debug:10")
-                '    pNoSourceFlowEnds = New EnumNetEIDArray
-
-                '    ' ================ RUN TRACE ON ONE FLAG AT A TIME ======================
-                '    ' check if user has hit 'close/cancel'
-                '    If m_bCancel = True Then
-                '        backgroundworker1.CancelAsync()
-                '        backgroundworker1.Dispose()
-                '        Exit Sub
-                '    End If
-                '    If iProgress < 50 Then
-                '        iProgress = iProgress + 1
-                '    End If
-                '    backgroundworker1.ReportProgress(iProgress, "Performing Network Traces for Advanced Connectivity Analysis Step 2 " & ControlChars.NewLine & _
-                '                                 "User Flag " & (i + 1).ToString & " of " & _
-                '                                 Convert.ToString(pOriginaljuncFlagsList.Count) & _
-                '                                 ControlChars.NewLine & _
-                '                             "Current Barrier 'Order': " & _
-                '                             orderLoop.ToString & " of " & _
-                '                             iOrderNum.ToString & " (max)." & _
-                '                             ControlChars.NewLine & _
-                '                             "Direction: " & sDirection)
-
-                '    'MsgBox("Debug:11")
-                '    pFlowEndJunctions.Reset()
-
-                '    ' check the flow end junctions from previous traces and make sure none are sources
-                '    For j = 0 To pFlowEndJunctions.Count - 1
-
-                '        ' for trace flow ends that are not sources
-                '        pNoSourceFlowEndsTemp = New EnumNetEIDArray
-                '        iEID = pFlowEndJunctions.Next()
-
-                '        ' ============ FILTER BARRIERS (eliminate barriers where flags will be) ===
-                '        ' For each of the original barriers
-                '        '   For each of the flow end junctions from the last trace
-                '        '     If the original barrier is NOT on a flow end junction 
-                '        '     Add it to a list to use in the upcoming trace.
-                '        ' DO NOT NEED TO DO THIS IN CASE THIS IS A 'NONBARR' ANALYSIS
-                '        ' AND ORDERLOOP = 0.  LOGIC THO?
-
-                '        p = 0
-                '        'reset / initialize OriginalBarriers list
-                '        pOriginalBarriersList.Reset()
-                '        ' clear the previous list
-                '        pNextTraceBarrierEIDGEN = New EnumNetEIDArray
-
-                '        For p = 0 To pOriginalBarriersList.Count - 1
-                '            bEID = pOriginalBarriersList.Next
-                '            flagOverBarrier = False
-
-                '            ' If the EID of the end-of-flow junctions is not
-                '            ' that of a barrier set in the last trace then keep
-                '            ' that barrier for the next trace. (will have to remove barrier
-                '            ' for trace to work, otherwise)
-                '            If bEID = iEID Then
-                '                flagOverBarrier = True
-                '            End If
-                '            'Next
-
-                '            ' Add barriers to a list of barriers for the next trace if it doesn't overlap with one of the
-                '            ' flags for the next trace
-                '            If Not flagOverBarrier Then
-                '                ' add the barrier to a list of barriers to use in the next trace
-                '                pNextTraceBarrierEIDGEN.Add(bEID)
-                '            End If
-                '        Next
-
-                '        'QI to get 'next' and 'count'
-                '        pNextTraceBarrierEIDs = CType(pNextTraceBarrierEIDGEN, IEnumNetEID)
-                '        ' ====================== END FILTER BARRIERS =============================
-
-                '        'MsgBox("Debug:12")
+                pForwardStarGEN = pUtilityNetwork.CreateForwardStar(True, Nothing, Nothing, Nothing, Nothing)
+                pForwardStar = CType(pForwardStarGEN, IForwardStar)
 
 
-                '        ' DON'T NEED BELOW??
-                '        ' ========================== SET BARRIERS  ===============================
-                '        'm = 0
-                '        'pNextTraceBarrierEIDs.Reset()
-                '        'pNetworkAnalysisExtBarriers.ClearBarriers()
+                Do Until iUpstreamJunctionCount = 0
 
-                '        'For m = 0 To pNextTraceBarrierEIDs.Count - 1
-                '        '    bEID = pNextTraceBarrierEIDs.Next
-                '        '    pNetElements.QueryIDs(bEID, _
-                '        '                          esriElementType.esriETJunction, _
-                '        '                          bFCID, _
-                '        '                          bFID, _
-                '        '                          bSubID)
+                    pJunctions.Reset()
+                    pNextJunctionsGEN = New EnumNetEIDArray
 
-                '        '    ' Display the barriers as a JunctionFlagDisplay type
-                '        '    pFlagDisplay = New JunctionFlagDisplay
-                '        '    pSymbol = CType(pBarrierSymbol, ISymbol)
-                '        '    With pFlagDisplay
-                '        '        .FeatureClassID = bFCID
-                '        '        .FID = bFID
-                '        '        .Geometry = pGeometricNetwork.GeometryForJunctionEID(bEID)
-                '        '        .Symbol = pSymbol
-                '        '    End With
+                    For j = 0 To pJunctions.Count - 1
+                        iThisEID = pJunctions.Next()
+                        iUpstreamEdges = 0
 
-                '        '    ' Add the flags to the logical network
-                '        '    pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
-                '        '    pNetworkAnalysisExtBarriers.AddJunctionBarrier(pJuncFlagDisplay)
-                '        'Next
-                '        ' ========================== END SET BARRIERS ===========================
+                        'pForwardStar.FindAdjacent(0, iThisEID, iEdges)
+                        iEdges = pNetTopology.GetAdjacentEdgeCount(iThisEID)
+                        'MsgBox("Debug2020: # edge neighbours found for node EID " & Str(iThisEID) & "using pForwardStar: " & Str(iEdges))
 
-                '        ' ========================== SET FLAG ====================================
+                        If iEdges > 0 Then
+                            'If pNetTopology.GetAdjacentEdgeCount(iThisEID) > 0 Then
+                            'pEnumNetEIDBuilder.Add(lEID)
+                            'MsgBox("Debug2020: neighbours found for flag " & Str(fEID))
+                            ' if edge count is greater than 2 (one uo one down)
+                            ' add current junction to list of branch junctions
+                            ' for each edge find adjacent junctions
+                            'iEdges = pNetTopology.GetAdjacentEdgeCount(iThisEID)
+                            'MsgBox("Debug2020: # edge neighbours found for node EID " & Str(iThisEID) & "using pNetTopology: " & Str(iEdges))
 
-                '        'MsgBox("Debug:13")
-                '        pNetworkAnalysisExtFlags.ClearFlags()
-                '        pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, _
-                '                              iFCID, _
-                '                              iFID, _
-                '                              iSubID)
+                            For k = 0 To iEdges - 1
 
-                '        ' Display the flags as a JunctionFlagDisplay type
-                '        pFlagDisplay = New JunctionFlagDisplay
-                '        pSymbol = CType(pFlagSymbol, ISymbol)
-                '        With pFlagDisplay
-                '            .FeatureClassID = iFCID
-                '            .FID = iFID
-                '            .Geometry = pGeometricNetwork.GeometryForJunctionEID(iEID)
-                '            .Symbol = pSymbol
-                '        End With
+                                iEdgeEID = 0
+                                iFromEID = 0
+                                iToEID = 0
 
-                '        ' Add the flags to the logical network
-                '        pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
-                '        pNetworkAnalysisExtFlags.AddJunctionFlag(pJuncFlagDisplay)
 
-                '        ' ====================== RUN TRACE IN DIRECTION OF ANALYSIS ====================
-                '        '                            TO GET FLOW END ELEMENTS
+                                'MsgBox("Debug2020: # This junction  EID: " & Str(iThisEID))
+                                'MsgBox("Debug2020: edgeEID initialized to: " & Str(iEdgeEID))
+                                pNetTopology.GetAdjacentEdge(iThisEID, k, iEdgeEID, True)
+                                'MsgBox("Debug2020: neighbour edge EID found using pNetTopology: " & Str(iEdgeEID))
 
-                '        'MsgBox("Debug:14")
-                '        'prepare the network solver
-                '        pTraceFlowSolver = TraceFlowSolverSetup()
-                '        If pTraceFlowSolver Is Nothing Then
-                '            System.Windows.Forms.MessageBox.Show("Could not set up the network. Check that there is a network loaded.", _
-                '                                                 "TraceFlowSolver setup error.")
-                '            Exit Sub
-                '        End If
+                                'pForwardStar.QueryAdjacentEdge(k, iEdgeEID, bOrientation, Nothing)
+                                ' MsgBox("Debug2020: neighbour edge EID found using pForwardStar: " & Str(iEdgeEID))
+                                'MsgBox("Debug2020: is neighbour edge " & Str(iEdgeEID) & " found using pForwardStar upstream? " & Str(bOrientation))
 
-                '        eFlowElements = esriFlowElements.esriFEJunctionsAndEdges
 
-                '        'Return the features stopping the trace
-                '        If sDirection = "up" Then
-                '            pTraceFlowSolver.FindFlowEndElements(esriFlowMethod.esriFMUpstream, _
-                '                                                 eFlowElements, _
-                '                                                 pFlowEndJunctionsPer, _
-                '                                                 pFlowEndEdgesPer)
-                '        Else
-                '            pTraceFlowSolver.FindFlowEndElements(esriFlowMethod.esriFMDownstream, _
-                '                                                 eFlowElements, _
-                '                                                 pFlowEndJunctionsPer, _
-                '                                                 pFlowEndEdgesPer)
-                '        End If
-                '        ' ============================ END RUN TRACE  ===============================
 
-                '        'MsgBox("Debug:15")
+                                ' Problem is that bOrientation (and other nettopology directions) are simply digitization direction
+                                ' no way easily to determine the flow direction of the edges
+                                ' need to:
+                                ' get the adjacent edge
+                                ' determine digitization direction relative to iThisEID
+                                ' determine flow direction relative to digization direction
+                                ' is it upstream?
 
-                '    Next ' Flow end junction (or flag in this 'order')
-                'Next ' 'order' 
+                                ' IUtilityNetworkGEN.GetFlowDirection(EID) should get flow direction but it is relative to digitization
+                                ' https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#esriFlowDirection.htm
+                                ' 1 = with digitization direction, 2 = against digitization direction
+                                'pUtilityNetwork.
+
+                                'iToEID = iThisEID
+
+                                'MsgBox("Debug2020: # The initialized next junction EID: " & Str(iNextJunctionEID))
+                                pNetTopology.GetFromToJunctionEIDs(iEdgeEID, iFromEID, iToEID)
+                                'MsgBox("Debug2020: # The returned 'to' node using PNetTopology for edge " & Str(iEdgeEID) & " :" & Str(iToEID))
+                                'MsgBox("Debug2020: # The returned 'from' node using PNetTopology for edge " & Str(iEdgeEID) & " :" & Str(iFromEID))
+
+                                'pForwardStar.QueryAdjacentJunction(k, iFromEID, Nothing)
+                                'MsgBox("Debug2020: # The neighbour node using pForwardStar for edge " & Str(iEdgeEID) & " :" & Str(iFromEID))
+
+                                iFlowDir = pUtilityNetwork.GetFlowDirection(iEdgeEID)
+                                'MsgBox("Debug2020: # The esriflowdirection for edge " & Str(iEdgeEID) & " :" & Str(iFlowDir))
+
+                                If iFromEID = iThisEID Then
+                                    iNextEID = iToEID
+                                    If iFlowDir = 1 Then
+                                        'MsgBox("Debug2020: Edge " & Str(iEdgeEID) & " is downstream of node " & Str(iThisEID))
+                                        bUpstream = False
+                                    ElseIf iFlowDir = 2 Then
+                                        'MsgBox("Debug2020: Edge " & Str(iEdgeEID) & " is upstream of node " & Str(iThisEID))
+                                        bUpstream = True
+                                    Else
+                                        MsgBox("Debug2020: Edge flow direction is unitialized or indeterminate")
+                                        bUpstream = False
+                                    End If
+
+                                ElseIf iToEID = iThisEID Then
+                                    iNextEID = iFromEID
+                                    If iFlowDir = 1 Then
+                                        'MsgBox("Debug2020: Edge " & Str(iEdgeEID) & " is upstream of node " & Str(iThisEID))
+                                        bUpstream = True
+                                    ElseIf iFlowDir = 2 Then
+                                        'MsgBox("Debug2020: Edge " & Str(iEdgeEID) & " is downstream of node " & Str(iThisEID))
+                                        bUpstream = False
+                                    Else
+                                        'MsgBox("Debug2020: Edge flow direction is unitialized or indeterminate")
+                                        bUpstream = False
+                                    End If
+                                Else
+                                    MsgBox("Debug2020: No match?? iThisEID: " & Str(iThisEID) & " iFromEID: " & Str(iFromEID) & "iToEID: " & Str(iToEID))
+                                End If
+
+                                ' add the upstream EID to a list of EIDs unless we are 
+                                ' Note here would be the place to identify braids, if that is desired
+                                '    Do this after this loop by checking if any duplicates in list of 
+                                '    upstream EIDs
+                                If bUpstream = True Then
+                                    pNextJunctionsGEN.Add(iNextEID)
+                                    iUpstreamEdges = iUpstreamEdges + 1
+                                End If
+                            Next
+                            ' MsgBox("Debug2020: # of UPSTREAM neighbour edges found for Node " & Str(iThisEID) & ": " & Str(iUpstreamEdges))
+
+                        End If ' upstream edges > 0
+                        ' Add to list of branching junctions
+
+                        If iUpstreamEdges > 1 Then
+                            pBranchJunctionsGEN.Add(iThisEID)
+                            'MsgBox("Debug2020: Found a branch junction at node: " & Str(iThisEID))
+                            ' going to add this EID to list and remove duplicates later
+                            pOriginalBarriersListGEN.Add(iThisEID)
+                        End If
+
+                        'iLastEID = iThisEID ' track last loops EID 
+
+                    Next 'junction in 'order
+                    pNextJunctions = Nothing
+                    pNextJunctions = CType(pNextJunctionsGEN, IEnumNetEID)
+                    pNextJunctions.Reset()
+
+                    'MsgBox("Debug2020: # of upstream junctions this 'order': " & Str(iUpstreamEdges))
+
+                    ' not sure it's necessary to redeclare an empty object for junctions but will do
+                    pJunctionsGEN = New EnumNetEIDArray
+                    pJunctions = Nothing
+                    pJunctions = CType(pJunctionsGEN, IEnumNetEID)
+                    pJunctions = pNextJunctions
+                    pNextJunctionsGEN = New EnumNetEIDArray
+
+                    iUpstreamJunctionCount = pJunctions.Count()
+
+                Loop
+
+                pBranchJunctions = CType(pBranchJunctionsGEN, IEnumNetEID)
+                MsgBox("Debug2020: # of branching junctions for network ': " & Str(pBranchJunctions.Count))
+
+                ' merge the original barriers list and the branch junction list
+                ' careful because the original barriers list likely has other objects
+                ' linked to it that contain permeability, ID, etc etc
+                ' remove duplicates
+
             Next ' original junction flag or sink
+
+
+            ' For each pBranchJunctions add it to the original barrier list generator
+            pBranchJunctions.Reset()
+            For j = 0 To pBranchJunctions.Count - 1
+                iEID_j = pBranchJunctions.Next
+                ' make sure it's not a duplicate
+                pOriginalBarriersList.Reset()
+                bMatch = False
+                For k = 0 To pOriginalBarriersList.Count - 1
+                    iEID_k = pOriginalBarriersList.Next
+                    If iEID_j = iEID_k Then
+                        bMatch = True
+                    End If
+                Next
+                If bMatch = False Then
+                    pOriginalBarriersListGEN.Add(iEID_j)
+                End If
+            Next
+            pOriginalBarriersList = Nothing
+            pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
+
         End If
 
+        MsgBox("Number of saved barriers after branch search: " & Str(pOriginalBarriersListSaved.Count))
 
         '###################### END ADVANCED CONNECTIVITY TAB ##############
 
+
+        pNextOriginalJuncFlagGEN = New EnumNetEIDArray
+        pNextOriginalJuncFlagGEN.Add(fEID)
+        pNextOriginalJuncFlag = CType(pNextOriginalJuncFlagGEN, IEnumNetEID)
 
         ' For each order
         '   If this is the first iteration
@@ -1449,7 +1492,7 @@ Public Class Analysis
 
                 'MsgBox("Debug:11")
                 pFlowEndJunctions.Reset()
-              
+
 
                 For j = 0 To pFlowEndJunctions.Count - 1
 
@@ -1731,7 +1774,7 @@ Public Class Analysis
                     'MsgBox("Debug:17")
                     For p = 0 To pFlowEndJunctionsPer.Count - 1
 
-                        keepEID = False 'initializw
+                        keepEID = False 'initialize
                         endEID = pFlowEndJunctionsPer.Next
                         m = 0
                         pOriginalBarriersList.Reset()
@@ -2991,7 +3034,7 @@ Public Class Analysis
                             '           "DIR", _
                             '           True)
                         End If
-               
+
                         If bUndirected = True Then
 
                             GLPKShellCall(sGLPKHabitatTableName, _
@@ -3140,7 +3183,7 @@ Public Class Analysis
                         End If ' UNDIR
                     End If ' RANDOMIZATION - SA IS ON
 
-                        'MsgBox("Debug:58")
+                    'MsgBox("Debug:58")
                 End If ' GLPK is on
                 ' ===== END GLPK CALCULATION =======
 
@@ -3153,8 +3196,21 @@ Public Class Analysis
 
             'pEdgeFlagDisplay = New IEdgeFlagDisplay
             '               Reset things the way the user had them
+
+
             ' ========================= RESET BARRIERS ===========================
             'MsgBox("Debug:59")
+            If bAdvConnectTab = True Then
+                MsgBox("Number of 'barriers' before: " & Str(pOriginalBarriersList.Count))
+                pOriginalBarriersList = Nothing
+                MsgBox("Number of 'barriers' in pOriginalBarriersListSaved: " & Str(pOriginalBarriersListSaved.Count))
+                pOriginalBarriersList = pOriginalBarriersListSaved
+                MsgBox("Number of 'barriers' in pOriginalBarriersListSaved: " & Str(pOriginalBarriersListSaved.Count))
+                MsgBox("Number of 'barriers' after: " & Str(pOriginalBarriersList.Count))
+
+
+            End If
+
             m = 0
             pOriginalBarriersList.Reset()
             For m = 0 To pOriginalBarriersList.Count - 1
@@ -3451,7 +3507,7 @@ Public Class Analysis
 
         If lMetricsObject.Count > 50 Then
             Dim result = Windows.Forms.MessageBox.Show("There are more than 50 barriers analyzed.  It may take some time to write to results form.  Continue?", "continue", Windows.Forms.MessageBoxButtons.YesNo)
-           If result = Windows.Forms.DialogResult.No Then
+            If result = Windows.Forms.DialogResult.No Then
                 Exit Sub
             End If
         End If

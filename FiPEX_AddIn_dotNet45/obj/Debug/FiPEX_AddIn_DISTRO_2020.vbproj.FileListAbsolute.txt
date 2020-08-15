@@ -26,4 +26,5 @@ C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\FiPEX_AddIn_dotNet45\o
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\FiPEX_AddIn_dotNet45\obj\Debug\FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.dll
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\FiPEX_AddIn_dotNet45\obj\Debug\FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.xml
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\FiPEX_AddIn_dotNet45\obj\Debug\FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.pdb
+C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\FiPEX_AddIn_dotNet45\obj\Debug\FiPEX_AddIn_DISTRO_2020.vbprojResolveAssemblyReference.cache
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\FiPEX_AddIn_dotNet45\bin\Debug\FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.esriAddIn
