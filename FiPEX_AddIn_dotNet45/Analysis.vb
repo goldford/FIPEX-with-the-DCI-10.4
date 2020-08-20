@@ -206,19 +206,20 @@ Public Class Analysis
         ' Author:        Greig Oldford
         '
         ' Description:   read settings from the extension stream,
-        '                perform a network trace, intersect trace
-        '                results with desired polygon and non-network line
-        '                layers, exclude selected features that are not
-        '                wanted, calculate habitat area sorted by habitat class,
-        '                and output results in desired format.
+        '                perform a network trace, 
+        '                intersect Trace results with desired polygon and non-network lines
+        '                exclude selected features that are not wanted
+        '                calculate habitat area sorted by habitat class,
+        '                output results in desired format.
         '                An option to repeat this process iteratively up or
-        '                downstream of a startpoint is possible which distinguishes
-        '                it from the 'one click' analysis.  It then returns
+        '                downstream of a startpoint is possible.  It then returns
         '                the network to the way it was originally.
         '
-        ' Notes:    
+        ' Old Notes:    
         '                This tool has some unused code to prepare for using edges
         '                as barriers or startpoints.  
+        ' Notes 2020:    to do: should be cleaned with functions created to make it more compact
+        '                Note the algorithm is 'breadth first search' (as opposed to 'depth first search')
 
         m_bCancel = False
         ProgressForm = Nothing
@@ -1102,6 +1103,18 @@ Public Class Analysis
             MsgBox("Error Converting ProgressIncrementFactor")
         End Try
 
+        ' 2020_2020 ########################################################
+        ' 2020_2020 ########################################################
+
+        ' 2020_2020 ########################################################
+        ' 2020_2020 ########################################################
+
+        ' 2020_2020 ########################################################
+        ' 2020_2020 ########################################################
+
+        ' 2020_2020 ########################################################
+        ' 2020_2020 ########################################################
+
         ' ######################### FIND ALL BRANCH JUNCTIONS ##############
         ' Created Aug 2020
         ' Purpose: testing, debugging of finding all junctions representing 
@@ -1159,10 +1172,6 @@ Public Class Analysis
 
         Dim pNetEdge As INetworkEdge
         Dim iNetEdgeDirection As Integer ' the direction of flow relative to digitized direction
-
-
-
-       
 
 
         If bAdvConnectTab = True Then
@@ -1390,11 +1399,50 @@ Public Class Analysis
             pOriginalBarriersList = Nothing
             pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
 
+            ' Add each branch junction to the list of Barriers and associated attributes 
+            ' lbarrierIDs is a list of BarrierIDObj
+            ' For each pBranchJunctions add it to the original barrier list generator
+            pBranchJunctions.Reset()
+            For j = 0 To pBranchJunctions.Count - 1
+                iEID_j = pBranchJunctions.Next
+                sBarrierIDLayer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDLayer" + j.ToString))
+                '        sBarrierIDField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDField" + j.ToString))
+                '        sBarrierPermField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierPermField" + j.ToString))
+                '        sBarrierNaturalYNField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierNaturalYNField" + j.ToString))
+                '        ' TEMP HARD CODE OF BARRIER TYPE - this contains a FIELD to look for
+                '        ' in each layer for barrier type ie. 'culvert' 'dam' -- thesis SA
+                '        pBarrierIDObj = New BarrierIDObj(sBarrierIDLayer, sBarrierIDField, sBarrierPermField, sBarrierNaturalYNField, "FIPEX_BarrierType")
+                '        lBarrierIDs.Add(pBarrierIDObj)
+            Next
+            ' SAMPLE CODE
+            ' Get the barrier ID Fields
+            'iBarrierIDs = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numBarrierIDs"))
+            'If iBarrierIDs > 0 Then
+            '    For j = 0 To iBarrierIDs - 1
+            '        sBarrierIDLayer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDLayer" + j.ToString))
+            '        sBarrierIDField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDField" + j.ToString))
+            '        sBarrierPermField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierPermField" + j.ToString))
+            '        sBarrierNaturalYNField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierNaturalYNField" + j.ToString))
+            '        ' TEMP HARD CODE OF BARRIER TYPE - this contains a FIELD to look for
+            '        ' in each layer for barrier type ie. 'culvert' 'dam' -- thesis SA
+            '        pBarrierIDObj = New BarrierIDObj(sBarrierIDLayer, sBarrierIDField, sBarrierPermField, sBarrierNaturalYNField, "FIPEX_BarrierType")
+            '        lBarrierIDs.Add(pBarrierIDObj)
+            '    Next
+            'End If
+
         End If
 
         MsgBox("Number of saved barriers after branch search: " & Str(pOriginalBarriersListSaved.Count))
 
+        ' 2020_2020 ########################################################
+        ' 2020_2020 ########################################################
+        ' 2020_2020 ########################################################
+        ' 2020_2020 ########################################################
+
+
         '###################### END ADVANCED CONNECTIVITY TAB ##############
+
+
 
 
         pNextOriginalJuncFlagGEN = New EnumNetEIDArray
@@ -1676,9 +1724,9 @@ Public Class Analysis
 
                     ' Barrier type - stores the 'culvert/dam/etc' type
                     ' of the layer... right now not in stored property set 
-                    ' of the FIPEX extension - so hardcoded
+                    ' of the FIPEX extension - so temporary switch and function here
                     Dim bBarrierType As Boolean = True
-                    '(temp HARD CODE)
+                    '(temp switch)
                     Dim sBarrierType As String ' field name found in layers
 
                     If bBarrierType = True Then
@@ -1720,8 +1768,7 @@ Public Class Analysis
                             lGLPKOptionsList.Add(lGLPKOptionsListTEMP(m))
                         Next
 
-
-                    End If
+                    End If 'GLPK tables
 
                     ' Will save this sOutID and sType for later use, if this is orderloop zero (flag)
                     ' because will need to insert the DCI Metric at the end of this flag loop
@@ -2663,6 +2710,7 @@ Public Class Analysis
                                               sPrefix)
                     Call PrepHabitatTable(sHabTableName, pFWorkspace)
 
+
                     ' check if user has hit 'close/cancel'
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
@@ -2678,11 +2726,24 @@ Public Class Analysis
                                                  sPrefix)
                     Call PrepMetricTable(sMetricTableName, _
                                          pFWorkspace)
+
+                    ' ========== 2020 To Do =========
+                    ' insert 'sMetricTableName' Advanced?
+
                     'MsgBox("Debug:52")
 
                 End If
                 ' ============== End New DCI, Hab and Metric Table Name ==========
 
+                ' ============== 2020 Duplicate Metrics Objects And Correct ==========
+                ' if the 'advanced' connectivity table is output
+                ' then duplicate metrics, habitat, connectivity tables
+                ' then fix the original tables to remove reference to junctions
+                ' (will need to do network search using these tables to fix by 
+                '  aggregating habitat upstream of branch junctions to the nearest downstream barrier)
+
+
+                ' ============== END 2020 Duplicate and Correct Tables ===========
 
 
                 If bConnectTab = True Then
@@ -11345,20 +11406,9 @@ Public Class Analysis
 
     End Function
     Private Function GetNaturalYN(ByVal iFCID As Integer, ByVal iFID As Integer, ByVal lBarrierIDs As List(Of BarrierIDObj)) As String
-        ' =============== FLAG ON POINT WITH Perm? =========================
-        ' This section checks whether there is a BarrierPerm Field
-        ' In which case it will use this field to identify the 
-        ' barrier in the output.
-        ' 1.0 For each layer in the table of contents
-        '   2.0 If the layer is a FeatureLayer
-        '     3.0 If the layer ClassID matches the layer of the CURRENT FLAG
-        '     3.1 Get the field values for the feature
-        '       4.0 For each of the Barrier IDs in the list
-        '         5.0 If the layer in the BarrierID list matches the layer in the TOC
-        '         5.1 Get the name of the field
-        '           6.0 If the field has something in it
-        '             7.0 Set the ID of the flag (dOutValue) equal to that value
-        '
+        'returns whether the barrier is natural or not based on user-declared field in attribute table
+        'if none found, assumes NOT natural (returns "F")
+        
         Dim bCheck As Boolean
         Dim j, k As Integer
 
@@ -11406,10 +11456,10 @@ Public Class Analysis
 
     End Function
     Private Function GetBarrierPerm(ByVal iFCID As Integer, ByVal iFID As Integer, ByVal lBarrierIDs As List(Of BarrierIDObj)) As Double
-        ' =============== FLAG ON POINT WITH Perm? =========================
-        ' This section checks whether there is a BarrierPerm Field
-        ' In which case it will use this field to identify the 
-        ' barrier in the output.
+        'returns permeability drawn from user-declared field in attribute table
+        'if not it returns a zero permeability
+        '
+        ' If there's a barrierperm field provided, 
         ' 1.0 For each layer in the table of contents
         '   2.0 If the layer is a FeatureLayer
         '     3.0 If the layer ClassID matches the layer of the CURRENT FLAG
@@ -11472,7 +11522,7 @@ Public Class Analysis
 
     End Function
     Private Function GetBarrierType(ByVal iFCID As Integer, ByVal iFID As Integer, ByVal lBarrierIDs As List(Of BarrierIDObj)) As String
-        ' =============== FLAG ON POINT WITH Perm? =========================
+        ' returns a type category drawn from attribute table such as "dam" or "culvert"
         ' This section checks whether there is a BarrierType Field
         ' In which case it will use this field to identify the 
         ' barrier in the output.
@@ -11657,6 +11707,7 @@ Public Class Analysis
     End Function
     Private Function GetBarrierID(ByVal iFCID As Integer, ByVal iFID As Integer, ByVal lBarrierIDs As List(Of BarrierIDObj)) As IDandType
         ' =============== FLAG ON POINT WITH BNUMBER? =========================
+        'returns user-set ID or Object ID
         ' This section checks whether there is a BNumber Field
         ' In which case it will use this field to identify the 
         ' barrier in the output.
