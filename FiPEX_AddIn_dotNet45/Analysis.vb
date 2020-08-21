@@ -888,7 +888,7 @@ Public Class Analysis
 
                 'Initial set of feature class
                 pEnumSimpLineFCs.Reset()
-                pFeatureClass = pEnumSimpLineFCs.Next
+                pFeatureClass = pEnumSimpLineFCs.Next()
                 i = 0
                 j = 0
                 If lFCIDs.Count > 0 Then
@@ -902,7 +902,7 @@ Public Class Analysis
                                 Next 'j
                             End If
                         Next 'i
-                        pFeatureClass = pEnumSimpLineFCs.Next
+                        pFeatureClass = pEnumSimpLineFCs.Next()
                     Loop
                 End If
 
@@ -916,7 +916,7 @@ Public Class Analysis
             If bGLPKTables = True Then
                 'Initial set of feature class
                 pEnumSimpLineFCs.Reset()
-                pFeatureClass = pEnumSimpLineFCs.Next
+                pFeatureClass = pEnumSimpLineFCs.Next()
                 i = 0
                 j = 0
                 If lAllFCIDs.Count > 0 Then
@@ -930,7 +930,7 @@ Public Class Analysis
                                 Next 'j                              
                             End If
                         Next 'i
-                        pFeatureClass = pEnumSimpLineFCs.Next
+                        pFeatureClass = pEnumSimpLineFCs.Next()
                     Loop
                 End If
                 j = 0
@@ -1142,6 +1142,7 @@ Public Class Analysis
         Dim iThisEID As Integer = 0
         Dim iNextEID As Integer = 0
         Dim iEID_j As Integer = 0
+        Dim iEID_p As Integer = 0
         Dim iEID_k As Integer = 0
         Dim iLastEID As Integer = 0
         Dim iActualFromEID As Integer = 0 ' for actual flow direction
@@ -1150,26 +1151,24 @@ Public Class Analysis
         Dim bOrientation As Boolean = False
         Dim bUpstream As Boolean = False
         Dim bMatch As Boolean = False
+        Dim bBranchJunction As Boolean = False
         Dim iUpstreamEdges As Integer = 0
         Dim pAdjacentEdges As IEnumNetEID
         Dim pAdjacentEdgesGEN As IEnumNetEIDBuilderGEN
         Dim pBranchJunctions As IEnumNetEID
         Dim pBranchJunctionsGEN As IEnumNetEIDBuilderGEN
+        Dim pFilteredBranchJunctionsGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pFilteredBranchJunctionsList As IEnumNetEID
 
         ' next junctions upstream direction
         Dim pNextJunctions As IEnumNetEID
         Dim pNextJunctionsGEN As IEnumNetEIDBuilderGEN
         Dim pJunctions As IEnumNetEID
         Dim pJunctionsGEN As IEnumNetEIDBuilderGEN
-
-
         Dim iUpstreamJunctionCount As Integer = 0
-
         Dim pUtilityNetwork As IUtilityNetwork ' need to get flow direction relative to dig. direction
-
         Dim pForwardStar As IForwardStar
         Dim pForwardStarGEN As IForwardStarGEN
-
         Dim pNetEdge As INetworkEdge
         Dim iNetEdgeDirection As Integer ' the direction of flow relative to digitized direction
 
@@ -1213,10 +1212,9 @@ Public Class Analysis
 
                 pBranchJunctionsGEN = New EnumNetEIDArray
 
-
                 pNetTopology = CType(pNetwork, INetTopology)
 
-                fEID = pOriginaljuncFlagsList.Next
+                fEID = pOriginaljuncFlagsList.Next()
 
                 ' Use Do loop until no upstream neighbours are found
                 pJunctionsGEN = New EnumNetEIDArray
@@ -1229,7 +1227,6 @@ Public Class Analysis
 
                 pForwardStarGEN = pUtilityNetwork.CreateForwardStar(True, Nothing, Nothing, Nothing, Nothing)
                 pForwardStar = CType(pForwardStarGEN, IForwardStar)
-
 
                 Do Until iUpstreamJunctionCount = 0
 
@@ -1345,7 +1342,7 @@ Public Class Analysis
                             pBranchJunctionsGEN.Add(iThisEID)
                             'MsgBox("Debug2020: Found a branch junction at node: " & Str(iThisEID))
                             ' going to add this EID to list and remove duplicates later
-                            pOriginalBarriersListGEN.Add(iThisEID)
+                            'pOriginalBarriersListGEN.Add(iThisEID)
                         End If
 
                         'iLastEID = iThisEID ' track last loops EID 
@@ -1369,7 +1366,7 @@ Public Class Analysis
                 Loop
 
                 pBranchJunctions = CType(pBranchJunctionsGEN, IEnumNetEID)
-                MsgBox("Debug2020: # of branching junctions for network ': " & Str(pBranchJunctions.Count))
+                ' MsgBox("Debug2020: # of branching junctions for network ': " & Str(pBranchJunctions.Count))
 
                 ' merge the original barriers list and the branch junction list
                 ' careful because the original barriers list likely has other objects
@@ -1382,57 +1379,47 @@ Public Class Analysis
             ' For each pBranchJunctions add it to the original barrier list generator
             pBranchJunctions.Reset()
             For j = 0 To pBranchJunctions.Count - 1
-                iEID_j = pBranchJunctions.Next
-                ' make sure it's not a duplicate
+                iEID_j = pBranchJunctions.Next()
+                'MsgBox("Debug2020 iIEID_j: " + Str(iEID_j))
+
+                ' make sure it's not a duplicate 
+                '(if user has placed flag on branch junction, then omit the branch junction)
                 pOriginalBarriersList.Reset()
                 bMatch = False
+
+                'MsgBox("Debug2020 pOriginalBarriersList.Count: " + Str(pOriginalBarriersList.Count))
                 For k = 0 To pOriginalBarriersList.Count - 1
-                    iEID_k = pOriginalBarriersList.Next
+                    iEID_k = pOriginalBarriersList.Next()
+                    'MsgBox("Debug2020 iIEID_k: " + Str(iEID_k))
                     If iEID_j = iEID_k Then
                         bMatch = True
+                        'MsgBox("Debug2020 iIEID_k " + Str(iEID_k) + " = iEID_j " + Str(iEID_j))
+
                     End If
                 Next
                 If bMatch = False Then
+                    ' add branch junction to user-set barrier list 
                     pOriginalBarriersListGEN.Add(iEID_j)
+                    ' store filtered (no user-set barrier) branch junction for later
+                    pFilteredBranchJunctionsGEN.Add(iEID_j)
+                    'MsgBox("Debug2020 adding iIEID_j to list of branch junctions: " + Str(iEID_j))
+
                 End If
             Next
+
             pOriginalBarriersList = Nothing
             pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
 
-            ' Add each branch junction to the list of Barriers and associated attributes 
-            ' lbarrierIDs is a list of BarrierIDObj
-            ' For each pBranchJunctions add it to the original barrier list generator
-            pBranchJunctions.Reset()
-            For j = 0 To pBranchJunctions.Count - 1
-                iEID_j = pBranchJunctions.Next
-                sBarrierIDLayer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDLayer" + j.ToString))
-                '        sBarrierIDField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDField" + j.ToString))
-                '        sBarrierPermField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierPermField" + j.ToString))
-                '        sBarrierNaturalYNField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierNaturalYNField" + j.ToString))
-                '        ' TEMP HARD CODE OF BARRIER TYPE - this contains a FIELD to look for
-                '        ' in each layer for barrier type ie. 'culvert' 'dam' -- thesis SA
-                '        pBarrierIDObj = New BarrierIDObj(sBarrierIDLayer, sBarrierIDField, sBarrierPermField, sBarrierNaturalYNField, "FIPEX_BarrierType")
-                '        lBarrierIDs.Add(pBarrierIDObj)
-            Next
-            ' SAMPLE CODE
-            ' Get the barrier ID Fields
-            'iBarrierIDs = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numBarrierIDs"))
-            'If iBarrierIDs > 0 Then
-            '    For j = 0 To iBarrierIDs - 1
-            '        sBarrierIDLayer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDLayer" + j.ToString))
-            '        sBarrierIDField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDField" + j.ToString))
-            '        sBarrierPermField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierPermField" + j.ToString))
-            '        sBarrierNaturalYNField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierNaturalYNField" + j.ToString))
-            '        ' TEMP HARD CODE OF BARRIER TYPE - this contains a FIELD to look for
-            '        ' in each layer for barrier type ie. 'culvert' 'dam' -- thesis SA
-            '        pBarrierIDObj = New BarrierIDObj(sBarrierIDLayer, sBarrierIDField, sBarrierPermField, sBarrierNaturalYNField, "FIPEX_BarrierType")
-            '        lBarrierIDs.Add(pBarrierIDObj)
-            '    Next
-            'End If
+            pFilteredBranchJunctionsList = Nothing
+            pFilteredBranchJunctionsList = CType(pFilteredBranchJunctionsGEN, IEnumNetEID)
+            pFilteredBranchJunctionsList.Reset()
+            MsgBox("Debug2020: number of branch junctions " + Str(pFilteredBranchJunctionsList.Count))
+
+
 
         End If
 
-        MsgBox("Number of saved barriers after branch search: " & Str(pOriginalBarriersListSaved.Count))
+        'MsgBox("Debug2020 Number of saved barriers after branch search: " & Str(pOriginalBarriersListSaved.Count))
 
         ' 2020_2020 ########################################################
         ' 2020_2020 ########################################################
@@ -1441,9 +1428,6 @@ Public Class Analysis
 
 
         '###################### END ADVANCED CONNECTIVITY TAB ##############
-
-
-
 
         pNextOriginalJuncFlagGEN = New EnumNetEIDArray
         pNextOriginalJuncFlagGEN.Add(fEID)
@@ -1497,7 +1481,7 @@ Public Class Analysis
             pAllFlowEndBarriersGEN = New EnumNetEIDArray
             pAllFlowEndBarriers = CType(pAllFlowEndBarriersGEN, IEnumNetEID)
 
-            fEID = pOriginaljuncFlagsList.Next
+            fEID = pOriginaljuncFlagsList.Next()
             pNextOriginalJuncFlagGEN = New EnumNetEIDArray
             pNextOriginalJuncFlagGEN.Add(fEID)
             pNextOriginalJuncFlag = CType(pNextOriginalJuncFlagGEN, IEnumNetEID)
@@ -1564,7 +1548,7 @@ Public Class Analysis
                     pNextTraceBarrierEIDGEN = New EnumNetEIDArray
 
                     For p = 0 To pOriginalBarriersList.Count - 1
-                        bEID = pOriginalBarriersList.Next
+                        bEID = pOriginalBarriersList.Next()
                         flagOverBarrier = False
 
                         ' If the EID of the end-of-flow junctions do not equal
@@ -1595,7 +1579,7 @@ Public Class Analysis
                     pNetworkAnalysisExtBarriers.ClearBarriers()
 
                     For m = 0 To pNextTraceBarrierEIDs.Count - 1
-                        bEID = pNextTraceBarrierEIDs.Next
+                        bEID = pNextTraceBarrierEIDs.Next()
                         pNetElements.QueryIDs(bEID, _
                                               esriElementType.esriETJunction, _
                                               bFCID, _
@@ -1685,7 +1669,30 @@ Public Class Analysis
                     '    MsgBox("!!!")
                     'End If
 
-                    sType = pIDAndType.BarrIDType
+
+
+                    ' 2020 if the 'advanced connectivity' analysis (branching junctions respected)
+                    '      then if element is a branch junction set permeability = 1
+                    bBranchJunction = False
+                    If bAdvConnectTab = True Then
+                        pFilteredBranchJunctionsList.Reset()
+                        For p = 0 To pFilteredBranchJunctionsList.Count - 1
+                            iEID_p = pFilteredBranchJunctionsList.Next()
+                            'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iEID: " + Str(iEID))
+                            If iEID = iEID_p Then
+                                bBranchJunction = True
+                                'MsgBox("Debug2020: Found junction will set perm to 1")
+                                Exit For
+                            End If
+                        Next
+                    End If
+
+                    If bBranchJunction = True Then
+                        sType = "Branch Junction"
+                    Else
+                        sType = pIDAndType.BarrIDType
+                    End If
+
                     If sType <> "Sink" And _
                         orderLoop = 0 And _
                         sFlagCheck = "nonbarr" Then
@@ -1701,13 +1708,21 @@ Public Class Analysis
                     End If
 
                     ' Get barrier Permeability 
-                    If bBarrierPerm = True Then
-                        dBarrierPerm = GetBarrierPerm(iFCID, _
-                                                      iFID, _
-                                                      lBarrierIDs)
+                    'MsgBox("2020 message pFilteredBranchJunctionsList.Count : " + Str(pFilteredBranchJunctionsList.Count))
+
+
+                    ' Barrier permeability = 1 if branch junction
+                    ' otherwise check the user-set attribute
+                    If bBranchJunction = True Then
+                        dBarrierPerm = 1
                     Else
-                        dBarrierPerm = 0
+                        If bBarrierPerm = True Then
+                            dBarrierPerm = GetBarrierPerm(iFCID, iFID, lBarrierIDs)
+                        Else
+                            dBarrierPerm = 0
+                        End If
                     End If
+                    
 
                     ' Get natural barrier
                     If bNaturalYN = True Then
@@ -1728,13 +1743,18 @@ Public Class Analysis
                     Dim bBarrierType As Boolean = True
                     '(temp switch)
                     Dim sBarrierType As String ' field name found in layers
-
-                    If bBarrierType = True Then
-                        sBarrierType = GetBarrierType(iFCID, iFID, lBarrierIDs)
+                    If bBranchJunction = True Then
+                        sBarrierType = "Branch Junction"
                     Else
-                        sBarrierType = "Not Set"
-                    End If
+                        If bBarrierType = True Then
 
+                            sBarrierType = GetBarrierType(iFCID, iFID, lBarrierIDs)
+                        Else
+                            sBarrierType = "Not Set"
+                        End If
+
+                    End If
+                   
 
                     ' populate tables for optimization analysis
                     If bGLPKTables = True Then
@@ -1822,15 +1842,15 @@ Public Class Analysis
                     For p = 0 To pFlowEndJunctionsPer.Count - 1
 
                         keepEID = False 'initialize
-                        endEID = pFlowEndJunctionsPer.Next
+                        endEID = pFlowEndJunctionsPer.Next()
                         m = 0
                         pOriginalBarriersList.Reset()
                         For m = 0 To pOriginalBarriersList.Count - 1
-                            If endEID = pOriginalBarriersList.Next Then
+                            If endEID = pOriginalBarriersList.Next() Then
                                 keepEID = True ' set true if found
                                 pAllFlowEndBarriers.Reset()
                                 For k = 0 To pAllFlowEndBarriers.Count - 1
-                                    If endEID = pAllFlowEndBarriers.Next Then
+                                    If endEID = pAllFlowEndBarriers.Next() Then
                                         keepEID = False ' set false if already on master list
                                     End If
                                 Next
@@ -1943,7 +1963,7 @@ Public Class Analysis
                             ' ---- EXCLUDE FEATURES -----
                             pEnumLayer.Reset()
                             ' Look at the next layer in the list
-                            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                             Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
                                 If pFeatureLayer.Valid = True Then
                                     If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
@@ -1952,7 +1972,7 @@ Public Class Analysis
                                         ExcludeFeatures(pFeatureLayer)
                                     End If
                                 End If
-                                pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                                pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                             Loop
                             ' ---- END EXCLUDE FEATURES -----
 
@@ -1961,11 +1981,11 @@ Public Class Analysis
                             pResultJunctions.Reset()
                             k = 0
                             For k = 0 To pResultJunctions.Count - 1
-                                pTotalResultsJunctionsGEN.Add(pResultJunctions.Next)
+                                pTotalResultsJunctionsGEN.Add(pResultJunctions.Next())
                             Next
                             pResultEdges.Reset()
                             For k = 0 To pResultEdges.Count - 1
-                                pTotalResultsEdgesGEN.Add(pResultEdges.Next)
+                                pTotalResultsEdgesGEN.Add(pResultEdges.Next())
                             Next
 
                             ' use results for DCI if needed
@@ -2064,11 +2084,11 @@ Public Class Analysis
                             pDownConnectedJunctions.Reset()
                             k = 0
                             For k = 0 To pDownConnectedJunctions.Count - 1
-                                pTotalResultsJunctionsGEN.Add(pDownConnectedJunctions.Next)
+                                pTotalResultsJunctionsGEN.Add(pDownConnectedJunctions.Next())
                             Next
                             pDownConnectedEdges.Reset()
                             For k = 0 To pDownConnectedEdges.Count - 1
-                                pTotalResultsEdgesGEN.Add(pDownConnectedEdges.Next)
+                                pTotalResultsEdgesGEN.Add(pDownConnectedEdges.Next())
                             Next
 
                             ' ============== INTERSECT FEATURES ================
@@ -2093,7 +2113,7 @@ Public Class Analysis
                             ' ---- EXCLUDE FEATURES -----
                             pEnumLayer.Reset()
                             ' Look at the next layer in the list
-                            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                             Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
                                 If pFeatureLayer.Valid = True Then
                                     If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
@@ -2102,7 +2122,7 @@ Public Class Analysis
                                         ExcludeFeatures(pFeatureLayer)
                                     End If
                                 End If
-                                pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                                pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                             Loop
                             ' ---- END EXCLUDE FEATURES -----
 
@@ -2164,11 +2184,11 @@ Public Class Analysis
                         pResultJunctions.Reset()
                         k = 0
                         For k = 0 To pResultJunctions.Count - 1
-                            pTotalResultsJunctionsGEN.Add(pResultJunctions.Next)
+                            pTotalResultsJunctionsGEN.Add(pResultJunctions.Next())
                         Next
                         pResultEdges.Reset()
                         For k = 0 To pResultEdges.Count - 1
-                            pTotalResultsEdgesGEN.Add(pResultEdges.Next)
+                            pTotalResultsEdgesGEN.Add(pResultEdges.Next())
                         Next
 
                         ' Get results as selection
@@ -2194,7 +2214,7 @@ Public Class Analysis
                         ' ---- EXCLUDE FEATURES -----
                         pEnumLayer.Reset()
                         ' Look at the next layer in the list
-                        pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                        pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                         Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
                             If pFeatureLayer.Valid = True Then
                                 If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
@@ -2203,7 +2223,7 @@ Public Class Analysis
                                     ExcludeFeatures(pFeatureLayer)
                                 End If
                             End If
-                            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                         Loop
                         ' ---- END EXCLUDE FEATURES -----
 
@@ -2272,11 +2292,11 @@ Public Class Analysis
                         pResultJunctions.Reset()
                         k = 0
                         For k = 0 To pResultJunctions.Count - 1
-                            pTotalResultsJunctionsGEN.Add(pResultJunctions.Next)
+                            pTotalResultsJunctionsGEN.Add(pResultJunctions.Next())
                         Next
                         pResultEdges.Reset()
                         For k = 0 To pResultEdges.Count - 1
-                            pTotalResultsEdgesGEN.Add(pResultEdges.Next)
+                            pTotalResultsEdgesGEN.Add(pResultEdges.Next())
                         Next
 
 
@@ -2306,7 +2326,7 @@ Public Class Analysis
                             ' ---- EXCLUDE FEATURES -----
                             pEnumLayer.Reset()
                             ' Look at the next layer in the list
-                            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                             Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
                                 If pFeatureLayer.Valid = True Then
                                     If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
@@ -2315,7 +2335,7 @@ Public Class Analysis
                                         ExcludeFeatures(pFeatureLayer)
                                     End If
                                 End If
-                                pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                                pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                             Loop
                             ' ---- END EXCLUDE FEATURES -----
 
@@ -2381,11 +2401,11 @@ Public Class Analysis
                             pResultJunctions.Reset()
                             k = 0
                             For k = 0 To pResultJunctions.Count - 1
-                                pTotalResultsJunctionsGEN.Add(pResultJunctions.Next)
+                                pTotalResultsJunctionsGEN.Add(pResultJunctions.Next())
                             Next
                             pResultEdges.Reset()
                             For k = 0 To pResultEdges.Count - 1
-                                pTotalResultsEdgesGEN.Add(pResultEdges.Next)
+                                pTotalResultsEdgesGEN.Add(pResultEdges.Next())
                             Next
 
                             ' ========= SUBTRACT UPSTREAM FROM ALL CONNECTED =======
@@ -2408,7 +2428,7 @@ Public Class Analysis
                             ' ---- EXCLUDE FEATURES -----
                             pEnumLayer.Reset()
                             ' Look at the next layer in the list
-                            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                             Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
                                 If pFeatureLayer.Valid = True Then
                                     If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
@@ -2417,7 +2437,7 @@ Public Class Analysis
                                         ExcludeFeatures(pFeatureLayer)
                                     End If
                                 End If
-                                pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                                pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                             Loop
                             ' ---- END EXCLUDE FEATURES -----
                             pActiveView.Refresh() ' refresh the view
@@ -2425,6 +2445,8 @@ Public Class Analysis
                             sHabType = "Total"
                             sHabDir = "downstream"
                             'MsgBox("Debug:38")
+
+                            ' returns a habitat list
                             Call calculateStatistics_2(lHabStatsList, _
                                                        sOutID, _
                                                        iEID, _
@@ -2485,11 +2507,11 @@ Public Class Analysis
                         pResultJunctions.Reset()
                         k = 0
                         For k = 0 To pResultJunctions.Count - 1
-                            pTotalResultsJunctionsGEN.Add(pResultJunctions.Next)
+                            pTotalResultsJunctionsGEN.Add(pResultJunctions.Next())
                         Next
                         pResultEdges.Reset()
                         For k = 0 To pResultEdges.Count - 1
-                            pTotalResultsEdgesGEN.Add(pResultEdges.Next)
+                            pTotalResultsEdgesGEN.Add(pResultEdges.Next())
                         Next
 
                         ' Get results as selection
@@ -2501,7 +2523,7 @@ Public Class Analysis
                         ' ---- EXCLUDE FEATURES -----
                         pEnumLayer.Reset()
                         ' Look at the next layer in the list
-                        pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                        pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                         Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
                             If pFeatureLayer.Valid = True Then
                                 If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
@@ -2510,7 +2532,7 @@ Public Class Analysis
                                     ExcludeFeatures(pFeatureLayer)
                                 End If
                             End If
-                            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+                            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
                         Loop
                         ' ---- END EXCLUDE FEATURES -----
 
@@ -2770,6 +2792,7 @@ Public Class Analysis
                     Next
                 End If
 
+                ' DO NOT DELETE!
                 'If bGLPKTables = True Then
                 '    pTabl2e = pFWorkspace.OpenTable(sConnectTabName)
                 '    j = 0
@@ -3275,7 +3298,7 @@ Public Class Analysis
             m = 0
             pOriginalBarriersList.Reset()
             For m = 0 To pOriginalBarriersList.Count - 1
-                bEID = pOriginalBarriersList.Next
+                bEID = pOriginalBarriersList.Next()
                 pNetElements.QueryIDs(bEID, esriElementType.esriETJunction, bFCID, bFID, bSubID)
 
                 ' Display the barriers as a JunctionFlagDisplay type
@@ -3336,6 +3359,8 @@ Public Class Analysis
             Next
             ' ============ END INSERT DCI's to METRICS TABLE ==================
             'MsgBox("Debug:61")
+
+
             ' ============ BEGIN INSERT STATS INTO HABITAT TABLES =============
             pTable = pFWorkspace.OpenTable(sHabTableName)
             j = 0
@@ -3381,7 +3406,7 @@ Public Class Analysis
         m = 0
         pOriginalBarriersList.Reset()
         For m = 0 To pOriginalBarriersList.Count - 1
-            bEID = pOriginalBarriersList.Next
+            bEID = pOriginalBarriersList.Next()
             pNetElements.QueryIDs(bEID, esriElementType.esriETJunction, bFCID, bFID, bSubID)
 
             ' Display the barriers as a JunctionFlagDisplay type
@@ -3409,7 +3434,7 @@ Public Class Analysis
         pOriginalEdgeFlagsList.Reset()
         For m = 0 To pOriginalEdgeFlagsList.Count - 1
 
-            iEID = pOriginalEdgeFlagsList.Next
+            iEID = pOriginalEdgeFlagsList.Next()
             ' Query the corresponding user ID's to the element ID
             pNetElements.QueryIDs(iEID, esriElementType.esriETEdge, iFCID, iFID, iSubID)
 
@@ -3433,7 +3458,7 @@ Public Class Analysis
         pOriginaljuncFlagsList.Reset()
         For m = 0 To pOriginaljuncFlagsList.Count - 1
 
-            iEID = pOriginaljuncFlagsList.Next
+            iEID = pOriginaljuncFlagsList.Next()
             ' Query the corresponding user ID's to the element ID
             pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, iFCID, iFID, iSubID)
 
@@ -3817,7 +3842,6 @@ Public Class Analysis
             pResultsForm3.DataGridView1.Columns.Item(i).SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic
         Next i
 
-
         Dim iMaxRowIndex, iSinkRowIndex, iSinkRowCount, iHabRowIndex, iHabRowcount, iBarrRowIndex, iBarrRowCount As Integer ' loop counters and grid indices
         Dim iMetricRowIndex, iMetricRowCount, iThisHabRowIndex, iThisHabRowCount As Integer
         Dim iSinkEID, iBarrEID As Integer
@@ -3847,7 +3871,8 @@ Public Class Analysis
 
 
         Dim pDataGridViewCellStyle As System.Windows.Forms.DataGridViewCellStyle
-        ' There are two tables being joined manually 
+
+        ' two tables joined manually (no SQL 'join' available):
         ' - the metrics table / list
         ' and 
         ' - the habitat statistics table / list
@@ -5578,7 +5603,7 @@ Public Class Analysis
         pEnumLayer.Reset()
 
         ' Look at the next layer in the list
-        pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+        pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
 
         Dim iLoopCount As Integer = 0
         Dim dTempQuan As Double
@@ -5642,7 +5667,7 @@ Public Class Analysis
                     Next           ' habitat layer
                 End If ' featurelayer is valid
             End If
-            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
         Loop ' next map layer
 
         With pGLPKStatisticsObject
@@ -5811,7 +5836,7 @@ Public Class Analysis
         pEnumLayer.Reset()
 
         ' Look at the next layer in the list
-        pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+        pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
 
         Dim iLoopCount As Integer = 0
         dTotalArea = 0
@@ -5873,7 +5898,7 @@ Public Class Analysis
                     Next           ' habitat layer
                 End If ' featurelayer is valid
             End If
-            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
         Loop ' next map layer
 
         With pDCIStatsObject
@@ -5903,7 +5928,7 @@ Public Class Analysis
         ' Subroutine:  Calculate Statistics (2) 
         ' Created By:  Greig Oldford
         ' Update Date: October 5, 2010
-        ' Purpose:     1) To intersect other included layers with returned selection
+        ' Purpose:     1) intersect other included layers with returned selection
         '                 from the trace.
         '              2) calculate habitat area and length using habitat classes 
         '                 and excluding unwanted features
@@ -5915,12 +5940,18 @@ Public Class Analysis
         '
         '
         ' Notes:
+        ' 
+        ' 
+        '       Aug, 2020    --> Not sure why passing vars by ref other than lHabStatsList.
+        '                        The function only changes Hab stats object
+        ' 
+        ' 
         '       Oct 5, 2010  --> Changing this subroutine to a function so it can update the statistics 
         '                  object for habitat statistics (with classes) ONLY. i.e., there will be no 
         '                  other metrics included in this habitat statistics object.
         '                  Added another keyword to say whether this is TOTAL habitat or otherwise (sHabTypeKeyword). 
         '    
-        '       Mar 3, 2008  --> Currently, only polygon feature layers are intersected.  The function
+        '       Mar 3, 2008  --> only polygon feature layers are intersected.  The function
         '                  checks the config file for included polygons and will intersect any
         '                  network features returned by the trace with the polygons on the list.
         '                  There is probably no reason to have this explicitly for polygons, and
@@ -5928,7 +5959,7 @@ Public Class Analysis
         '                  the habitat classification also must be divided as such.  This would double
         '                  the number of variables for this process (polygon habitat class layer
         '                  variable, line hab class lyr var, polygon hab class case field var, etc.)
-        '                  So, since network feature layers are already being returned by the trace,
+        '                  So since network feature layers are already being returned by the trace,
         '                  they don't need to be intersected.  If we have one 'includes' list that
         '                  contains both polygon and line layers then we need to find out which layers
         '                  in this list are not part of the geometric network, and only intersect these
@@ -6166,7 +6197,7 @@ Public Class Analysis
         pEnumLayer.Reset()
 
         ' Look at the next layer in the list
-        pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+        pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
         Dim iClassCheckTemp As Integer
         Dim iLoopCount As Integer = 0
         Dim dTempQuan As Double
@@ -6577,7 +6608,7 @@ Public Class Analysis
                     End If     ' feature layer matches hab class layer
                 Next           ' habitat layer
             End If ' featurelayer is valid
-            pFeatureLayer = CType(pEnumLayer.Next, IFeatureLayer)
+            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
         Loop
 
     End Sub
@@ -9402,9 +9433,7 @@ Public Class Analysis
         ' ====================================================================
         ' SubRoutine:    Update Results Form With DCI
         ' Author:        Greig Oldford
-        ' Created For:   DFO Maritimes
-        '
-        ' Description:   This command will read the output file in the DCI Model
+        ' Description:   read the output file in the DCI Model
         '                directory, created during the DCIShellCall sub
         ' ====================================================================
 
@@ -11859,14 +11888,14 @@ Public Class Analysis
         For i = 0 To pJuncFlags.Count - 1
 
             flagBarrier = False     ' assume flag is not on barrier
-            iEID = pJuncFlags.Next  ' get the EID of flag
+            iEID = pJuncFlags.Next()  ' get the EID of flag
             m = 0
             pBarriersList.Reset()
 
             ' For each barrier
             For m = 0 To pBarriersList.Count - 1
                 'If endEID = pOriginalBarriersList(m) Then 'VB.NET
-                If iEID = pBarriersList.Next Then
+                If iEID = pBarriersList.Next() Then
                     flagBarrier = True
                 End If
             Next
@@ -11926,14 +11955,14 @@ Public Class Analysis
         For i = 0 To pConnected.Count - 1
 
             bCommonElement = False  ' assume flag is not on barrier
-            iEID = pConnected.Next  ' get the EID of flag
+            iEID = pConnected.Next() ' get the EID of flag
             m = 0
             pUpConnected.Reset()
 
             ' For each upstream element
             For m = 0 To pUpConnected.Count - 1
                 'If endEID = pOriginalBarriersList(m) Then 'VB.NET
-                If iEID = pUpConnected.Next Then
+                If iEID = pUpConnected.Next() Then
                     bCommonElement = True
                 End If
             Next
