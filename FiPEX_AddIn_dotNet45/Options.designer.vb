@@ -138,9 +138,10 @@ Partial Class Options
         '
         'cmdSave
         '
-        Me.cmdSave.Location = New System.Drawing.Point(147, 508)
+        Me.cmdSave.Location = New System.Drawing.Point(220, 782)
+        Me.cmdSave.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdSave.Name = "cmdSave"
-        Me.cmdSave.Size = New System.Drawing.Size(106, 23)
+        Me.cmdSave.Size = New System.Drawing.Size(159, 35)
         Me.cmdSave.TabIndex = 0
         Me.cmdSave.Text = "Save Settings"
         Me.cmdSave.UseVisualStyleBackColor = True
@@ -152,10 +153,11 @@ Partial Class Options
         Me.TabBarriers.Controls.Add(Me.TabPage2)
         Me.TabBarriers.Controls.Add(Me.TabPage3)
         Me.TabBarriers.Controls.Add(Me.TabPage4)
-        Me.TabBarriers.Location = New System.Drawing.Point(12, 12)
+        Me.TabBarriers.Location = New System.Drawing.Point(18, 18)
+        Me.TabBarriers.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TabBarriers.Name = "TabBarriers"
         Me.TabBarriers.SelectedIndex = 0
-        Me.TabBarriers.Size = New System.Drawing.Size(628, 490)
+        Me.TabBarriers.Size = New System.Drawing.Size(942, 754)
         Me.TabBarriers.TabIndex = 7
         '
         'TabPage1
@@ -163,20 +165,22 @@ Partial Class Options
         Me.TabPage1.Controls.Add(Me.PictureBox4)
         Me.TabPage1.Controls.Add(Me.GroupBox3)
         Me.TabPage1.Controls.Add(Me.frmLayersInclude)
-        Me.TabPage1.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage1.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(620, 464)
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.TabPage1.Size = New System.Drawing.Size(934, 721)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "General"
         Me.TabPage1.UseVisualStyleBackColor = True
         '
         'PictureBox4
         '
-        Me.PictureBox4.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPEx_LOGOv3b_90x90
-        Me.PictureBox4.Location = New System.Drawing.Point(22, 23)
+        Me.PictureBox4.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox4.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox4.Name = "PictureBox4"
-        Me.PictureBox4.Size = New System.Drawing.Size(90, 90)
+        Me.PictureBox4.Size = New System.Drawing.Size(135, 138)
         Me.PictureBox4.TabIndex = 11
         Me.PictureBox4.TabStop = False
         '
@@ -188,9 +192,11 @@ Partial Class Options
         Me.GroupBox3.Controls.Add(Me.chkPathDownHab)
         Me.GroupBox3.Controls.Add(Me.chkDownHab)
         Me.GroupBox3.Controls.Add(Me.chkUpHab)
-        Me.GroupBox3.Location = New System.Drawing.Point(157, 36)
+        Me.GroupBox3.Location = New System.Drawing.Point(236, 55)
+        Me.GroupBox3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(406, 77)
+        Me.GroupBox3.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox3.Size = New System.Drawing.Size(609, 118)
         Me.GroupBox3.TabIndex = 2
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Habitat Output"
@@ -198,9 +204,10 @@ Partial Class Options
         'chkTotalPathDownHab
         '
         Me.chkTotalPathDownHab.AutoSize = True
-        Me.chkTotalPathDownHab.Location = New System.Drawing.Point(255, 43)
+        Me.chkTotalPathDownHab.Location = New System.Drawing.Point(382, 66)
+        Me.chkTotalPathDownHab.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkTotalPathDownHab.Name = "chkTotalPathDownHab"
-        Me.chkTotalPathDownHab.Size = New System.Drawing.Size(137, 17)
+        Me.chkTotalPathDownHab.Size = New System.Drawing.Size(201, 24)
         Me.chkTotalPathDownHab.TabIndex = 5
         Me.chkTotalPathDownHab.Text = "Downstream Path Total"
         Me.chkTotalPathDownHab.UseVisualStyleBackColor = True
@@ -208,9 +215,10 @@ Partial Class Options
         'chkTotalDownHab
         '
         Me.chkTotalDownHab.AutoSize = True
-        Me.chkTotalDownHab.Location = New System.Drawing.Point(127, 43)
+        Me.chkTotalDownHab.Location = New System.Drawing.Point(190, 66)
+        Me.chkTotalDownHab.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkTotalDownHab.Name = "chkTotalDownHab"
-        Me.chkTotalDownHab.Size = New System.Drawing.Size(112, 17)
+        Me.chkTotalDownHab.Size = New System.Drawing.Size(164, 24)
         Me.chkTotalDownHab.TabIndex = 4
         Me.chkTotalDownHab.Text = "Downstream Total"
         Me.chkTotalDownHab.UseVisualStyleBackColor = True
@@ -218,9 +226,10 @@ Partial Class Options
         'chkTotalUpHab
         '
         Me.chkTotalUpHab.AutoSize = True
-        Me.chkTotalUpHab.Location = New System.Drawing.Point(15, 42)
+        Me.chkTotalUpHab.Location = New System.Drawing.Point(22, 65)
+        Me.chkTotalUpHab.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkTotalUpHab.Name = "chkTotalUpHab"
-        Me.chkTotalUpHab.Size = New System.Drawing.Size(98, 17)
+        Me.chkTotalUpHab.Size = New System.Drawing.Size(144, 24)
         Me.chkTotalUpHab.TabIndex = 3
         Me.chkTotalUpHab.Text = "Upstream Total"
         Me.chkTotalUpHab.UseVisualStyleBackColor = True
@@ -228,9 +237,10 @@ Partial Class Options
         'chkPathDownHab
         '
         Me.chkPathDownHab.AutoSize = True
-        Me.chkPathDownHab.Location = New System.Drawing.Point(255, 21)
+        Me.chkPathDownHab.Location = New System.Drawing.Point(382, 32)
+        Me.chkPathDownHab.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkPathDownHab.Name = "chkPathDownHab"
-        Me.chkPathDownHab.Size = New System.Drawing.Size(110, 17)
+        Me.chkPathDownHab.Size = New System.Drawing.Size(162, 24)
         Me.chkPathDownHab.TabIndex = 2
         Me.chkPathDownHab.Text = "Downstream Path"
         Me.chkPathDownHab.UseVisualStyleBackColor = True
@@ -238,9 +248,10 @@ Partial Class Options
         'chkDownHab
         '
         Me.chkDownHab.AutoSize = True
-        Me.chkDownHab.Location = New System.Drawing.Point(127, 19)
+        Me.chkDownHab.Location = New System.Drawing.Point(190, 29)
+        Me.chkDownHab.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkDownHab.Name = "chkDownHab"
-        Me.chkDownHab.Size = New System.Drawing.Size(85, 17)
+        Me.chkDownHab.Size = New System.Drawing.Size(125, 24)
         Me.chkDownHab.TabIndex = 1
         Me.chkDownHab.Text = "Downstream"
         Me.chkDownHab.UseVisualStyleBackColor = True
@@ -248,9 +259,10 @@ Partial Class Options
         'chkUpHab
         '
         Me.chkUpHab.AutoSize = True
-        Me.chkUpHab.Location = New System.Drawing.Point(15, 19)
+        Me.chkUpHab.Location = New System.Drawing.Point(22, 29)
+        Me.chkUpHab.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkUpHab.Name = "chkUpHab"
-        Me.chkUpHab.Size = New System.Drawing.Size(71, 17)
+        Me.chkUpHab.Size = New System.Drawing.Size(105, 24)
         Me.chkUpHab.TabIndex = 0
         Me.chkUpHab.Text = "Upstream"
         Me.chkUpHab.UseVisualStyleBackColor = True
@@ -261,9 +273,11 @@ Partial Class Options
         Me.frmLayersInclude.Controls.Add(Me.GroupBox2)
         Me.frmLayersInclude.Controls.Add(Me.Label3)
         Me.frmLayersInclude.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.frmLayersInclude.Location = New System.Drawing.Point(16, 147)
+        Me.frmLayersInclude.Location = New System.Drawing.Point(24, 226)
+        Me.frmLayersInclude.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.frmLayersInclude.Name = "frmLayersInclude"
-        Me.frmLayersInclude.Size = New System.Drawing.Size(598, 302)
+        Me.frmLayersInclude.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.frmLayersInclude.Size = New System.Drawing.Size(897, 465)
         Me.frmLayersInclude.TabIndex = 1
         Me.frmLayersInclude.TabStop = False
         Me.frmLayersInclude.Text = "Network and Habitat Layers to Include in Analysis"
@@ -278,9 +292,11 @@ Partial Class Options
         Me.GroupBox8.Controls.Add(Me.Label19)
         Me.GroupBox8.Controls.Add(Me.lstLineHabQuan)
         Me.GroupBox8.Controls.Add(Me.cmdChngLineCls)
-        Me.GroupBox8.Location = New System.Drawing.Point(20, 19)
+        Me.GroupBox8.Location = New System.Drawing.Point(30, 29)
+        Me.GroupBox8.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox8.Name = "GroupBox8"
-        Me.GroupBox8.Size = New System.Drawing.Size(563, 118)
+        Me.GroupBox8.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox8.Size = New System.Drawing.Size(844, 182)
         Me.GroupBox8.TabIndex = 26
         Me.GroupBox8.TabStop = False
         Me.GroupBox8.Text = "Line Layers"
@@ -288,18 +304,20 @@ Partial Class Options
         'lstLineLayers
         '
         Me.lstLineLayers.FormattingEnabled = True
-        Me.lstLineLayers.Location = New System.Drawing.Point(10, 22)
+        Me.lstLineLayers.Location = New System.Drawing.Point(15, 34)
+        Me.lstLineLayers.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLineLayers.Name = "lstLineLayers"
-        Me.lstLineLayers.Size = New System.Drawing.Size(306, 79)
+        Me.lstLineLayers.Size = New System.Drawing.Size(457, 109)
         Me.lstLineLayers.TabIndex = 17
         '
         'Label18
         '
         Me.Label18.AutoSize = True
         Me.Label18.ForeColor = System.Drawing.SystemColors.InfoText
-        Me.Label18.Location = New System.Drawing.Point(332, 22)
+        Me.Label18.Location = New System.Drawing.Point(498, 34)
+        Me.Label18.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(78, 13)
+        Me.Label18.Size = New System.Drawing.Size(116, 20)
         Me.Label18.TabIndex = 8
         Me.Label18.Text = "Quantity Field*:"
         '
@@ -307,9 +325,10 @@ Partial Class Options
         '
         Me.Label1.AutoSize = True
         Me.Label1.ForeColor = System.Drawing.SystemColors.InfoText
-        Me.Label1.Location = New System.Drawing.Point(372, 41)
+        Me.Label1.Location = New System.Drawing.Point(558, 63)
+        Me.Label1.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(38, 13)
+        Me.Label1.Size = New System.Drawing.Size(56, 20)
         Me.Label1.TabIndex = 19
         Me.Label1.Text = "Units*:"
         '
@@ -320,10 +339,12 @@ Partial Class Options
         Me.lstLineHabCls.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lstLineHabCls.ForeColor = System.Drawing.Color.Black
         Me.lstLineHabCls.FormattingEnabled = True
-        Me.lstLineHabCls.Location = New System.Drawing.Point(426, 60)
+        Me.lstLineHabCls.ItemHeight = 20
+        Me.lstLineHabCls.Location = New System.Drawing.Point(639, 92)
+        Me.lstLineHabCls.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLineHabCls.Name = "lstLineHabCls"
         Me.lstLineHabCls.SelectionMode = System.Windows.Forms.SelectionMode.None
-        Me.lstLineHabCls.Size = New System.Drawing.Size(113, 13)
+        Me.lstLineHabCls.Size = New System.Drawing.Size(170, 20)
         Me.lstLineHabCls.TabIndex = 11
         '
         'lstLineUnit
@@ -332,18 +353,21 @@ Partial Class Options
         Me.lstLineUnit.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstLineUnit.ForeColor = System.Drawing.SystemColors.MenuText
         Me.lstLineUnit.FormattingEnabled = True
-        Me.lstLineUnit.Location = New System.Drawing.Point(426, 41)
+        Me.lstLineUnit.ItemHeight = 20
+        Me.lstLineUnit.Location = New System.Drawing.Point(639, 63)
+        Me.lstLineUnit.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLineUnit.Name = "lstLineUnit"
-        Me.lstLineUnit.Size = New System.Drawing.Size(81, 13)
+        Me.lstLineUnit.Size = New System.Drawing.Size(122, 20)
         Me.lstLineUnit.TabIndex = 23
         '
         'Label19
         '
         Me.Label19.AutoSize = True
         Me.Label19.ForeColor = System.Drawing.Color.Black
-        Me.Label19.Location = New System.Drawing.Point(346, 60)
+        Me.Label19.Location = New System.Drawing.Point(519, 92)
+        Me.Label19.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(64, 13)
+        Me.Label19.Size = New System.Drawing.Size(96, 20)
         Me.Label19.TabIndex = 7
         Me.Label19.Text = "Class Field*:"
         '
@@ -354,17 +378,20 @@ Partial Class Options
         Me.lstLineHabQuan.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lstLineHabQuan.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstLineHabQuan.FormattingEnabled = True
-        Me.lstLineHabQuan.Location = New System.Drawing.Point(426, 22)
+        Me.lstLineHabQuan.ItemHeight = 20
+        Me.lstLineHabQuan.Location = New System.Drawing.Point(639, 34)
+        Me.lstLineHabQuan.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLineHabQuan.Name = "lstLineHabQuan"
         Me.lstLineHabQuan.SelectionMode = System.Windows.Forms.SelectionMode.None
-        Me.lstLineHabQuan.Size = New System.Drawing.Size(113, 13)
+        Me.lstLineHabQuan.Size = New System.Drawing.Size(170, 20)
         Me.lstLineHabQuan.TabIndex = 12
         '
         'cmdChngLineCls
         '
-        Me.cmdChngLineCls.Location = New System.Drawing.Point(388, 79)
+        Me.cmdChngLineCls.Location = New System.Drawing.Point(582, 122)
+        Me.cmdChngLineCls.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdChngLineCls.Name = "cmdChngLineCls"
-        Me.cmdChngLineCls.Size = New System.Drawing.Size(61, 23)
+        Me.cmdChngLineCls.Size = New System.Drawing.Size(92, 35)
         Me.cmdChngLineCls.TabIndex = 15
         Me.cmdChngLineCls.Text = "Change..."
         Me.cmdChngLineCls.UseVisualStyleBackColor = True
@@ -379,9 +406,11 @@ Partial Class Options
         Me.GroupBox2.Controls.Add(Me.lstPolyHabCls)
         Me.GroupBox2.Controls.Add(Me.lstPolyHabQuan)
         Me.GroupBox2.Controls.Add(Me.Label20)
-        Me.GroupBox2.Location = New System.Drawing.Point(20, 156)
+        Me.GroupBox2.Location = New System.Drawing.Point(30, 240)
+        Me.GroupBox2.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(563, 123)
+        Me.GroupBox2.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox2.Size = New System.Drawing.Size(844, 189)
         Me.GroupBox2.TabIndex = 25
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Polygon Layers"
@@ -389,9 +418,10 @@ Partial Class Options
         'lstPolyLayers
         '
         Me.lstPolyLayers.FormattingEnabled = True
-        Me.lstPolyLayers.Location = New System.Drawing.Point(10, 19)
+        Me.lstPolyLayers.Location = New System.Drawing.Point(15, 29)
+        Me.lstPolyLayers.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPolyLayers.Name = "lstPolyLayers"
-        Me.lstPolyLayers.Size = New System.Drawing.Size(306, 79)
+        Me.lstPolyLayers.Size = New System.Drawing.Size(457, 109)
         Me.lstPolyLayers.TabIndex = 18
         '
         'lstPolyUnit
@@ -400,26 +430,30 @@ Partial Class Options
         Me.lstPolyUnit.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstPolyUnit.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstPolyUnit.FormattingEnabled = True
-        Me.lstPolyUnit.Location = New System.Drawing.Point(426, 42)
+        Me.lstPolyUnit.ItemHeight = 20
+        Me.lstPolyUnit.Location = New System.Drawing.Point(639, 65)
+        Me.lstPolyUnit.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPolyUnit.Name = "lstPolyUnit"
-        Me.lstPolyUnit.Size = New System.Drawing.Size(81, 13)
+        Me.lstPolyUnit.Size = New System.Drawing.Size(122, 20)
         Me.lstPolyUnit.TabIndex = 22
         '
         'Label21
         '
         Me.Label21.AutoSize = True
         Me.Label21.ForeColor = System.Drawing.Color.Black
-        Me.Label21.Location = New System.Drawing.Point(352, 64)
+        Me.Label21.Location = New System.Drawing.Point(528, 98)
+        Me.Label21.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(64, 13)
+        Me.Label21.Size = New System.Drawing.Size(96, 20)
         Me.Label21.TabIndex = 9
         Me.Label21.Text = "Class Field*:"
         '
         'cmdChngPolyCls
         '
-        Me.cmdChngPolyCls.Location = New System.Drawing.Point(388, 83)
+        Me.cmdChngPolyCls.Location = New System.Drawing.Point(582, 128)
+        Me.cmdChngPolyCls.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdChngPolyCls.Name = "cmdChngPolyCls"
-        Me.cmdChngPolyCls.Size = New System.Drawing.Size(61, 23)
+        Me.cmdChngPolyCls.Size = New System.Drawing.Size(92, 35)
         Me.cmdChngPolyCls.TabIndex = 16
         Me.cmdChngPolyCls.Text = "Change..."
         Me.cmdChngPolyCls.UseVisualStyleBackColor = True
@@ -428,9 +462,10 @@ Partial Class Options
         '
         Me.Label2.AutoSize = True
         Me.Label2.ForeColor = System.Drawing.SystemColors.InfoText
-        Me.Label2.Location = New System.Drawing.Point(338, 42)
+        Me.Label2.Location = New System.Drawing.Point(507, 65)
+        Me.Label2.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(80, 13)
+        Me.Label2.Size = New System.Drawing.Size(119, 20)
         Me.Label2.TabIndex = 20
         Me.Label2.Text = "Quantity Units*:"
         '
@@ -441,10 +476,12 @@ Partial Class Options
         Me.lstPolyHabCls.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lstPolyHabCls.ForeColor = System.Drawing.Color.Black
         Me.lstPolyHabCls.FormattingEnabled = True
-        Me.lstPolyHabCls.Location = New System.Drawing.Point(426, 64)
+        Me.lstPolyHabCls.ItemHeight = 20
+        Me.lstPolyHabCls.Location = New System.Drawing.Point(639, 98)
+        Me.lstPolyHabCls.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPolyHabCls.Name = "lstPolyHabCls"
         Me.lstPolyHabCls.SelectionMode = System.Windows.Forms.SelectionMode.None
-        Me.lstPolyHabCls.Size = New System.Drawing.Size(113, 13)
+        Me.lstPolyHabCls.Size = New System.Drawing.Size(170, 20)
         Me.lstPolyHabCls.TabIndex = 13
         '
         'lstPolyHabQuan
@@ -454,19 +491,22 @@ Partial Class Options
         Me.lstPolyHabQuan.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lstPolyHabQuan.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstPolyHabQuan.FormattingEnabled = True
-        Me.lstPolyHabQuan.Location = New System.Drawing.Point(426, 19)
+        Me.lstPolyHabQuan.ItemHeight = 20
+        Me.lstPolyHabQuan.Location = New System.Drawing.Point(639, 29)
+        Me.lstPolyHabQuan.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPolyHabQuan.Name = "lstPolyHabQuan"
         Me.lstPolyHabQuan.SelectionMode = System.Windows.Forms.SelectionMode.None
-        Me.lstPolyHabQuan.Size = New System.Drawing.Size(113, 13)
+        Me.lstPolyHabQuan.Size = New System.Drawing.Size(170, 20)
         Me.lstPolyHabQuan.TabIndex = 14
         '
         'Label20
         '
         Me.Label20.AutoSize = True
         Me.Label20.ForeColor = System.Drawing.SystemColors.InfoText
-        Me.Label20.Location = New System.Drawing.Point(338, 19)
+        Me.Label20.Location = New System.Drawing.Point(507, 29)
+        Me.Label20.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label20.Name = "Label20"
-        Me.Label20.Size = New System.Drawing.Size(78, 13)
+        Me.Label20.Size = New System.Drawing.Size(116, 20)
         Me.Label20.TabIndex = 10
         Me.Label20.Text = "Quantity Field*:"
         '
@@ -475,9 +515,10 @@ Partial Class Options
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label3.ForeColor = System.Drawing.SystemColors.MenuText
-        Me.Label3.Location = New System.Drawing.Point(455, 282)
+        Me.Label3.Location = New System.Drawing.Point(682, 434)
+        Me.Label3.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(72, 13)
+        Me.Label3.Size = New System.Drawing.Size(114, 20)
         Me.Label3.TabIndex = 24
         Me.Label3.Text = "(* = Required)"
         '
@@ -487,10 +528,11 @@ Partial Class Options
         Me.TabPage2.Controls.Add(Me.GroupBox5)
         Me.TabPage2.Controls.Add(Me.Farme3)
         Me.TabPage2.Controls.Add(Me.PictureBox3)
-        Me.TabPage2.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage2.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage2.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage2.Size = New System.Drawing.Size(620, 464)
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.TabPage2.Size = New System.Drawing.Size(934, 721)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "Exclusions"
         Me.TabPage2.UseVisualStyleBackColor = True
@@ -499,9 +541,10 @@ Partial Class Options
         '
         Me.Label4.AutoSize = True
         Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(139, 23)
+        Me.Label4.Location = New System.Drawing.Point(208, 35)
+        Me.Label4.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(229, 20)
+        Me.Label4.Size = New System.Drawing.Size(334, 29)
         Me.Label4.TabIndex = 12
         Me.Label4.Text = "FIPEX - Exclusions Options"
         '
@@ -514,18 +557,21 @@ Partial Class Options
         Me.GroupBox5.Controls.Add(Me.lstFtrsExcld)
         Me.GroupBox5.Controls.Add(Me.Label15)
         Me.GroupBox5.Controls.Add(Me.lstLyrsExcld)
-        Me.GroupBox5.Location = New System.Drawing.Point(6, 280)
+        Me.GroupBox5.Location = New System.Drawing.Point(9, 431)
+        Me.GroupBox5.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox5.Name = "GroupBox5"
-        Me.GroupBox5.Size = New System.Drawing.Size(591, 149)
+        Me.GroupBox5.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox5.Size = New System.Drawing.Size(886, 229)
         Me.GroupBox5.TabIndex = 7
         Me.GroupBox5.TabStop = False
         Me.GroupBox5.Text = "2. Current Exclusions"
         '
         'cmdRemove2
         '
-        Me.cmdRemove2.Location = New System.Drawing.Point(218, 112)
+        Me.cmdRemove2.Location = New System.Drawing.Point(327, 172)
+        Me.cmdRemove2.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdRemove2.Name = "cmdRemove2"
-        Me.cmdRemove2.Size = New System.Drawing.Size(138, 23)
+        Me.cmdRemove2.Size = New System.Drawing.Size(207, 35)
         Me.cmdRemove2.TabIndex = 6
         Me.cmdRemove2.Text = "Remove From Exclusions"
         Me.cmdRemove2.UseVisualStyleBackColor = True
@@ -533,9 +579,10 @@ Partial Class Options
         'Label17
         '
         Me.Label17.AutoSize = True
-        Me.Label17.Location = New System.Drawing.Point(430, 25)
+        Me.Label17.Location = New System.Drawing.Point(645, 38)
+        Me.Label17.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label17.Name = "Label17"
-        Me.Label17.Size = New System.Drawing.Size(37, 13)
+        Me.Label17.Size = New System.Drawing.Size(54, 20)
         Me.Label17.TabIndex = 5
         Me.Label17.Text = "Value:"
         '
@@ -543,17 +590,20 @@ Partial Class Options
         '
         Me.lstVlsExcld.BackColor = System.Drawing.SystemColors.MenuBar
         Me.lstVlsExcld.FormattingEnabled = True
-        Me.lstVlsExcld.Location = New System.Drawing.Point(433, 41)
+        Me.lstVlsExcld.ItemHeight = 20
+        Me.lstVlsExcld.Location = New System.Drawing.Point(650, 63)
+        Me.lstVlsExcld.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstVlsExcld.Name = "lstVlsExcld"
-        Me.lstVlsExcld.Size = New System.Drawing.Size(140, 56)
+        Me.lstVlsExcld.Size = New System.Drawing.Size(208, 84)
         Me.lstVlsExcld.TabIndex = 4
         '
         'Label16
         '
         Me.Label16.AutoSize = True
-        Me.Label16.Location = New System.Drawing.Point(276, 25)
+        Me.Label16.Location = New System.Drawing.Point(414, 38)
+        Me.Label16.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label16.Name = "Label16"
-        Me.Label16.Size = New System.Drawing.Size(32, 13)
+        Me.Label16.Size = New System.Drawing.Size(47, 20)
         Me.Label16.TabIndex = 3
         Me.Label16.Text = "Field:"
         '
@@ -562,26 +612,31 @@ Partial Class Options
         Me.lstFtrsExcld.BackColor = System.Drawing.SystemColors.MenuBar
         Me.lstFtrsExcld.Enabled = False
         Me.lstFtrsExcld.FormattingEnabled = True
-        Me.lstFtrsExcld.Location = New System.Drawing.Point(279, 41)
+        Me.lstFtrsExcld.ItemHeight = 20
+        Me.lstFtrsExcld.Location = New System.Drawing.Point(418, 63)
+        Me.lstFtrsExcld.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstFtrsExcld.Name = "lstFtrsExcld"
-        Me.lstFtrsExcld.Size = New System.Drawing.Size(148, 56)
+        Me.lstFtrsExcld.Size = New System.Drawing.Size(220, 84)
         Me.lstFtrsExcld.TabIndex = 2
         '
         'Label15
         '
         Me.Label15.AutoSize = True
-        Me.Label15.Location = New System.Drawing.Point(15, 25)
+        Me.Label15.Location = New System.Drawing.Point(22, 38)
+        Me.Label15.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label15.Name = "Label15"
-        Me.Label15.Size = New System.Drawing.Size(123, 13)
+        Me.Label15.Size = New System.Drawing.Size(182, 20)
         Me.Label15.TabIndex = 1
         Me.Label15.Text = "Layer (select to remove):"
         '
         'lstLyrsExcld
         '
         Me.lstLyrsExcld.FormattingEnabled = True
-        Me.lstLyrsExcld.Location = New System.Drawing.Point(18, 41)
+        Me.lstLyrsExcld.ItemHeight = 20
+        Me.lstLyrsExcld.Location = New System.Drawing.Point(27, 63)
+        Me.lstLyrsExcld.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLyrsExcld.Name = "lstLyrsExcld"
-        Me.lstLyrsExcld.Size = New System.Drawing.Size(244, 56)
+        Me.lstLyrsExcld.Size = New System.Drawing.Size(364, 84)
         Me.lstLyrsExcld.TabIndex = 0
         '
         'Farme3
@@ -593,9 +648,11 @@ Partial Class Options
         Me.Farme3.Controls.Add(Me.Label12)
         Me.Farme3.Controls.Add(Me.lstValues)
         Me.Farme3.Controls.Add(Me.lstLayers)
-        Me.Farme3.Location = New System.Drawing.Point(6, 123)
+        Me.Farme3.Location = New System.Drawing.Point(9, 189)
+        Me.Farme3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.Farme3.Name = "Farme3"
-        Me.Farme3.Size = New System.Drawing.Size(591, 151)
+        Me.Farme3.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.Farme3.Size = New System.Drawing.Size(886, 232)
         Me.Farme3.TabIndex = 1
         Me.Farme3.TabStop = False
         Me.Farme3.Text = "1. Select Exclusion "
@@ -603,10 +660,11 @@ Partial Class Options
         'cmdAddExcld
         '
         Me.HelpProvider2.SetHelpNavigator(Me.cmdAddExcld, System.Windows.Forms.HelpNavigator.Topic)
-        Me.cmdAddExcld.Location = New System.Drawing.Point(236, 121)
+        Me.cmdAddExcld.Location = New System.Drawing.Point(354, 186)
+        Me.cmdAddExcld.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdAddExcld.Name = "cmdAddExcld"
         Me.HelpProvider2.SetShowHelp(Me.cmdAddExcld, True)
-        Me.cmdAddExcld.Size = New System.Drawing.Size(102, 24)
+        Me.cmdAddExcld.Size = New System.Drawing.Size(153, 37)
         Me.cmdAddExcld.TabIndex = 6
         Me.cmdAddExcld.Text = "Add to Exclusions"
         Me.cmdAddExcld.UseVisualStyleBackColor = True
@@ -614,60 +672,70 @@ Partial Class Options
         'Label14
         '
         Me.Label14.AutoSize = True
-        Me.Label14.Location = New System.Drawing.Point(430, 26)
+        Me.Label14.Location = New System.Drawing.Point(645, 40)
+        Me.Label14.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label14.Name = "Label14"
-        Me.Label14.Size = New System.Drawing.Size(112, 13)
+        Me.Label14.Size = New System.Drawing.Size(165, 20)
         Me.Label14.TabIndex = 5
         Me.Label14.Text = "Value (unique values):"
         '
         'Label13
         '
         Me.Label13.AutoSize = True
-        Me.Label13.Location = New System.Drawing.Point(276, 26)
+        Me.Label13.Location = New System.Drawing.Point(414, 40)
+        Me.Label13.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label13.Name = "Label13"
-        Me.Label13.Size = New System.Drawing.Size(133, 13)
+        Me.Label13.Size = New System.Drawing.Size(199, 20)
         Me.Label13.TabIndex = 4
         Me.Label13.Text = "Field (populate 'Value' box)"
         '
         'lstFields
         '
         Me.lstFields.FormattingEnabled = True
-        Me.lstFields.Location = New System.Drawing.Point(279, 42)
+        Me.lstFields.ItemHeight = 20
+        Me.lstFields.Location = New System.Drawing.Point(418, 65)
+        Me.lstFields.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstFields.Name = "lstFields"
-        Me.lstFields.Size = New System.Drawing.Size(148, 69)
+        Me.lstFields.Size = New System.Drawing.Size(220, 104)
         Me.lstFields.TabIndex = 2
         '
         'Label12
         '
         Me.Label12.AutoSize = True
-        Me.Label12.Location = New System.Drawing.Point(15, 26)
+        Me.Label12.Location = New System.Drawing.Point(22, 40)
+        Me.Label12.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label12.Name = "Label12"
-        Me.Label12.Size = New System.Drawing.Size(175, 13)
+        Me.Label12.Size = New System.Drawing.Size(260, 20)
         Me.Label12.TabIndex = 1
         Me.Label12.Text = "Layer (select to populate 'Field' box:"
         '
         'lstValues
         '
         Me.lstValues.FormattingEnabled = True
-        Me.lstValues.Location = New System.Drawing.Point(433, 42)
+        Me.lstValues.ItemHeight = 20
+        Me.lstValues.Location = New System.Drawing.Point(650, 65)
+        Me.lstValues.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstValues.Name = "lstValues"
-        Me.lstValues.Size = New System.Drawing.Size(140, 69)
+        Me.lstValues.Size = New System.Drawing.Size(208, 104)
         Me.lstValues.TabIndex = 3
         '
         'lstLayers
         '
         Me.lstLayers.FormattingEnabled = True
-        Me.lstLayers.Location = New System.Drawing.Point(18, 42)
+        Me.lstLayers.ItemHeight = 20
+        Me.lstLayers.Location = New System.Drawing.Point(27, 65)
+        Me.lstLayers.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLayers.Name = "lstLayers"
-        Me.lstLayers.Size = New System.Drawing.Size(244, 69)
+        Me.lstLayers.Size = New System.Drawing.Size(364, 104)
         Me.lstLayers.TabIndex = 0
         '
         'PictureBox3
         '
-        Me.PictureBox3.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPEx_LOGOv3b_90x90
-        Me.PictureBox3.Location = New System.Drawing.Point(22, 23)
+        Me.PictureBox3.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox3.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox3.Name = "PictureBox3"
-        Me.PictureBox3.Size = New System.Drawing.Size(90, 90)
+        Me.PictureBox3.Size = New System.Drawing.Size(135, 138)
         Me.PictureBox3.TabIndex = 11
         Me.PictureBox3.TabStop = False
         '
@@ -676,10 +744,11 @@ Partial Class Options
         Me.TabPage3.Controls.Add(Me.Label5)
         Me.TabPage3.Controls.Add(Me.GroupBox6)
         Me.TabPage3.Controls.Add(Me.PictureBox2)
-        Me.TabPage3.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage3.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage3.Size = New System.Drawing.Size(620, 464)
+        Me.TabPage3.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.TabPage3.Size = New System.Drawing.Size(934, 721)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "Barriers"
         Me.TabPage3.UseVisualStyleBackColor = True
@@ -688,9 +757,10 @@ Partial Class Options
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(139, 23)
+        Me.Label5.Location = New System.Drawing.Point(208, 35)
+        Me.Label5.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(207, 20)
+        Me.Label5.Size = New System.Drawing.Size(302, 29)
         Me.Label5.TabIndex = 24
         Me.Label5.Text = "FIPEX - Barriers Options"
         '
@@ -699,9 +769,11 @@ Partial Class Options
         Me.GroupBox6.Controls.Add(Me.GroupBox9)
         Me.GroupBox6.Controls.Add(Me.Label8)
         Me.GroupBox6.Controls.Add(Me.chkLstBarriersLayers)
-        Me.GroupBox6.Location = New System.Drawing.Point(16, 132)
+        Me.GroupBox6.Location = New System.Drawing.Point(24, 203)
+        Me.GroupBox6.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox6.Name = "GroupBox6"
-        Me.GroupBox6.Size = New System.Drawing.Size(556, 284)
+        Me.GroupBox6.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox6.Size = New System.Drawing.Size(834, 437)
         Me.GroupBox6.TabIndex = 0
         Me.GroupBox6.TabStop = False
         '
@@ -716,9 +788,11 @@ Partial Class Options
         Me.GroupBox9.Controls.Add(Me.cmdBarrierID)
         Me.GroupBox9.Controls.Add(Me.Label10)
         Me.GroupBox9.Controls.Add(Me.cmdSelectBarrierPerm)
-        Me.GroupBox9.Location = New System.Drawing.Point(331, 18)
+        Me.GroupBox9.Location = New System.Drawing.Point(496, 28)
+        Me.GroupBox9.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox9.Name = "GroupBox9"
-        Me.GroupBox9.Size = New System.Drawing.Size(200, 256)
+        Me.GroupBox9.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox9.Size = New System.Drawing.Size(300, 394)
         Me.GroupBox9.TabIndex = 22
         Me.GroupBox9.TabStop = False
         Me.GroupBox9.Text = "2. Choose Barrier Layer Settings"
@@ -730,10 +804,12 @@ Partial Class Options
         Me.lstBarrierField.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lstBarrierField.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstBarrierField.FormattingEnabled = True
-        Me.lstBarrierField.Location = New System.Drawing.Point(39, 45)
+        Me.lstBarrierField.ItemHeight = 20
+        Me.lstBarrierField.Location = New System.Drawing.Point(58, 69)
+        Me.lstBarrierField.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstBarrierField.Name = "lstBarrierField"
         Me.lstBarrierField.SelectionMode = System.Windows.Forms.SelectionMode.None
-        Me.lstBarrierField.Size = New System.Drawing.Size(113, 13)
+        Me.lstBarrierField.Size = New System.Drawing.Size(170, 20)
         Me.lstBarrierField.TabIndex = 13
         '
         'lstNaturalTFField
@@ -743,35 +819,40 @@ Partial Class Options
         Me.lstNaturalTFField.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lstNaturalTFField.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstNaturalTFField.FormattingEnabled = True
-        Me.lstNaturalTFField.Location = New System.Drawing.Point(38, 206)
+        Me.lstNaturalTFField.ItemHeight = 20
+        Me.lstNaturalTFField.Location = New System.Drawing.Point(57, 317)
+        Me.lstNaturalTFField.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstNaturalTFField.Name = "lstNaturalTFField"
         Me.lstNaturalTFField.SelectionMode = System.Windows.Forms.SelectionMode.None
-        Me.lstNaturalTFField.Size = New System.Drawing.Size(113, 13)
+        Me.lstNaturalTFField.Size = New System.Drawing.Size(170, 20)
         Me.lstNaturalTFField.TabIndex = 21
         '
         'Label9
         '
         Me.Label9.AutoSize = True
-        Me.Label9.Location = New System.Drawing.Point(36, 29)
+        Me.Label9.Location = New System.Drawing.Point(54, 45)
+        Me.Label9.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(116, 13)
+        Me.Label9.Size = New System.Drawing.Size(170, 20)
         Me.Label9.TabIndex = 14
         Me.Label9.Text = "Barrier ID / Label Field:"
         '
         'Label11
         '
         Me.Label11.AutoSize = True
-        Me.Label11.Location = New System.Drawing.Point(35, 190)
+        Me.Label11.Location = New System.Drawing.Point(52, 292)
+        Me.Label11.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label11.Name = "Label11"
-        Me.Label11.Size = New System.Drawing.Size(90, 13)
+        Me.Label11.Size = New System.Drawing.Size(129, 20)
         Me.Label11.TabIndex = 19
         Me.Label11.Text = "Natural T/F Field:"
         '
         'cmdSelectNaturalTF
         '
-        Me.cmdSelectNaturalTF.Location = New System.Drawing.Point(38, 225)
+        Me.cmdSelectNaturalTF.Location = New System.Drawing.Point(57, 346)
+        Me.cmdSelectNaturalTF.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdSelectNaturalTF.Name = "cmdSelectNaturalTF"
-        Me.cmdSelectNaturalTF.Size = New System.Drawing.Size(152, 23)
+        Me.cmdSelectNaturalTF.Size = New System.Drawing.Size(228, 35)
         Me.cmdSelectNaturalTF.TabIndex = 17
         Me.cmdSelectNaturalTF.Text = "Change Natural T/F Field..."
         Me.cmdSelectNaturalTF.UseVisualStyleBackColor = True
@@ -783,17 +864,20 @@ Partial Class Options
         Me.lstPermField.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lstPermField.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstPermField.FormattingEnabled = True
-        Me.lstPermField.Location = New System.Drawing.Point(39, 130)
+        Me.lstPermField.ItemHeight = 20
+        Me.lstPermField.Location = New System.Drawing.Point(58, 200)
+        Me.lstPermField.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPermField.Name = "lstPermField"
         Me.lstPermField.SelectionMode = System.Windows.Forms.SelectionMode.None
-        Me.lstPermField.Size = New System.Drawing.Size(113, 13)
+        Me.lstPermField.Size = New System.Drawing.Size(170, 20)
         Me.lstPermField.TabIndex = 20
         '
         'cmdBarrierID
         '
-        Me.cmdBarrierID.Location = New System.Drawing.Point(39, 64)
+        Me.cmdBarrierID.Location = New System.Drawing.Point(58, 98)
+        Me.cmdBarrierID.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdBarrierID.Name = "cmdBarrierID"
-        Me.cmdBarrierID.Size = New System.Drawing.Size(112, 23)
+        Me.cmdBarrierID.Size = New System.Drawing.Size(168, 35)
         Me.cmdBarrierID.TabIndex = 15
         Me.cmdBarrierID.Text = "Change ID Field..."
         Me.cmdBarrierID.UseVisualStyleBackColor = True
@@ -801,17 +885,19 @@ Partial Class Options
         'Label10
         '
         Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(36, 114)
+        Me.Label10.Location = New System.Drawing.Point(54, 175)
+        Me.Label10.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(95, 13)
+        Me.Label10.Size = New System.Drawing.Size(142, 20)
         Me.Label10.TabIndex = 18
         Me.Label10.Text = "Permeability Field*:"
         '
         'cmdSelectBarrierPerm
         '
-        Me.cmdSelectBarrierPerm.Location = New System.Drawing.Point(38, 149)
+        Me.cmdSelectBarrierPerm.Location = New System.Drawing.Point(57, 229)
+        Me.cmdSelectBarrierPerm.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdSelectBarrierPerm.Name = "cmdSelectBarrierPerm"
-        Me.cmdSelectBarrierPerm.Size = New System.Drawing.Size(149, 23)
+        Me.cmdSelectBarrierPerm.Size = New System.Drawing.Size(224, 35)
         Me.cmdSelectBarrierPerm.TabIndex = 16
         Me.cmdSelectBarrierPerm.Text = "Change Permeability Field..."
         Me.cmdSelectBarrierPerm.UseVisualStyleBackColor = True
@@ -819,26 +905,29 @@ Partial Class Options
         'Label8
         '
         Me.Label8.AutoSize = True
-        Me.Label8.Location = New System.Drawing.Point(13, 18)
+        Me.Label8.Location = New System.Drawing.Point(20, 28)
+        Me.Label8.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(178, 13)
+        Me.Label8.Size = New System.Drawing.Size(267, 20)
         Me.Label8.TabIndex = 3
         Me.Label8.Text = "1. Select Barrier Layers For Analysis:"
         '
         'chkLstBarriersLayers
         '
         Me.chkLstBarriersLayers.FormattingEnabled = True
-        Me.chkLstBarriersLayers.Location = New System.Drawing.Point(16, 37)
+        Me.chkLstBarriersLayers.Location = New System.Drawing.Point(24, 57)
+        Me.chkLstBarriersLayers.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkLstBarriersLayers.Name = "chkLstBarriersLayers"
-        Me.chkLstBarriersLayers.Size = New System.Drawing.Size(273, 229)
+        Me.chkLstBarriersLayers.Size = New System.Drawing.Size(408, 340)
         Me.chkLstBarriersLayers.TabIndex = 2
         '
         'PictureBox2
         '
-        Me.PictureBox2.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPEx_LOGOv3b_90x90
-        Me.PictureBox2.Location = New System.Drawing.Point(22, 23)
+        Me.PictureBox2.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox2.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox2.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(90, 90)
+        Me.PictureBox2.Size = New System.Drawing.Size(135, 138)
         Me.PictureBox2.TabIndex = 23
         Me.PictureBox2.TabStop = False
         '
@@ -849,10 +938,11 @@ Partial Class Options
         Me.TabPage4.Controls.Add(Me.GroupBox4)
         Me.TabPage4.Controls.Add(Me.GroupBox1)
         Me.TabPage4.Controls.Add(Me.PictureBox1)
-        Me.TabPage4.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage4.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TabPage4.Name = "TabPage4"
-        Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage4.Size = New System.Drawing.Size(620, 464)
+        Me.TabPage4.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.TabPage4.Size = New System.Drawing.Size(934, 721)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "Advanced"
         Me.TabPage4.UseVisualStyleBackColor = True
@@ -861,9 +951,10 @@ Partial Class Options
         '
         Me.Label22.AutoSize = True
         Me.Label22.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label22.Location = New System.Drawing.Point(139, 23)
+        Me.Label22.Location = New System.Drawing.Point(208, 35)
+        Me.Label22.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(223, 20)
+        Me.Label22.Size = New System.Drawing.Size(323, 29)
         Me.Label22.TabIndex = 25
         Me.Label22.Text = "FIPEX - Advanced Options"
         '
@@ -871,9 +962,11 @@ Partial Class Options
         '
         Me.frmDirection.Controls.Add(Me.OptDown)
         Me.frmDirection.Controls.Add(Me.OptUp)
-        Me.frmDirection.Location = New System.Drawing.Point(390, 56)
+        Me.frmDirection.Location = New System.Drawing.Point(585, 86)
+        Me.frmDirection.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.frmDirection.Name = "frmDirection"
-        Me.frmDirection.Size = New System.Drawing.Size(129, 67)
+        Me.frmDirection.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.frmDirection.Size = New System.Drawing.Size(194, 103)
         Me.frmDirection.TabIndex = 9
         Me.frmDirection.TabStop = False
         Me.frmDirection.Text = "Analysis Direction"
@@ -881,9 +974,10 @@ Partial Class Options
         'OptDown
         '
         Me.OptDown.AutoSize = True
-        Me.OptDown.Location = New System.Drawing.Point(22, 43)
+        Me.OptDown.Location = New System.Drawing.Point(33, 66)
+        Me.OptDown.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.OptDown.Name = "OptDown"
-        Me.OptDown.Size = New System.Drawing.Size(84, 17)
+        Me.OptDown.Size = New System.Drawing.Size(124, 24)
         Me.OptDown.TabIndex = 1
         Me.OptDown.TabStop = True
         Me.OptDown.Text = "Downstream"
@@ -892,9 +986,10 @@ Partial Class Options
         'OptUp
         '
         Me.OptUp.AutoSize = True
-        Me.OptUp.Location = New System.Drawing.Point(22, 20)
+        Me.OptUp.Location = New System.Drawing.Point(33, 31)
+        Me.OptUp.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.OptUp.Name = "OptUp"
-        Me.OptUp.Size = New System.Drawing.Size(70, 17)
+        Me.OptUp.Size = New System.Drawing.Size(104, 24)
         Me.OptUp.TabIndex = 0
         Me.OptUp.TabStop = True
         Me.OptUp.Text = "Upstream"
@@ -911,13 +1006,15 @@ Partial Class Options
         Me.GroupBox4.Controls.Add(Me.ChkDBFOutput)
         Me.GroupBox4.Controls.Add(Me.txtTablesPrefix)
         Me.GroupBox4.Controls.Add(Me.txtGDB)
-        Me.GroupBox4.Location = New System.Drawing.Point(22, 147)
+        Me.GroupBox4.Location = New System.Drawing.Point(33, 226)
+        Me.GroupBox4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(533, 247)
+        Me.GroupBox4.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox4.Size = New System.Drawing.Size(800, 380)
         Me.GroupBox4.TabIndex = 8
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Table Output (requires at least one barriers layer to be selected in 'Barriers' t" & _
-            "ab)"
+    "ab)"
         '
         'GroupBox7
         '
@@ -927,9 +1024,11 @@ Partial Class Options
         Me.GroupBox7.Controls.Add(Me.txtRInstallDir)
         Me.GroupBox7.Controls.Add(Me.cmdRInstallDir)
         Me.GroupBox7.Controls.Add(Me.chkDCI)
-        Me.GroupBox7.Location = New System.Drawing.Point(18, 128)
+        Me.GroupBox7.Location = New System.Drawing.Point(27, 197)
+        Me.GroupBox7.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox7.Name = "GroupBox7"
-        Me.GroupBox7.Size = New System.Drawing.Size(509, 102)
+        Me.GroupBox7.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox7.Size = New System.Drawing.Size(764, 157)
         Me.GroupBox7.TabIndex = 9
         Me.GroupBox7.TabStop = False
         Me.GroupBox7.Text = "DCI Calculation"
@@ -937,41 +1036,46 @@ Partial Class Options
         'chkDCISectional
         '
         Me.chkDCISectional.AutoSize = True
-        Me.chkDCISectional.Location = New System.Drawing.Point(200, 19)
+        Me.chkDCISectional.Location = New System.Drawing.Point(300, 29)
+        Me.chkDCISectional.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkDCISectional.Name = "chkDCISectional"
-        Me.chkDCISectional.Size = New System.Drawing.Size(144, 17)
+        Me.chkDCISectional.Size = New System.Drawing.Size(214, 24)
         Me.chkDCISectional.TabIndex = 5
         Me.chkDCISectional.Text = "Calculate Segmental DCI"
         Me.chkDCISectional.UseVisualStyleBackColor = True
         '
         'cmdDCIModelDir
         '
-        Me.cmdDCIModelDir.Location = New System.Drawing.Point(44, 75)
+        Me.cmdDCIModelDir.Location = New System.Drawing.Point(66, 115)
+        Me.cmdDCIModelDir.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdDCIModelDir.Name = "cmdDCIModelDir"
-        Me.cmdDCIModelDir.Size = New System.Drawing.Size(126, 20)
+        Me.cmdDCIModelDir.Size = New System.Drawing.Size(189, 31)
         Me.cmdDCIModelDir.TabIndex = 4
         Me.cmdDCIModelDir.Text = "DCI Model Dir:"
         Me.cmdDCIModelDir.UseVisualStyleBackColor = True
         '
         'txtDCIModelDir
         '
-        Me.txtDCIModelDir.Location = New System.Drawing.Point(177, 76)
+        Me.txtDCIModelDir.Location = New System.Drawing.Point(266, 117)
+        Me.txtDCIModelDir.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.txtDCIModelDir.Name = "txtDCIModelDir"
-        Me.txtDCIModelDir.Size = New System.Drawing.Size(325, 20)
+        Me.txtDCIModelDir.Size = New System.Drawing.Size(486, 26)
         Me.txtDCIModelDir.TabIndex = 3
         '
         'txtRInstallDir
         '
-        Me.txtRInstallDir.Location = New System.Drawing.Point(177, 45)
+        Me.txtRInstallDir.Location = New System.Drawing.Point(266, 69)
+        Me.txtRInstallDir.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.txtRInstallDir.Name = "txtRInstallDir"
-        Me.txtRInstallDir.Size = New System.Drawing.Size(326, 20)
+        Me.txtRInstallDir.Size = New System.Drawing.Size(487, 26)
         Me.txtRInstallDir.TabIndex = 2
         '
         'cmdRInstallDir
         '
-        Me.cmdRInstallDir.Location = New System.Drawing.Point(42, 43)
+        Me.cmdRInstallDir.Location = New System.Drawing.Point(63, 66)
+        Me.cmdRInstallDir.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdRInstallDir.Name = "cmdRInstallDir"
-        Me.cmdRInstallDir.Size = New System.Drawing.Size(129, 23)
+        Me.cmdRInstallDir.Size = New System.Drawing.Size(194, 35)
         Me.cmdRInstallDir.TabIndex = 1
         Me.cmdRInstallDir.Text = "R Installation Directory:"
         Me.cmdRInstallDir.UseVisualStyleBackColor = True
@@ -979,9 +1083,10 @@ Partial Class Options
         'chkDCI
         '
         Me.chkDCI.AutoSize = True
-        Me.chkDCI.Location = New System.Drawing.Point(16, 19)
+        Me.chkDCI.Location = New System.Drawing.Point(24, 29)
+        Me.chkDCI.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkDCI.Name = "chkDCI"
-        Me.chkDCI.Size = New System.Drawing.Size(145, 17)
+        Me.chkDCI.Size = New System.Drawing.Size(214, 24)
         Me.chkDCI.TabIndex = 0
         Me.chkDCI.Text = "Calculate DCId and DCIp"
         Me.chkDCI.UseVisualStyleBackColor = True
@@ -989,9 +1094,10 @@ Partial Class Options
         'chkNaturalTF
         '
         Me.chkNaturalTF.AutoSize = True
-        Me.chkNaturalTF.Location = New System.Drawing.Point(308, 73)
+        Me.chkNaturalTF.Location = New System.Drawing.Point(462, 112)
+        Me.chkNaturalTF.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkNaturalTF.Name = "chkNaturalTF"
-        Me.chkNaturalTF.Size = New System.Drawing.Size(141, 17)
+        Me.chkNaturalTF.Size = New System.Drawing.Size(202, 24)
         Me.chkNaturalTF.TabIndex = 8
         Me.chkNaturalTF.Text = "Include Natural T/F field"
         Me.chkNaturalTF.UseVisualStyleBackColor = True
@@ -999,9 +1105,10 @@ Partial Class Options
         'chkBarrierPerm
         '
         Me.chkBarrierPerm.AutoSize = True
-        Me.chkBarrierPerm.Location = New System.Drawing.Point(308, 50)
+        Me.chkBarrierPerm.Location = New System.Drawing.Point(462, 77)
+        Me.chkBarrierPerm.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkBarrierPerm.Name = "chkBarrierPerm"
-        Me.chkBarrierPerm.Size = New System.Drawing.Size(178, 17)
+        Me.chkBarrierPerm.Size = New System.Drawing.Size(265, 24)
         Me.chkBarrierPerm.TabIndex = 7
         Me.chkBarrierPerm.Text = "Include Barrier Permeability Field"
         Me.chkBarrierPerm.UseVisualStyleBackColor = True
@@ -1009,18 +1116,20 @@ Partial Class Options
         'chkConnect
         '
         Me.chkConnect.AutoSize = True
-        Me.chkConnect.Location = New System.Drawing.Point(308, 96)
+        Me.chkConnect.Location = New System.Drawing.Point(462, 148)
+        Me.chkConnect.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkConnect.Name = "chkConnect"
-        Me.chkConnect.Size = New System.Drawing.Size(147, 17)
+        Me.chkConnect.Size = New System.Drawing.Size(212, 24)
         Me.chkConnect.TabIndex = 6
         Me.chkConnect.Text = "Include connectivity table"
         Me.chkConnect.UseVisualStyleBackColor = True
         '
         'cmdAddGDB
         '
-        Me.cmdAddGDB.Location = New System.Drawing.Point(18, 50)
+        Me.cmdAddGDB.Location = New System.Drawing.Point(27, 77)
+        Me.cmdAddGDB.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdAddGDB.Name = "cmdAddGDB"
-        Me.cmdAddGDB.Size = New System.Drawing.Size(94, 23)
+        Me.cmdAddGDB.Size = New System.Drawing.Size(141, 35)
         Me.cmdAddGDB.TabIndex = 2
         Me.cmdAddGDB.Text = "Browse for GDB:"
         Me.cmdAddGDB.UseVisualStyleBackColor = True
@@ -1028,35 +1137,39 @@ Partial Class Options
         'Label7
         '
         Me.Label7.AutoSize = True
-        Me.Label7.Location = New System.Drawing.Point(41, 92)
+        Me.Label7.Location = New System.Drawing.Point(62, 142)
+        Me.Label7.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label7.Name = "Label7"
-        Me.Label7.Size = New System.Drawing.Size(74, 13)
+        Me.Label7.Size = New System.Drawing.Size(107, 20)
         Me.Label7.TabIndex = 4
         Me.Label7.Text = "Tables Prefix: "
         '
         'ChkDBFOutput
         '
         Me.ChkDBFOutput.AutoSize = True
-        Me.ChkDBFOutput.Location = New System.Drawing.Point(18, 19)
+        Me.ChkDBFOutput.Location = New System.Drawing.Point(27, 29)
+        Me.ChkDBFOutput.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.ChkDBFOutput.Name = "ChkDBFOutput"
-        Me.ChkDBFOutput.Size = New System.Drawing.Size(174, 17)
+        Me.ChkDBFOutput.Size = New System.Drawing.Size(258, 24)
         Me.ChkDBFOutput.TabIndex = 0
         Me.ChkDBFOutput.Text = "Output to GeoDatabase Tables"
         Me.ChkDBFOutput.UseVisualStyleBackColor = True
         '
         'txtTablesPrefix
         '
-        Me.txtTablesPrefix.Location = New System.Drawing.Point(118, 89)
+        Me.txtTablesPrefix.Location = New System.Drawing.Point(177, 137)
+        Me.txtTablesPrefix.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.txtTablesPrefix.Name = "txtTablesPrefix"
-        Me.txtTablesPrefix.Size = New System.Drawing.Size(153, 20)
+        Me.txtTablesPrefix.Size = New System.Drawing.Size(228, 26)
         Me.txtTablesPrefix.TabIndex = 3
         '
         'txtGDB
         '
-        Me.txtGDB.Location = New System.Drawing.Point(118, 52)
+        Me.txtGDB.Location = New System.Drawing.Point(177, 80)
+        Me.txtGDB.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.txtGDB.Name = "txtGDB"
         Me.txtGDB.ReadOnly = True
-        Me.txtGDB.Size = New System.Drawing.Size(153, 20)
+        Me.txtGDB.Size = New System.Drawing.Size(228, 26)
         Me.txtGDB.TabIndex = 1
         '
         'GroupBox1
@@ -1064,9 +1177,11 @@ Partial Class Options
         Me.GroupBox1.Controls.Add(Me.Label6)
         Me.GroupBox1.Controls.Add(Me.TxtOrder)
         Me.GroupBox1.Controls.Add(Me.ChkMaxOrd)
-        Me.GroupBox1.Location = New System.Drawing.Point(132, 56)
+        Me.GroupBox1.Location = New System.Drawing.Point(198, 86)
+        Me.GroupBox1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(230, 67)
+        Me.GroupBox1.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.GroupBox1.Size = New System.Drawing.Size(345, 103)
         Me.GroupBox1.TabIndex = 2
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = """Order"" of Analysis"
@@ -1074,55 +1189,61 @@ Partial Class Options
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(112, 31)
+        Me.Label6.Location = New System.Drawing.Point(168, 48)
+        Me.Label6.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(36, 13)
+        Me.Label6.Size = New System.Drawing.Size(53, 20)
         Me.Label6.TabIndex = 2
         Me.Label6.Text = "Order:"
         '
         'TxtOrder
         '
-        Me.TxtOrder.Location = New System.Drawing.Point(157, 28)
+        Me.TxtOrder.Location = New System.Drawing.Point(236, 43)
+        Me.TxtOrder.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TxtOrder.Name = "TxtOrder"
-        Me.TxtOrder.Size = New System.Drawing.Size(59, 20)
+        Me.TxtOrder.Size = New System.Drawing.Size(86, 26)
         Me.TxtOrder.TabIndex = 1
         '
         'ChkMaxOrd
         '
         Me.ChkMaxOrd.AutoSize = True
-        Me.ChkMaxOrd.Location = New System.Drawing.Point(20, 30)
+        Me.ChkMaxOrd.Location = New System.Drawing.Point(30, 46)
+        Me.ChkMaxOrd.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.ChkMaxOrd.Name = "ChkMaxOrd"
-        Me.ChkMaxOrd.Size = New System.Drawing.Size(70, 17)
+        Me.ChkMaxOrd.Size = New System.Drawing.Size(102, 24)
         Me.ChkMaxOrd.TabIndex = 0
         Me.ChkMaxOrd.Text = "Maximum"
         Me.ChkMaxOrd.UseVisualStyleBackColor = True
         '
         'PictureBox1
         '
-        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPEx_LOGOv3b_90x90
-        Me.PictureBox1.Location = New System.Drawing.Point(22, 23)
+        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox1.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(90, 90)
+        Me.PictureBox1.Size = New System.Drawing.Size(135, 138)
         Me.PictureBox1.TabIndex = 10
         Me.PictureBox1.TabStop = False
         '
         'cmdCancel
         '
-        Me.cmdCancel.Location = New System.Drawing.Point(373, 508)
+        Me.cmdCancel.Location = New System.Drawing.Point(560, 782)
+        Me.cmdCancel.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdCancel.Name = "cmdCancel"
-        Me.cmdCancel.Size = New System.Drawing.Size(75, 23)
+        Me.cmdCancel.Size = New System.Drawing.Size(112, 35)
         Me.cmdCancel.TabIndex = 8
         Me.cmdCancel.Text = "Cancel"
         Me.cmdCancel.UseVisualStyleBackColor = True
         '
         'Options
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(652, 544)
+        Me.ClientSize = New System.Drawing.Size(978, 837)
         Me.Controls.Add(Me.cmdCancel)
         Me.Controls.Add(Me.TabBarriers)
         Me.Controls.Add(Me.cmdSave)
+        Me.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.Name = "Options"
         Me.Text = "FiPEx - Options"
         Me.TabBarriers.ResumeLayout(False)

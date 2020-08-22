@@ -1413,7 +1413,7 @@ Public Class Analysis
             pFilteredBranchJunctionsList = Nothing
             pFilteredBranchJunctionsList = CType(pFilteredBranchJunctionsGEN, IEnumNetEID)
             pFilteredBranchJunctionsList.Reset()
-            MsgBox("Debug2020: number of branch junctions " + Str(pFilteredBranchJunctionsList.Count))
+            'MsgBox("Debug2020: number of branch junctions " + Str(pFilteredBranchJunctionsList.Count))
 
 
 
@@ -2757,16 +2757,6 @@ Public Class Analysis
                 End If
                 ' ============== End New DCI, Hab and Metric Table Name ==========
 
-                ' ============== 2020 Duplicate Metrics Objects And Correct ==========
-                ' if the 'advanced' connectivity table is output
-                ' then duplicate metrics, habitat, connectivity tables
-                ' then fix the original tables to remove reference to junctions
-                ' (will need to do network search using these tables to fix by 
-                '  aggregating habitat upstream of branch junctions to the nearest downstream barrier)
-
-
-                ' ============== END 2020 Duplicate and Correct Tables ===========
-
 
                 If bConnectTab = True Then
                     ' check if user has hit 'close/cancel'
@@ -2936,21 +2926,52 @@ Public Class Analysis
                                         End If
                                         dDCIs = Convert.ToDouble(sLineArray(1))
 
-                                        'Have to retrieve the barrier label now, too
+                                        'retrieve the barrier label, too
                                         pNetElements.QueryIDs(iBarrierEID, esriElementType.esriETJunction, iFCID, iFID, iSubID)
                                         pIDAndType = New IDandType(Nothing, Nothing)
                                         pIDAndType = GetBarrierID(iFCID, iFID, lBarrierIDs)
                                         sOutID = pIDAndType.BarrID
 
-                                        ' Insert new metric into metrics object list
-                                        pMetricsObject = New MetricsObject(f_sOutID, _
-                                                                           f_siOutEID, _
-                                                                           sOutID, _
-                                                                           iBarrierEID, _
-                                                                           f_sType, _
-                                                                           "DCI Sectional", _
-                                                                           Math.Round(dDCIs, 2))
-                                        lMetricsObject.Add(pMetricsObject)
+                                        ' ##############################################
+                                        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
+                                        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
+
+                                        ' do not read the same DCI sectional value for branch junctions
+                                        '
+                                        ' if EID = branch junction EID
+                                        '  then flag and do not do next step
+                                        bBranchJunction = False
+                                        If bAdvConnectTab = True Then
+                                            'MsgBox("Debug2020: filtered branch juncs: " + Str(pFilteredBranchJunctionsList.Count))
+
+                                            pFilteredBranchJunctionsList.Reset()
+                                            For p = 0 To pFilteredBranchJunctionsList.Count - 1
+                                                iEID_p = pFilteredBranchJunctionsList.Next()
+                                                'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iBarrierEID: " + Str(iBarrierEID))
+                                                If iBarrierEID = iEID_p Then
+                                                    bBranchJunction = True
+                                                    'MsgBox("Debug2020: MAtch found")
+                                                    Exit For
+                                                End If
+                                            Next
+                                        End If
+
+
+                                        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
+                                        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
+                                        ' ###############################################
+
+                                        If bBranchJunction = False Then
+                                            ' Insert new metric into metrics object list
+                                            pMetricsObject = New MetricsObject(f_sOutID, _
+                                                                               f_siOutEID, _
+                                                                               sOutID, _
+                                                                               iBarrierEID, _
+                                                                               f_sType, _
+                                                                               "DCI Sectional", _
+                                                                               Math.Round(dDCIs, 2))
+                                            lMetricsObject.Add(pMetricsObject)
+                                        End If
                                     End If
                                 Loop
                                 objReader.Close()
@@ -3285,14 +3306,12 @@ Public Class Analysis
             ' ========================= RESET BARRIERS ===========================
             'MsgBox("Debug:59")
             If bAdvConnectTab = True Then
-                MsgBox("Number of 'barriers' before: " & Str(pOriginalBarriersList.Count))
+                'MsgBox("Number of 'barriers' before: " & Str(pOriginalBarriersList.Count))
                 pOriginalBarriersList = Nothing
-                MsgBox("Number of 'barriers' in pOriginalBarriersListSaved: " & Str(pOriginalBarriersListSaved.Count))
+                'MsgBox("Number of 'barriers' in pOriginalBarriersListSaved: " & Str(pOriginalBarriersListSaved.Count))
                 pOriginalBarriersList = pOriginalBarriersListSaved
-                MsgBox("Number of 'barriers' in pOriginalBarriersListSaved: " & Str(pOriginalBarriersListSaved.Count))
-                MsgBox("Number of 'barriers' after: " & Str(pOriginalBarriersList.Count))
-
-
+                'MsgBox("Number of 'barriers' in pOriginalBarriersListSaved: " & Str(pOriginalBarriersListSaved.Count))
+                'MsgBox("Number of 'barriers' after: " & Str(pOriginalBarriersList.Count))
             End If
 
             m = 0
@@ -3327,6 +3346,42 @@ Public Class Analysis
 
 
         Next ' Flag /sink
+
+
+
+        ' ============== 2020 DON'T WRITE REDUNDANT METRICS Objects And Correct ==========
+        ' ################################################################################
+        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
+        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
+        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
+
+
+        ' reevaluate the metrics and habitat to remove reference to branch junctions (gets
+        ' too long in table output! 10,000's of thousands of rows
+        ' 
+
+        j = 0
+        For j = 0 To lConnectivity.Count - 1
+            '       
+            'lConnectivity(j).DownstreamBarrierID
+            'lConnectivity(j).BarrID
+        Next
+
+        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
+        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
+        ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
+        ' ################################################################################
+
+
+
+
+        ' if the 'advanced' connectivity table is output
+        ' then duplicate metrics, habitat, connectivity tables
+        ' then fix the original tables to remove reference to junctions
+        ' (will need to do network search using these tables to fix by 
+        '  aggregating habitat upstream of branch junctions to the nearest downstream barrier)
+        ' ============== END 2020 Duplicate and Correct Tables ===========
+
 
         'MsgBox("Debug:60")
         If bDBF = True Then
@@ -3540,7 +3595,7 @@ Public Class Analysis
         ' will need to re-read user settings in order to determine what CAN go into 
         ' the output.
 
-        ' Logic Flow's gotta be - check our settings and what traces are being done. 
+        ' Logic - check our settings and what traces are being done. 
         ' give the user the available options
         ' given their choice determine how the summary table is made.  
 
@@ -10619,8 +10674,8 @@ Public Class Analysis
         '       ObjectID
         '       Sink      (string - 55)
         '       SinkEID   (integer - long)
-        '       Barrier   (string - 55)
-        '       BarrierEID(integer - long)
+        '       Label   (string - 55)   2020 Barrier   (string - 55)
+        '       ElementID(integer - long)  2020 BarrierEID(integer - long)
         '       Layer     (string - 255)
         '       Direction (string - 12)
         '       Trace Type(string - 20)
@@ -10692,8 +10747,8 @@ Public Class Analysis
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
 
-        pFieldEdit.AliasName_2 = "bID"
-        pFieldEdit.Name_2 = "bID"
+        pFieldEdit.AliasName_2 = "Label"
+        pFieldEdit.Name_2 = "Label"
 
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
@@ -10704,8 +10759,8 @@ Public Class Analysis
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
 
-        pFieldEdit.AliasName_2 = "barr EID"
-        pFieldEdit.Name_2 = "barrEID"
+        pFieldEdit.AliasName_2 = "Element ID"
+        pFieldEdit.Name_2 = "ElementID"
 
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger
         pFieldEdit.Length_2 = 5
@@ -10829,8 +10884,8 @@ Public Class Analysis
         '       ObjectID
         '       SinkID    (string - 55)
         '       SinkEID   (integer - long)
-        '       Barrier   (string - 55)
-        '       BarrierEID (integer - long)
+        '       Label      (string -55) 2020 
+        '       ElementID (integer - long) 2020
         '       MetricName (string - 55)
         '       Metric (double)
 
@@ -10898,8 +10953,8 @@ Public Class Analysis
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
 
-        pFieldEdit.AliasName_2 = "bID"
-        pFieldEdit.Name_2 = "bID"
+        pFieldEdit.AliasName_2 = "Label"
+        pFieldEdit.Name_2 = "Label"
 
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
@@ -10910,8 +10965,8 @@ Public Class Analysis
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
 
-        pFieldEdit.AliasName_2 = "barr EID"
-        pFieldEdit.Name_2 = "barrEID"
+        pFieldEdit.AliasName_2 = "Element ID"
+        pFieldEdit.Name_2 = "ElementID"
 
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger
         pFieldEdit.Length_2 = 5

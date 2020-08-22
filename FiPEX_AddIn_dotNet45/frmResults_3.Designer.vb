@@ -41,18 +41,20 @@ Partial Class frmResults_3
         Me.DataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells
         Me.DataGridView1.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.EnableWithoutHeaderText
         Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DataGridView1.Location = New System.Drawing.Point(12, 118)
+        Me.DataGridView1.Location = New System.Drawing.Point(18, 182)
+        Me.DataGridView1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.DataGridView1.Name = "DataGridView1"
-        Me.DataGridView1.Size = New System.Drawing.Size(1035, 332)
+        Me.DataGridView1.Size = New System.Drawing.Size(1552, 511)
         Me.DataGridView1.TabIndex = 0
         '
         'lblBeginTime
         '
         Me.lblBeginTime.AutoSize = True
         Me.lblBeginTime.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblBeginTime.Location = New System.Drawing.Point(195, 22)
+        Me.lblBeginTime.Location = New System.Drawing.Point(292, 34)
+        Me.lblBeginTime.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblBeginTime.Name = "lblBeginTime"
-        Me.lblBeginTime.Size = New System.Drawing.Size(84, 15)
+        Me.lblBeginTime.Size = New System.Drawing.Size(117, 22)
         Me.lblBeginTime.TabIndex = 2
         Me.lblBeginTime.Text = "Begin Time:"
         '
@@ -60,9 +62,10 @@ Partial Class frmResults_3
         '
         Me.lblEndtime.AutoSize = True
         Me.lblEndtime.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblEndtime.Location = New System.Drawing.Point(207, 49)
+        Me.lblEndtime.Location = New System.Drawing.Point(310, 75)
+        Me.lblEndtime.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblEndtime.Name = "lblEndtime"
-        Me.lblEndtime.Size = New System.Drawing.Size(72, 15)
+        Me.lblEndtime.Size = New System.Drawing.Size(101, 22)
         Me.lblEndtime.TabIndex = 3
         Me.lblEndtime.Text = "End Time:"
         '
@@ -70,9 +73,10 @@ Partial Class frmResults_3
         '
         Me.lblTotalTime.AutoSize = True
         Me.lblTotalTime.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblTotalTime.Location = New System.Drawing.Point(200, 76)
+        Me.lblTotalTime.Location = New System.Drawing.Point(300, 117)
+        Me.lblTotalTime.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblTotalTime.Name = "lblTotalTime"
-        Me.lblTotalTime.Size = New System.Drawing.Size(79, 15)
+        Me.lblTotalTime.Size = New System.Drawing.Size(112, 22)
         Me.lblTotalTime.TabIndex = 4
         Me.lblTotalTime.Text = "Total Time:"
         '
@@ -80,9 +84,10 @@ Partial Class frmResults_3
         '
         Me.lblDirection.AutoSize = True
         Me.lblDirection.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblDirection.Location = New System.Drawing.Point(495, 49)
+        Me.lblDirection.Location = New System.Drawing.Point(742, 75)
+        Me.lblDirection.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblDirection.Name = "lblDirection"
-        Me.lblDirection.Size = New System.Drawing.Size(125, 15)
+        Me.lblDirection.Size = New System.Drawing.Size(177, 22)
         Me.lblDirection.TabIndex = 5
         Me.lblDirection.Text = "Analysis Direction:"
         '
@@ -90,9 +95,10 @@ Partial Class frmResults_3
         '
         Me.lblOrder.AutoSize = True
         Me.lblOrder.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblOrder.Location = New System.Drawing.Point(501, 22)
+        Me.lblOrder.Location = New System.Drawing.Point(752, 34)
+        Me.lblOrder.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblOrder.Name = "lblOrder"
-        Me.lblOrder.Size = New System.Drawing.Size(119, 15)
+        Me.lblOrder.Size = New System.Drawing.Size(171, 22)
         Me.lblOrder.TabIndex = 6
         Me.lblOrder.Text = "Order of Analysis:"
         '
@@ -100,35 +106,38 @@ Partial Class frmResults_3
         '
         Me.lblNumBarriers.AutoSize = True
         Me.lblNumBarriers.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblNumBarriers.Location = New System.Drawing.Point(487, 76)
+        Me.lblNumBarriers.Location = New System.Drawing.Point(730, 117)
+        Me.lblNumBarriers.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblNumBarriers.Name = "lblNumBarriers"
-        Me.lblNumBarriers.Size = New System.Drawing.Size(133, 15)
+        Me.lblNumBarriers.Size = New System.Drawing.Size(185, 22)
         Me.lblNumBarriers.TabIndex = 7
         Me.lblNumBarriers.Text = "Number of Barriers:"
         '
         'PictureBox1
         '
-        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPEx_LOGOv3b_90x90
-        Me.PictureBox1.Location = New System.Drawing.Point(25, 9)
+        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox1.Location = New System.Drawing.Point(38, 14)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(91, 91)
+        Me.PictureBox1.Size = New System.Drawing.Size(136, 140)
         Me.PictureBox1.TabIndex = 1
         Me.PictureBox1.TabStop = False
         '
         'cmdExportXLS
         '
-        Me.cmdExportXLS.Location = New System.Drawing.Point(393, 462)
+        Me.cmdExportXLS.Location = New System.Drawing.Point(590, 711)
+        Me.cmdExportXLS.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdExportXLS.Name = "cmdExportXLS"
-        Me.cmdExportXLS.Size = New System.Drawing.Size(103, 23)
+        Me.cmdExportXLS.Size = New System.Drawing.Size(154, 35)
         Me.cmdExportXLS.TabIndex = 8
         Me.cmdExportXLS.Text = "Export to XLS"
         Me.cmdExportXLS.UseVisualStyleBackColor = True
         '
         'frmResults_3
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1059, 497)
+        Me.ClientSize = New System.Drawing.Size(1588, 765)
         Me.Controls.Add(Me.cmdExportXLS)
         Me.Controls.Add(Me.lblNumBarriers)
         Me.Controls.Add(Me.lblOrder)
@@ -138,6 +147,7 @@ Partial Class frmResults_3
         Me.Controls.Add(Me.lblBeginTime)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.DataGridView1)
+        Me.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.Name = "frmResults_3"
         Me.Text = "FiPEx Results Summary"
         CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).EndInit()

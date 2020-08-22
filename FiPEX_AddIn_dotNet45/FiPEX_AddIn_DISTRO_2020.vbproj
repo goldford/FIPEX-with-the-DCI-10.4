@@ -446,6 +446,7 @@
     </AddInContent>
     <AddInContent Include="Images\VisualizeDecisions.png" />
     <AddInContent Include="Images\VisualizeDecisionsAndNet.png" />
+    <Content Include="Resources\FIPEX_DCI_Logo_2020_90x90a.JPG" />
     <None Include="Resources\FiPex_LOGOv3b_90x90.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
