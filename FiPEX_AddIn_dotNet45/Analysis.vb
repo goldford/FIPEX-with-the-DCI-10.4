@@ -598,7 +598,6 @@ Public Class Analysis
         End If
         backgroundworker1.ReportProgress(8, "Saving Current Geometric Network Flags and Barriers")
 
-
         pNetworkAnalysisExt = CType(m_UNAExt, INetworkAnalysisExt)
         Dim pGeometricNetwork As IGeometricNetwork = pNetworkAnalysisExt.CurrentNetwork
         pGeometricNetwork = pNetworkAnalysisExt.CurrentNetwork
@@ -650,7 +649,7 @@ Public Class Analysis
         ' 2020: for branch connectivity feature - GO
         ' save the original list so it can be restored later
         pOriginalBarriersListSaved = CType(pOriginalBarriersListSavedGEN, IEnumNetEID)
-        MsgBox("Number of original barriers: " & Str(pOriginalBarriersListSaved.Count))
+        MsgBox("Number of original barriers: " & CStr(pOriginalBarriersListSaved.Count))
 
 
         ' Save the flags
@@ -717,6 +716,7 @@ Public Class Analysis
 
         'Dim pWorkspaceName As IWorkspaceName = New WorkspaceName
         Dim sConnectTabName As String = ""
+        Dim sAdvConnectTabName As String = ""
 
         ' =============== For DCI Table Output =====================
 
@@ -1024,11 +1024,12 @@ Public Class Analysis
         Dim pUID As New UID
         Dim pEnumLayer As IEnumLayer
         ' for connectivity info:
-        Dim pBarrierAndDownstreamEID As New BarrierAndDownstreamID(Nothing, Nothing)
+        Dim pBarrierAndDownstreamEID As New BarrierAndDownstreamID(Nothing, Nothing, Nothing, Nothing)
         Dim pGLPKBarrAndDownEID As New GLPKBarrierAndDownstreamEID(Nothing, Nothing)
         Dim lConnectivity As New List(Of BarrierAndDownstreamID)
         Dim lGLPKConnectivity As New List(Of GLPKBarrierAndDownstreamEID)
         Dim sFlowEndID, sHabDir, sTableType, sType As String
+        Dim sLastUserSetID As String = ""
         Dim dDCIp, dDCId, dPerm As Double ' holds DCIp and DCId stats, 9999 if error
         Dim bNoPerm As Boolean ' holds trigger to check if a single barrier does have a zero permeability
         Dim bNaturalY As Boolean = False ' holds trigger to check if any barrier is labeled as 'Natural' - 
@@ -1152,6 +1153,7 @@ Public Class Analysis
         Dim bUpstream As Boolean = False
         Dim bMatch As Boolean = False
         Dim bBranchJunction As Boolean = False
+        Dim bSourceJunction As Boolean = False
         Dim iUpstreamEdges As Integer = 0
         Dim pAdjacentEdges As IEnumNetEID
         Dim pAdjacentEdgesGEN As IEnumNetEIDBuilderGEN
@@ -1159,6 +1161,11 @@ Public Class Analysis
         Dim pBranchJunctionsGEN As IEnumNetEIDBuilderGEN
         Dim pFilteredBranchJunctionsGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
         Dim pFilteredBranchJunctionsList As IEnumNetEID
+        Dim pSourceJunctions As IEnumNetEID
+        Dim pSourceJunctionsGEN As IEnumNetEIDBuilderGEN
+        Dim pFilteredSourceJunctionsGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pFilteredSourceJunctionsList As IEnumNetEID
+
 
         ' next junctions upstream direction
         Dim pNextJunctions As IEnumNetEID
@@ -1176,10 +1183,11 @@ Public Class Analysis
         If bAdvConnectTab = True Then
 
             '   If this is the first iteration
-            lHabStatsList = New List(Of StatisticsObject_2) ' set the habitat stats list
+            'lHabStatsList = New List(Of StatisticsObject_2) ' set the habitat stats list
 
             pOriginaljuncFlagsList.Reset()
-
+            pBranchJunctionsGEN = New EnumNetEIDArray
+            pSourceJunctionsGEN = New EnumNetEIDArray
 
             ' for each flag the user has set (usually assuming the flag is on the furthest
             ' downstream nodes
@@ -1198,7 +1206,6 @@ Public Class Analysis
                                                  "User Flag " & (i + 1).ToString & _
                                                  " of " & (pOriginaljuncFlagsList.Count).ToString)
                 ' reset the counter
-                orderLoop = 0
 
                 ' ##### NEW CODE AUG 2020 #####
                 ' https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#INetTopology.htm
@@ -1210,19 +1217,14 @@ Public Class Analysis
                 'pNetwork already set,
                 'pNetwork = pGeometricNetwork.Network
 
-                pBranchJunctionsGEN = New EnumNetEIDArray
-
                 pNetTopology = CType(pNetwork, INetTopology)
-
                 fEID = pOriginaljuncFlagsList.Next()
 
                 ' Use Do loop until no upstream neighbours are found
                 pJunctionsGEN = New EnumNetEIDArray
                 pJunctionsGEN.Add(fEID) ' initialize this object before first loop
                 pJunctions = CType(pJunctionsGEN, IEnumNetEID)
-
                 iUpstreamJunctionCount = pJunctions.Count ' initialize for first loop
-
                 pUtilityNetwork = CType(pGeometricNetwork.Network, IUtilityNetwork)
 
                 pForwardStarGEN = pUtilityNetwork.CreateForwardStar(True, Nothing, Nothing, Nothing, Nothing)
@@ -1256,7 +1258,6 @@ Public Class Analysis
                                 iEdgeEID = 0
                                 iFromEID = 0
                                 iToEID = 0
-
 
                                 'MsgBox("Debug2020: # This junction  EID: " & Str(iThisEID))
                                 'MsgBox("Debug2020: edgeEID initialized to: " & Str(iEdgeEID))
@@ -1343,6 +1344,9 @@ Public Class Analysis
                             'MsgBox("Debug2020: Found a branch junction at node: " & Str(iThisEID))
                             ' going to add this EID to list and remove duplicates later
                             'pOriginalBarriersListGEN.Add(iThisEID)
+                        ElseIf iUpstreamEdges = 0 Then
+                            'MsgBox("Debug2020 Source found at " & CStr(iThisEID))
+                            pSourceJunctionsGEN.Add(iThisEID)
                         End If
 
                         'iLastEID = iThisEID ' track last loops EID 
@@ -1365,7 +1369,6 @@ Public Class Analysis
 
                 Loop
 
-                pBranchJunctions = CType(pBranchJunctionsGEN, IEnumNetEID)
                 ' MsgBox("Debug2020: # of branching junctions for network ': " & Str(pBranchJunctions.Count))
 
                 ' merge the original barriers list and the branch junction list
@@ -1375,8 +1378,9 @@ Public Class Analysis
 
             Next ' original junction flag or sink
 
-
             ' For each pBranchJunctions add it to the original barrier list generator
+            pBranchJunctions = CType(pBranchJunctionsGEN, IEnumNetEID)
+
             pBranchJunctions.Reset()
             For j = 0 To pBranchJunctions.Count - 1
                 iEID_j = pBranchJunctions.Next()
@@ -1407,15 +1411,49 @@ Public Class Analysis
                 End If
             Next
 
-            pOriginalBarriersList = Nothing
-            pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
-
             pFilteredBranchJunctionsList = Nothing
             pFilteredBranchJunctionsList = CType(pFilteredBranchJunctionsGEN, IEnumNetEID)
             pFilteredBranchJunctionsList.Reset()
-            'MsgBox("Debug2020: number of branch junctions " + Str(pFilteredBranchJunctionsList.Count))
 
+            pSourceJunctions = CType(pSourceJunctionsGEN, IEnumNetEID)
+            pSourceJunctions.Reset()
+            'MsgBox("Debug2020: number of source junctions " + CStr(pSourceJunctions.Count))
 
+            For j = 0 To pSourceJunctions.Count - 1
+                iEID_j = pSourceJunctions.Next()
+                'MsgBox("Debug2020 iIEID_j: " + Str(iEID_j))
+
+                ' make sure it's not a duplicate 
+                '(if user has placed flag on branch junction, then omit the branch junction)
+                pOriginalBarriersList.Reset()
+                bMatch = False
+
+                'MsgBox("Debug2020 pOriginalBarriersList.Count: " + Str(pOriginalBarriersList.Count))
+                For k = 0 To pOriginalBarriersList.Count - 1
+                    iEID_k = pOriginalBarriersList.Next()
+                    'MsgBox("Debug2020 iIEID_k: " + Str(iEID_k))
+                    If iEID_j = iEID_k Then
+                        bMatch = True
+                        'MsgBox("Debug2020 iIEID_k " + Str(iEID_k) + " = iEID_j " + Str(iEID_j))
+
+                    End If
+                Next
+                If bMatch = False Then
+                    ' add branch junction to user-set barrier list 
+                    pOriginalBarriersListGEN.Add(iEID_j)
+                    ' store filtered (no user-set barrier) branch junction for later
+                    pFilteredSourceJunctionsGEN.Add(iEID_j)
+                    'MsgBox("Debug2020 adding iIEID_j to list of source junctions and to list of barriers: " + Str(iEID_j))
+
+                End If
+            Next
+
+            pFilteredSourceJunctionsList = Nothing
+            pFilteredSourceJunctionsList = CType(pFilteredSourceJunctionsGEN, IEnumNetEID)
+            pFilteredSourceJunctionsList.Reset()
+
+            pOriginalBarriersList = Nothing
+            pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
 
         End If
 
@@ -1687,8 +1725,24 @@ Public Class Analysis
                         Next
                     End If
 
+                    bSourceJunction = False
+                    If bAdvConnectTab = True Then
+                        pFilteredSourceJunctionsList.Reset()
+                        For p = 0 To pFilteredSourceJunctionsList.Count - 1
+                            iEID_p = pFilteredSourceJunctionsList.Next()
+                            'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iEID: " + Str(iEID))
+                            If iEID = iEID_p Then
+                                bSourceJunction = True
+                                'MsgBox("Debug2020: Found junction will set perm to 1")
+                                Exit For
+                            End If
+                        Next
+                    End If
+
                     If bBranchJunction = True Then
                         sType = "Branch Junction"
+                    ElseIf bSourceJunction = True Then
+                        sType = "Source Junction"
                     Else
                         sType = pIDAndType.BarrIDType
                     End If
@@ -1714,6 +1768,8 @@ Public Class Analysis
                     ' Barrier permeability = 1 if branch junction
                     ' otherwise check the user-set attribute
                     If bBranchJunction = True Then
+                        dBarrierPerm = 1
+                    ElseIf bSourceJunction = True Then
                         dBarrierPerm = 1
                     Else
                         If bBarrierPerm = True Then
@@ -1745,6 +1801,8 @@ Public Class Analysis
                     Dim sBarrierType As String ' field name found in layers
                     If bBranchJunction = True Then
                         sBarrierType = "Branch Junction"
+                    ElseIf bSourceJunction = True Then
+                        sBarrierType = "Source Junction"
                     Else
                         If bBarrierType = True Then
 
@@ -1872,20 +1930,22 @@ Public Class Analysis
 
                                 Dim pIDAndType2 As New IDandType(Nothing, Nothing)
                                 pIDAndType2 = GetBarrierID(iFCID, iFID, lBarrierIDs)
+                                sLastUserSetID = sFlowEndID
                                 sFlowEndID = pIDAndType2.BarrID
+
+                                'Dim pIDAndType2 As New IDandType(Nothing, Nothing)
 
                                 If bConnectTab = True Then
                                     ' TEMPORARY CODE UNTIL DCI MODEL IS UPDATED
                                     If orderLoop = 0 Then
-                                        'pBarrierAndDownstreamEID = New BarrierAndDownstreamID(sFlowEndID, "Sink")
+
                                         ' updated March 14, 2012 to use EID's for connectivity table
                                         '    rather than user-set ID's
-                                        pBarrierAndDownstreamEID = New BarrierAndDownstreamID(endEID.ToString, "Sink")
+                                        pBarrierAndDownstreamEID = New BarrierAndDownstreamID(endEID.ToString, "Sink", sFlowEndID, "Sink")
                                     Else
-                                        'pBarrierAndDownstreamEID = New BarrierAndDownstreamID(sFlowEndID, sOutID)
                                         ' updated March 14, 2012 to use EID's for connectivity table
                                         '    rather than user-set ID's
-                                        pBarrierAndDownstreamEID = New BarrierAndDownstreamID(endEID.ToString, iEID.ToString)
+                                        pBarrierAndDownstreamEID = New BarrierAndDownstreamID(endEID.ToString, iEID.ToString, sFlowEndID, sLastUserSetID)
 
                                     End If
 
@@ -2144,7 +2204,8 @@ Public Class Analysis
                     End If  ' bUpHab = True Or bDCI = True Or bDownHab = True 
 
                     ' If Downstream Path Habitat desired
-                    If bPathDownHab = True Then
+                    ' 2020 - required if 'advanced connectivity' (distance decay)
+                    If bPathDownHab = True Or bAdvConnectTab = True Then
                         ' check if user has hit 'close/cancel'
                         If m_bCancel = True Then
                             backgroundworker1.CancelAsync()
@@ -2162,6 +2223,7 @@ Public Class Analysis
                         pMap.ClearSelection() ' clear selection
                         ' perform downstream trace
                         pTraceFlowSolver.FindFlowElements(esriFlowMethod.esriFMDownstream, eFlowElements, pResultJunctions, pResultEdges)
+
 
                         If pResultJunctions Is Nothing Then
                             ' junctions were not returned -- create an empty enumeration
@@ -2228,8 +2290,8 @@ Public Class Analysis
                         ' ---- END EXCLUDE FEATURES -----
 
                         pActiveView.Refresh() ' refresh the view
-                        sHabType = "Path"
-                        sHabDir = "downstream"
+                        sHabType = "Path" ' careful not to change - used later
+                        sHabDir = "downstream" ' careful not to change - used later
                         'MsgBox("Debug:29")
                         Call calculateStatistics_2(lHabStatsList, _
                                                    sOutID, _
@@ -2637,6 +2699,7 @@ Public Class Analysis
                                               sPrefix)
                     'MsgBox("Debug:46")
                     PrepDCIOutTable(sDCITableName, pFWorkspace)
+
                 End If
 
                 If bConnectTab = True Then
@@ -2655,9 +2718,32 @@ Public Class Analysis
                                                 sPrefix)
 
                     If sConnectTabName = "Cancel" Then
+                        MsgBox("Debug2020 - issue encountered naming output connectivity table")
                         Exit Sub
                     End If
                     PrepConnectivityTables(pFWorkspace, sConnectTabName)
+                End If
+
+                If bAdvConnectTab = True Then
+                    ' check if user has hit 'close/cancel'
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        Exit Sub
+                    End If
+                    backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
+                                                                "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count & ControlChars.NewLine & _
+                                                                                                                            "Table: Connectivity"))
+                    'MsgBox("Debug:47")
+                    sAdvConnectTabName = TableName("ADV_connectivity_" + sAnalysisCode, _
+                                                pFWorkspace, _
+                                                sPrefix)
+
+                    If sAdvConnectTabName = "Cancel" Then
+                        MsgBox("Debug2020 - issue encountered naming output advanced connect table")
+                        Exit Sub
+                    End If
+                    PrepAdvanced2020DCIOutTable(sAdvConnectTabName, pFWorkspace)
                 End If
 
                 If bGLPKTables = True Then
@@ -2775,11 +2861,86 @@ Public Class Analysis
                         pRowBuffer = pTable.CreateRowBuffer
                         pRowBuffer.Value(1) = lConnectivity(j).BarrID
                         pRowBuffer.Value(2) = lConnectivity(j).DownstreamBarrierID
+                        pRowBuffer.Value(3) = lConnectivity(j).BarrLabel
+                        pRowBuffer.Value(4) = lConnectivity(j).DownstreamBarrLabel
+                        pCursor = pTable.Insert(True)
+                        pCursor.InsertRow(pRowBuffer)
+                        pCursor.Flush()
+                    Next
+                End If
+
+                ' 2020 - 'allow for second connectivity containing downstream length and habitat 
+                '      - match the path length stats for each node 
+
+                If bAdvConnectTab = True And bDCI = True Then
+                    ' to do: change lDCIStatsList to include Areas as well....
+                    ' to do: above will fix issue when there are 'classes' used
+                    '        and eliminate the need to use the lHabStatsObject
+
+                    ' check if user has hit 'close/cancel'
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        Exit Sub
+                    End If
+                    backgroundworker1.ReportProgress(iProgress, "Writing To Output Tables" & ControlChars.NewLine & _
+                                                             "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count & ControlChars.NewLine & _
+                                                                                                                         "Table: Connectivity"))
+                    'MsgBox("Debug:53")
+                    pTable = pFWorkspace.OpenTable(sAdvConnectTabName)
+                    j = 0
+                    For j = 0 To lConnectivity.Count - 1
+                        pRowBuffer = pTable.CreateRowBuffer
+
+                        ' objectID
+                        ' BarrierID
+                        ' BarirerUserLabel
+                        ' Habt len Quan
+                        ' Habit len Quan Units
+                        ' habitat area quan
+                        ' habitat area units
+                        ' BarrPerm
+                        ' BarrnaturalYN
+                        ' DownstreamNeighbEID
+                        ' DownstreamNeighbUserLabel
+                        ' DownstreamNeighbDistance
+                        ' DownstreamNeighbUnits
+
+                        pRowBuffer.Value(1) = lConnectivity(j).BarrID
+                        pRowBuffer.Value(2) = lConnectivity(j).BarrLabel
+
+                        For k = 0 To lDCIStatsList.Count - 1
+                            If lDCIStatsList(k).Barrier = lConnectivity(j).BarrID Then
+                                pRowBuffer.Value(3) = Math.Round(lDCIStatsList(k).Quantity, 2)
+                                pRowBuffer.Value(4) = "km" ' fix this by adding units to DCI Stats List Object
+                                pRowBuffer.Value(5) = "0" ' fix this by adding areas to DCI Stats List Object
+                                pRowBuffer.Value(6) = "km^2" ' fix this by adding areas to DCI Stats List Object
+                                pRowBuffer.Value(7) = lDCIStatsList(k).BarrierPerm
+                                pRowBuffer.Value(8) = lDCIStatsList(k).BarrierYN
+                            End If
+                        Next
+
+                        pRowBuffer.Value(9) = lConnectivity(j).DownstreamBarrierID
+                        pRowBuffer.Value(10) = lConnectivity(j).DownstreamBarrLabel
+
+                        For k = 0 To lHabStatsList.Count - 1
+                            If lHabStatsList(k).bEID = lConnectivity(j).BarrID Then
+                                If lHabStatsList(k).TotalImmedPath = "Path" And lHabStatsList(k).Direction = "downstream" Then
+                                    'MsgBox("Debug2020: Found the distance downstream for EID")
+                                    pRowBuffer.Value(11) = Math.Round(lHabStatsList(k).Quantity, 2)
+                                    pRowBuffer.Value(12) = lHabStatsList(k).Unit
+                                End If
+                            End If
+                        Next
 
                         pCursor = pTable.Insert(True)
                         pCursor.InsertRow(pRowBuffer)
                         pCursor.Flush()
                     Next
+
+                    ' 2020 test - should be moved
+                    DCI_ADV2020_ShellCall(sAdvConnectTabName, pFWorkspace)
+
                 End If
 
                 ' DO NOT DELETE!
@@ -2795,6 +2956,7 @@ Public Class Analysis
                 '        pCursor.InsertRow(pRowBuffer)
                 '    Next
                 'End If
+
 
 
                 If bDCI = True Then
@@ -2936,7 +3098,8 @@ Public Class Analysis
                                         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
                                         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
 
-                                        ' do not read the same DCI sectional value for branch junctions
+                                        ' do not read the same DCI sectional for branch junctions
+                                        ' they are the same as for the next downstream barrier
                                         '
                                         ' if EID = branch junction EID
                                         '  then flag and do not do next step
@@ -2956,12 +3119,27 @@ Public Class Analysis
                                             Next
                                         End If
 
+                                        bSourceJunction = False
+                                        If bAdvConnectTab = True Then
+                                            'MsgBox("Debug2020: filtered branch juncs: " + Str(pFilteredBranchJunctionsList.Count))
+
+                                            pFilteredSourceJunctionsList.Reset()
+                                            For p = 0 To pFilteredSourceJunctionsList.Count - 1
+                                                iEID_p = pFilteredSourceJunctionsList.Next()
+                                                'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iBarrierEID: " + Str(iBarrierEID))
+                                                If iBarrierEID = iEID_p Then
+                                                    bSourceJunction = True
+                                                    'MsgBox("Debug2020: MAtch found")
+                                                    Exit For
+                                                End If
+                                            Next
+                                        End If
 
                                         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
                                         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
                                         ' ###############################################
 
-                                        If bBranchJunction = False Then
+                                        If bBranchJunction = False And bSourceJunction = False Then
                                             ' Insert new metric into metrics object list
                                             pMetricsObject = New MetricsObject(f_sOutID, _
                                                                                f_siOutEID, _
@@ -3360,6 +3538,18 @@ Public Class Analysis
         ' too long in table output! 10,000's of thousands of rows
         ' 
 
+        ' for each row in habitat table
+        ' do this until EID found is not junction 
+        '   is EID branch junction? 
+        '   if no find the next downstream barrier and repeat
+        '   else exit do loop
+        '
+        ' if the EID and hab class is not already in the new hab list
+        '   insert the EID and hab class and value
+        'else update the new hab list value for the EID/class 
+
+        ' will need a phabitatobject 
+
         j = 0
         For j = 0 To lConnectivity.Count - 1
             '       
@@ -3653,7 +3843,7 @@ Public Class Analysis
             End If
         End If
 
-        ' this bit gets a list of the unique sinks from the 
+        ' gets a list of the unique sinks from the 
         ' metrics object list
         ' and it populates a datatable with unique sinks list
         For i = 0 To lMetricsObject.Count - 1
@@ -3859,7 +4049,7 @@ Public Class Analysis
 
         ' ============ BEGIN WRITE TO DATAGRID OUTPUT SUMMARY TABLE =============
 
-        ' Set up the table - create columns if needed
+        ' Set up the table - create columns 
 
         pResultsForm3.DataGridView1.Columns.Add("Sink", "Sink")           '0
         pResultsForm3.DataGridView1.Columns.Add("SinkID", "SinkID")       '1
@@ -5755,6 +5945,8 @@ Public Class Analysis
         '                 habitat measure (intent to introduce weighting options and 
         '                 inclusion of non-network lines which requires additions to intersect sub)
         '              4) update statistics object and send back to onclick
+        '
+        ' 2020 - note this doesn't currently make use of area and polygons, just lines
 
         Dim pMxDoc As IMxDocument
         Dim pEnumLayer As IEnumLayer
@@ -5936,7 +6128,7 @@ Public Class Analysis
                                         dTempQuan = Convert.ToDouble(pFeature.Value(iFieldVal))
                                     Catch ex As Exception
                                         dTempQuan = 0
-                                        MsgBox("The Habitat Quantity found in the " & pFeatureLayer.Name & " was not convertible" _
+                                        MsgBox("DCI table creation error. The Habitat Quantity found in the " & pFeatureLayer.Name & " was not convertible" _
                                             & " to type 'double'.  Null values in field may be responsible. " & ex.Message)
                                     End Try
                                     ' Insert into the corresponding column of the second
@@ -6304,6 +6496,8 @@ Public Class Analysis
                             sUnit = "hm"
                         ElseIf sUnit = "Dekametres" Then
                             sUnit = "dm"
+                        ElseIf sUnit = "Square Kilometres" Then
+                            sUnit = "km^2"
                         Else
                             sUnit = "n/a"
                         End If
@@ -9341,17 +9535,10 @@ Public Class Analysis
         ' Author:        Greig Oldford
         ' Last Edited: August, 2020
         '
-        ' Description:   This command will open the tables created in the earlier
-        '       Analysis command process and resave them as .CSV
-        '       It only converts tables that contain habitat quantities derived
-        '         from lines layers that participate in the geometric network. 
-        '       If there is more than one lines layer and consequently more than 
-        '         one table it WILL MERGE THESE TABLES INTO ONE.  This means the quantity 
-        '         units are assumed the same. 
-        '      It then calls on R from the DOS command line and calls the
-        '       conversion file created to convert column headings and table 
-        '       format to match the requirements of the DCI model.  Then it will run
-        '     a batch command that calculates DCI and prints to a TXT file.  
+        ' Description: 
+        '       Re-exports DBF as CSV
+        '       calls on R from the DOS command line 
+        '       DCI R models prints to a TXT file.  
 
 
         Dim sDCIModelDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDCIModelDir"))    ' DCI model install directory
@@ -9384,7 +9571,7 @@ Public Class Analysis
         Dim bPermissionCheck
         bPermissionCheck = FileWriteDeleteCheck(sDCIModelDir)
         If bPermissionCheck = False Then
-            MsgBox("File / folder permission check: " & Str(bPermissionCheck))
+            MsgBox("File / folder permission check: " & CStr(bPermissionCheck))
             MsgBox("It appears you do not have write permission to the DCI Model Directory.  Write permission to this directory is needed in order to run DCI Analysis.")
             Exit Sub
         End If
@@ -9481,6 +9668,86 @@ Public Class Analysis
         End If
 
 
+
+    End Sub
+    Private Sub DCI_ADV2020_ShellCall(ByVal sAdvConnectTabName As String, ByRef pFWorkspace As IFeatureWorkspace)
+        ' ====================================================================
+        ' Exports 'advanced' connectivity table for distance decay calcs to CSV 
+        ' Calls DCI via Shell
+
+        Dim sDCIModelDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDCIModelDir"))    ' DCI model install directory
+        Dim sRInstallDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sRInstallDir"))     ' R Program install directory
+        Dim bDCISectional As Boolean = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("dcisectionalyn")) ' DCI sectional on/off?
+        Dim pTable As ITable
+        Dim i As Integer
+        Dim pTxtFactory As IWorkspaceFactory = New TextFileWorkspaceFactory
+        Dim pFWorkspaceOut As IFeatureWorkspace
+        Dim pWorkspaceOut As IWorkspace
+
+        ' Get output workspace
+        pWorkspaceOut = pTxtFactory.OpenFromFile(sDCIModelDir, My.ArcMap.Application.hWnd)
+        pFWorkspaceOut = CType(pWorkspaceOut, IFeatureWorkspace)
+
+        ' Check that the user currently has file permissions to write to 
+        ' this directory
+        Dim bPermissionCheck
+        bPermissionCheck = FileWriteDeleteCheck(sDCIModelDir)
+        If bPermissionCheck = False Then
+            MsgBox("File / folder permission check: " & CStr(bPermissionCheck))
+            MsgBox("It appears you do not have write permission to the DCI Model Directory.  Write permission to this directory is needed in order to run DCI Analysis.")
+            Exit Sub
+        End If
+
+        Dim pExportOp As IExportOperation = New ExportOperation
+        Dim pDataSetIn As IDataset
+        Dim pDataSetOut As IDataset
+        Dim pDSNameIn As IDatasetName
+        Dim pDSNameOut As IDatasetName
+        Dim FileToDelete As String
+
+        ' Get the output dataset name ready.
+        pDataSetOut = CType(pWorkspaceOut, IDataset)
+
+            ' Delete the table if it already exists
+        FileToDelete = sDCIModelDir + "/FIPEX_Advanced_DD_2020.csv"
+        If System.IO.File.Exists(FileToDelete) = True Then
+            System.IO.File.Delete(FileToDelete)
+
+            ' need to reset the workspace so the file list will refresh and
+            ' arcgis will know the file doesn't exist now.
+            pWorkspaceOut = pTxtFactory.OpenFromFile(sDCIModelDir, 0)
+            pFWorkspaceOut = CType(pWorkspaceOut, IFeatureWorkspace)
+            pDataSetOut = CType(pWorkspaceOut, IDataset)
+        End If
+
+        pExportOp = New ExportOperation
+
+            ' Get input table
+        pTable = pFWorkspace.OpenTable(sAdvConnectTabName)
+
+            ' Get the dataset name for the input table
+        pDataSetIn = CType(pTable, IDataset)
+        pDSNameIn = CType(pDataSetIn.FullName, IDatasetName)
+
+            ' Get dataset for output table
+        pDSNameOut = New TableName
+        pDSNameOut.Name = "FIPEX_Advanced_DD_2020.csv"
+        pDSNameOut.WorkspaceName = CType(pDataSetOut.FullName, IWorkspaceName)
+
+        Try
+            pExportOp.ExportTable(pDSNameIn, Nothing, Nothing, pDSNameOut, My.ArcMap.Application.hWnd)
+        Catch ex As Exception
+            MsgBox("Error trying to export DBF table to DCI Directory. " & ex.Message)
+        End Try
+
+        'Else ' if this is the second loop just ADD data from the input table to output table
+        ' navigate to the model directory and run the R program.  Pause until completed.
+        'ChDir(sDCIModelDir)
+        'If bDCISectional = True Then
+        'Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI_Sectional.r", AppWinStyle.NormalFocus, True)
+        'Else
+        'Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI.r", AppWinStyle.NormalFocus, True)
+        'End If
 
     End Sub
     Private Sub UpdateResultsDCI(ByRef iBarrierCount As Integer, ByRef dDCIp As Double, ByRef dDCId As Double, ByRef bNaturalY As Boolean)
@@ -9607,6 +9874,8 @@ Public Class Analysis
         '   2.3 Set second as barrierID (string)
         '   2.4 Set third as downstream_barrierID (should be string)
         '
+        ' # 2020 - added the user-set labels back as well as the EIDs
+        '
         '  Note on field types:  Since there can be multiple barriers layers
         '  there could be a variety of ID types that will get added to the one connectivity
         '  table.  Since anything can be inserted to a text field then both fields should
@@ -9631,9 +9900,9 @@ Public Class Analysis
         ' Create new Fields object
         pFields = New Fields
         pFieldsEdit = CType(pFields, IFieldsEdit)
-        pFieldsEdit.FieldCount_2 = 3
+        pFieldsEdit.FieldCount_2 = 5
 
-        ' Create ObjectID Field
+        ' Create  Field
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
 
@@ -9644,7 +9913,7 @@ Public Class Analysis
         ' Set first field
         pFieldsEdit.Field_2(0) = pField
 
-        ' Create ObjectID Field
+        ' Create Field
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
 
@@ -9655,18 +9924,38 @@ Public Class Analysis
 
         pFieldsEdit.Field_2(1) = pField
 
+        'Create Field
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
 
-        ' THIS COLUMN IS SET AS AN INTEGER
-        ' MAY CAUSE PROBLEMS IN THE FUTURE IF BARRIER
-        ' IDs ARE STRINGS!!
         pFieldEdit.AliasName_2 = "Downstream Barrier/Sink"
         pFieldEdit.Name_2 = "Downstream_Barrier"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
 
         pFieldsEdit.Field_2(2) = pField
+
+        'Create Field
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+
+        pFieldEdit.AliasName_2 = "BarrierFlagID Label"
+        pFieldEdit.Name_2 = "BarrierOrFlagLabel"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+
+        pFieldsEdit.Field_2(3) = pField
+
+        'Create Field
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+
+        pFieldEdit.AliasName_2 = "Downstream Barrier/Sink User Label"
+        pFieldEdit.Name_2 = "Downstream_BarrierLabel"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+
+        pFieldsEdit.Field_2(4) = pField
 
         ' May be possible to add optional params for RDBMS behaviour
         If pFWorkspace IsNot Nothing Then
@@ -10659,6 +10948,177 @@ Public Class Analysis
         pMxDoc.UpdateContents()
 
     End Sub
+    Private Sub PrepAdvanced2020DCIOutTable(ByVal sTable As String, ByVal pFWSpace As IFeatureWorkspace)
+
+        ' ==============================================
+        ' 2020 - DCI Output Table that includes columns for downstream neighbour 
+        ' and distance to downstream neighbout
+
+
+        Dim pStTab As IStandaloneTable
+        Dim pStTabColl As IStandaloneTableCollection
+        Dim pDoc As IDocument = My.ArcMap.Application.Document
+        Dim pMxDoc As IMxDocument = CType(pDoc, IMxDocument)
+        Dim pMap As IMap = pMxDoc.FocusMap
+
+        Dim pFields As IFields
+        Dim pFieldsEdit As IFieldsEdit
+        Dim pField As IField
+        Dim pFieldEdit As IFieldEdit
+
+        ' Create new Fields object
+        pFields = New Fields
+        pFieldsEdit = CType(pFields, IFieldsEdit)
+
+        Dim iFields As Integer ' to keep track of number of fields
+
+        pFieldsEdit.FieldCount_2 = 13
+        iFields = 13
+
+        ' objectID
+        ' BarrierID
+        ' BarirerUserLabel
+        ' Habt len Quan
+        ' Habit len Quan Units
+        ' habitat area quan
+        ' habitat area units
+        ' BarrPerm
+        ' BarrnaturalYN
+        ' DownstreamNeighbEID
+        ' DownstreamNeighbUserLabel
+        ' DownstreamNeighbDistance
+        ' DownstreamNeighbUnits
+
+        ' ============ Field ============
+        ' Create ObjectID Field
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "ObjectID"
+        pFieldEdit.Name_2 = "ObID"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeOID
+        pFieldsEdit.Field_2(0) = pField
+
+        ' ============= Field ============
+        ' Create ObjectID Field
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Node EID"
+        pFieldEdit.Name_2 = "NodeEID"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+        pFieldsEdit.Field_2(1) = pField
+
+        ' ============= Field ============
+        ' Create ObjectID Field
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Node User Label"
+        pFieldEdit.Name_2 = "NodeLabel"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+        pFieldsEdit.Field_2(2) = pField
+
+        ' ============Field ============
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Habitat Quantity Length"
+        pFieldEdit.Name_2 = "Quantity_Len"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
+        pFieldsEdit.Field_2(3) = pField
+
+        ' ============  Field ============
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Habitat Length Units"
+        pFieldEdit.Name_2 = "HabLenUnits"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+        pFieldsEdit.Field_2(4) = pField
+
+        ' ============Field ============
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Habitat Quantity Area"
+        pFieldEdit.Name_2 = "Quantity_Area"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
+        pFieldsEdit.Field_2(5) = pField
+
+        ' ============  Field ============
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Habitat Area Units"
+        pFieldEdit.Name_2 = "HabAreaUnits"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+        pFieldsEdit.Field_2(6) = pField
+
+        ' =========== Field ===========
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Barrier Permeability"
+        pFieldEdit.Name_2 = "BarrierPerm"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
+        pFieldsEdit.Field_2(7) = pField
+
+        ' =========== Field ===========
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Barrier Natural TF"
+        pFieldEdit.Name_2 = "NaturalYN"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+        pFieldsEdit.Field_2(8) = pField
+
+        ' =========== Field ===========
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Downstream Neighbour EID"
+        pFieldEdit.Name_2 = "DownstreamEID"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+        pFieldsEdit.Field_2(9) = pField
+
+        ' ============= Field ============
+        ' Create ObjectID Field
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Downstream Neighbour User Label"
+        pFieldEdit.Name_2 = "DownstreamNodeLabel"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+        pFieldsEdit.Field_2(10) = pField
+
+        ' =========== Field ===========
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Downstream Neighbour Distance"
+        pFieldEdit.Name_2 = "DownstreamNeighDistance"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
+        pFieldsEdit.Field_2(11) = pField
+
+        ' =========== Field ===========
+        pField = New Field
+        pFieldEdit = CType(pField, IFieldEdit)
+        pFieldEdit.AliasName_2 = "Distance Units"
+        pFieldEdit.Name_2 = "DistanceUnits"
+        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
+        pFieldEdit.Length_2 = 55
+        pFieldsEdit.Field_2(12) = pField
+
+        ' MsgBox "Going to create table in workspace named - & sTableName
+        ' May be possible to add optional params for RDBMS behaviour
+        pFWSpace.CreateTable(sTable, pFields, Nothing, Nothing, "")
+        ' MsgBox "created table successfully"
+
+        ' Add Table to Map Doc
+        Dim pTable As ITable = pFWSpace.OpenTable(sTable)
+        pStTabColl = CType(pMap, IStandaloneTableCollection)
+        pStTab = New StandaloneTable
+        pStTab.Table = pTable
+        pStTabColl.AddStandaloneTable(pStTab)
+        pMxDoc.UpdateContents()
+
+    End Sub
     Private Sub PrepHabitatTable(ByVal sTable As String, ByVal pFWSpace As IFeatureWorkspace)
 
         ' ==============================================
@@ -10828,7 +11288,7 @@ Public Class Analysis
         ' ============ Eleventh Field ============
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
-        pFieldEdit.AliasName_2 = "Habitat Class Field"
+        pFieldEdit.AliasName_2 = "Habitat Class"
         pFieldEdit.Name_2 = "HabClassField"
         'End If
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
@@ -10839,7 +11299,7 @@ Public Class Analysis
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
 
-        pFieldEdit.AliasName_2 = "Habitat Quantity Field"
+        pFieldEdit.AliasName_2 = "Habitat Quantity"
         pFieldEdit.Name_2 = "Quantity"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
         pFieldsEdit.Field_2(11) = pField
@@ -11489,10 +11949,14 @@ Public Class Analysis
         TraceFlowSolverSetup = pTraceFlowSolver
 
     End Function
+    Public Function GetSourcesBranchJunctions()
+
+    End Function
+
     Private Function GetNaturalYN(ByVal iFCID As Integer, ByVal iFID As Integer, ByVal lBarrierIDs As List(Of BarrierIDObj)) As String
         'returns whether the barrier is natural or not based on user-declared field in attribute table
         'if none found, assumes NOT natural (returns "F")
-        
+
         Dim bCheck As Boolean
         Dim j, k As Integer
 
@@ -11588,7 +12052,10 @@ Public Class Analysis
                                         dOutValue = Convert.ToDouble(pFeature.Value(pFields.FindField(sBarrierPermField)))
                                         bCheck = True
                                     Catch ex As Exception
-                                        dOutValue = 1
+                                        MsgBox("The Permeability Value in the " & CStr(pFLayer.Name) & " was not convertible" _
+                                        & " to type 'double'. Please check the attribute table. Assuming permeability = zero. " & ex.Message.ToString)
+                                        ' If there's a null value or field value can't be converted, assume zero
+                                        dOutValue = 0.0
                                     End Try
 
                                 End If ' names match

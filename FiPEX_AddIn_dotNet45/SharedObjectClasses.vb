@@ -160,11 +160,19 @@ Public Class BarrierAndDownstreamID
     ' this object is used to 
     Public BarrID As String
     Public DownstreamBarrierID As String
+    Public BarrLabel As String
+    Public DownstreamBarrLabel As String
 
 
-    Public Sub New(ByVal barrid As String, ByVal downstreambarrierid As String)
+    Public Sub New(ByVal barrid As String, _
+                   ByVal downstreambarrierid As String, _
+                   ByVal barrlabel As String, _
+                   ByVal downstreambarrierlabel As String
+                   )
         Me.BarrID = barrid
         Me.DownstreamBarrierID = downstreambarrierid
+        Me.BarrLabel = barrlabel
+        Me.DownstreamBarrLabel = downstreambarrierlabel
     End Sub
 
 End Class

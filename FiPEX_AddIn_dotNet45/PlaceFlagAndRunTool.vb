@@ -1327,7 +1327,7 @@ Public Class PlaceFlagAndRunTool
                                              "Trace: path downstream.")
 
             pMap.ClearSelection() ' clear selection
-            ' perform UPSTREAM trace
+
             pTraceFlowSolver.FindFlowElements(esriFlowMethod.esriFMDownstream, eFlowElements, pResultJunctions, pResultEdges)
 
             If pResultJunctions Is Nothing Then
@@ -3224,6 +3224,8 @@ Public Class PlaceFlagAndRunTool
         Dim sBarrierPermField As String
         Dim iBarrierIds As Integer
         Dim dOutValue As Double
+        Dim vPermValue As Object
+
 
         bCheck = False
         For j = 0 To pMap.LayerCount - 1
@@ -3239,9 +3241,23 @@ Public Class PlaceFlagAndRunTool
 
                         For k = 0 To iBarrierIds - 1
                             If lBarrierIDs.Item(k).Layer = pFLayer.Name Then
+                                MsgBox("The Layer in TOC: " + CStr(pFLayer.Name))
+                                MsgBox("The Layer in List: " + CStr(lBarrierIDs.Item(k).Layer))
+
                                 sBarrierPermField = lBarrierIDs.Item(k).PermField
+                                MsgBox("Permeability field: " + CStr(sBarrierPermField))
+
                                 If pFields.FindField(sBarrierPermField) <> -1 Then
-                                    dOutValue = Convert.ToDouble(pFeature.Value(pFields.FindField(sBarrierPermField)))
+                                    ''MsgBox("Debug:C12")
+                                    vPermValue = pFeature.Value(pFields.FindField(sBarrierPermField))
+                                    Try
+                                        dOutValue = Convert.ToDouble(vPermValue)
+                                    Catch ex As Exception
+                                        MsgBox("The Permeability Value in the " & CStr(pFLayer.Name) & " was not convertible" _
+                                        & " to type 'double'. Please check the attribute table. Assuming permeability = zero. " & ex.Message.ToString)
+                                        ' If there's a null value or field value can't be converted, assume zero
+                                        dOutValue = 0.0
+                                    End Try
                                     bCheck = True
                                 End If ' names match
                             End If
@@ -4005,6 +4021,7 @@ Public Class PlaceFlagAndRunTool
 
                         ' Get the Units of measure, if any
                         sUnit = lLayersFields(j).UnitField
+
                         If sUnit = "Metres" Then
                             sUnit = "m"
                         ElseIf sUnit = "Kilometres" Then
@@ -4021,6 +4038,12 @@ Public Class PlaceFlagAndRunTool
                             sUnit = "ha"
                         ElseIf sUnit = "Acres" Then
                             sUnit = "ac"
+                        ElseIf sUnit = "Hectometres" Then
+                            sUnit = "hm"
+                        ElseIf sUnit = "Dekametres" Then
+                            sUnit = "dm"
+                        ElseIf sUnit = "Square Kilometres" Then
+                            sUnit = "km^2"
                         Else
                             sUnit = "n/a"
                         End If

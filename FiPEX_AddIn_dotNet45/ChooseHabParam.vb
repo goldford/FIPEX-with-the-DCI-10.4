@@ -123,12 +123,13 @@ Public Class ChooseHabParam
 
         cboUnits.Items.Add("Metres")
         cboUnits.Items.Add("Kilometres")
-        cboUnits.Items.Add("Square Metres")
-        cboUnits.Items.Add("Hectares")
         cboUnits.Items.Add("Feet")
         cboUnits.Items.Add("Miles")
         cboUnits.Items.Add("Square Miles")
         cboUnits.Items.Add("Acres")
+        cboUnits.Items.Add("Square Metres")
+        cboUnits.Items.Add("Hectares")
+        cboUnits.Items.Add("Square Kilometres")
         cboUnits.Items.Add("Hectometres")
         cboUnits.Items.Add("Dekametres")
 
