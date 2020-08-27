@@ -1939,13 +1939,11 @@ Public Class Analysis
                                     ' TEMPORARY CODE UNTIL DCI MODEL IS UPDATED
                                     If orderLoop = 0 Then
 
-                                        ' updated March 14, 2012 to use EID's for connectivity table
-                                        '    rather than user-set ID's
+
                                         pBarrierAndDownstreamEID = New BarrierAndDownstreamID(endEID.ToString, "Sink", sFlowEndID, "Sink")
                                     Else
-                                        ' updated March 14, 2012 to use EID's for connectivity table
-                                        '    rather than user-set ID's
-                                        pBarrierAndDownstreamEID = New BarrierAndDownstreamID(endEID.ToString, iEID.ToString, sFlowEndID, sLastUserSetID)
+                                     
+                                        pBarrierAndDownstreamEID = New BarrierAndDownstreamID(endEID.ToString, iEID.ToString, sFlowEndID, sOutID)
 
                                     End If
 
@@ -2614,6 +2612,8 @@ Public Class Analysis
                         'MsgBox("Debug:44")
                     End If ' bTotalPathDownHab = true
 
+                    'MsgBox("Debug2020: The iEID of this Barrier: " + CStr(iEID) + " and the sOutID of barrier: " + CStr(sOutID))
+
 
                     'End If ' calculate total impacted
                     pNetworkAnalysisExtFlags.ClearFlags()   ' clear the flags
@@ -2911,10 +2911,15 @@ Public Class Analysis
 
                         For k = 0 To lDCIStatsList.Count - 1
                             If lDCIStatsList(k).Barrier = lConnectivity(j).BarrID Then
-                                pRowBuffer.Value(3) = Math.Round(lDCIStatsList(k).Quantity, 2)
-                                pRowBuffer.Value(4) = "km" ' fix this by adding units to DCI Stats List Object
-                                pRowBuffer.Value(5) = "0" ' fix this by adding areas to DCI Stats List Object
-                                pRowBuffer.Value(6) = "km^2" ' fix this by adding areas to DCI Stats List Object
+                                ' 2020 to-do - fix from here to pCursor
+                                '            - DCIStatsList should have same stats as lhabstatslist need to add 
+                                '              room for all params required for DCI
+                                '              downstream habitat length, hab area, and distance to next barrier 
+                                '              (distance often = length, but not always)
+                                'pRowBuffer.Value(3) = Math.Round(lDCIStatsList(k).Quantity, 2)
+                                'pRowBuffer.Value(4) = "km" ' 2020: to do add units to DCI Stats List Object
+                                pRowBuffer.Value(5) = "0" ' 2020: to do add area quan to DCI Stats List Object
+                                pRowBuffer.Value(6) = "km^2" ' 2020: to do add units to DCI Stats List Objectt
                                 pRowBuffer.Value(7) = lDCIStatsList(k).BarrierPerm
                                 pRowBuffer.Value(8) = lDCIStatsList(k).BarrierYN
                             End If
@@ -2927,6 +2932,8 @@ Public Class Analysis
                             If lHabStatsList(k).bEID = lConnectivity(j).BarrID Then
                                 If lHabStatsList(k).TotalImmedPath = "Path" And lHabStatsList(k).Direction = "downstream" Then
                                     'MsgBox("Debug2020: Found the distance downstream for EID")
+                                    pRowBuffer.Value(3) = Math.Round(lHabStatsList(k).Quantity, 2)
+                                    pRowBuffer.Value(4) = lHabStatsList(k).Unit
                                     pRowBuffer.Value(11) = Math.Round(lHabStatsList(k).Quantity, 2)
                                     pRowBuffer.Value(12) = lHabStatsList(k).Unit
                                 End If
@@ -11064,7 +11071,7 @@ Public Class Analysis
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
         pFieldEdit.AliasName_2 = "Barrier Natural TF"
-        pFieldEdit.Name_2 = "NaturalYN"
+        pFieldEdit.Name_2 = "NaturalTF"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
         pFieldsEdit.Field_2(8) = pField
