@@ -682,13 +682,19 @@ Public Class FishPassageExtension
                     .SetProperty("ordernum", Convert.ToInt32(sDictionary.Item("ordernum")))
                     .SetProperty("maximum", Convert.ToBoolean(sDictionary.Item("maximum")))
                     .SetProperty("connecttab", Convert.ToBoolean(sDictionary.Item("connecttab")))
-                    .SetProperty("advconnecttab", Convert.ToBoolean(sDictionary.Item("advconnecttab")))
                     .SetProperty("barrierperm", Convert.ToBoolean(sDictionary.Item("barrierperm")))
                     .SetProperty("naturalyn", Convert.ToBoolean(sDictionary.Item("naturalyn")))
                     .SetProperty("dciyn", Convert.ToBoolean(sDictionary.Item("dciyn")))
                     .SetProperty("dcisectionalyn", Convert.ToBoolean(sDictionary.Item("dcisectionalyn")))
                     .SetProperty("sDCIModelDir", Convert.ToString(sDictionary.Item("sDCIModelDir")))
                     .SetProperty("sRInstallDir", Convert.ToString(sDictionary.Item("sRInstallDir")))
+
+                    '2020
+                    .SetProperty("advconnecttab", Convert.ToBoolean(sDictionary.Item("advconnecttab")))
+                    .SetProperty("bDistanceDecay", Convert.ToBoolean(sDictionary.Item("bDistanceDecay")))
+                    .SetProperty("bDistanceLim", Convert.ToBoolean(sDictionary.Item("bDistanceLim")))
+                    .SetProperty("dMaxDist", Convert.ToDouble(sDictionary.Item("dMaxDist")))
+
                     .SetProperty("bDBF", Convert.ToBoolean(sDictionary.Item("bDBF")))
                     .SetProperty("sGDB", Convert.ToString(sDictionary.Item("sGDB")))
                     .SetProperty("TabPrefix", Convert.ToString(sDictionary.Item("TabPrefix")))
@@ -1079,12 +1085,18 @@ Public Class FishPassageExtension
             sDictionary.Add("ordernum", Convert.ToString(pPropset.GetProperty("ordernum")))
             sDictionary.Add("maximum", Convert.ToString(pPropset.GetProperty("maximum")))
             sDictionary.Add("connecttab", Convert.ToString(pPropset.GetProperty("connecttab")))
-            sDictionary.Add("advconnecttab", Convert.ToString(pPropset.GetProperty("advconnecttab")))
             sDictionary.Add("barrierperm", Convert.ToString(pPropset.GetProperty("barrierperm")))
             sDictionary.Add("naturalyn", Convert.ToString(pPropset.GetProperty("naturalyn")))
             sDictionary.Add("dciyn", Convert.ToString(pPropset.GetProperty("dciyn")))
             sDictionary.Add("dcisectionalyn", Convert.ToString(pPropset.GetProperty("dcisectionalyn")))
             sDictionary.Add("sDCIModelDir", Convert.ToString(pPropset.GetProperty("sDCIModelDir")))
+
+            '2020
+            sDictionary.Add("advconnecttab", Convert.ToString(pPropset.GetProperty("advconnecttab")))
+            sDictionary.Add("bDistanceDecay", Convert.ToString(pPropset.GetProperty("bDistanceDecay")))
+            sDictionary.Add("bDistanceLim", Convert.ToString(pPropset.GetProperty("bDistanceLim")))
+            sDictionary.Add("dMaxDist", Convert.ToString(pPropset.GetProperty("dMaxDist")))
+
             sDictionary.Add("sRInstallDir", Convert.ToString(pPropset.GetProperty("sRInstallDir")))
             sDictionary.Add("bDBF", Convert.ToString(pPropset.GetProperty("bDBF")))
             sDictionary.Add("sGDB", Convert.ToString(pPropset.GetProperty("sGDB")))

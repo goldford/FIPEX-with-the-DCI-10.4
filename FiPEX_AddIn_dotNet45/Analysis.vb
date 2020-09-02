@@ -402,11 +402,23 @@ Public Class Analysis
         Dim bNaturalYN As Boolean = False   ' Natural Barrier y/n field?
         Dim bDCI As Boolean = False         ' Calculate DCI?
         Dim bDCISectional As Boolean = False ' Calculate DCI Sectional?
+
+        '2020 
+        Dim bDistanceLim As Boolean = False
+        Dim bDistanceDecay As Boolean = False
+        Dim dMaxDist As Double = 0.0
+
         Dim bDBF As Boolean = False         ' Include DBF output default none
         Dim sGDB As String = ""             ' Output GDB for DBF output
         Dim sPrefix As String = ""          ' Prefix for output tables
 
-        Dim bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab As Boolean
+        Dim bUpHab As Boolean = False
+        Dim bTotalUpHab As Boolean = False
+        Dim bDownHab As Boolean = False
+        Dim bTotalDownHab As Boolean = False
+        Dim bPathDownHab As Boolean = False
+        Dim bTotalPathDownHab As Boolean = False
+
 
         Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
         Dim iLinesCount As Integer = 0      ' number of lines layers currently using
@@ -416,12 +428,12 @@ Public Class Analysis
         Dim lBarrierIDs As List(Of BarrierIDObj) = New List(Of BarrierIDObj)
         Dim pBarrierIDObj As New BarrierIDObj(Nothing, Nothing, Nothing, Nothing, Nothing)
 
-        Dim iBarrierIDs As Integer
+        Dim iBarrierIDs As Integer = 0
         Dim sBarrierIDLayer, sBarrierIDField, sBarrierNaturalYNField, sBarrierPermField As String
 
-        Dim bGLPKTables As Boolean
-        Dim sGLPKModelDir As String
-        Dim sGnuWinDir As String
+        Dim bGLPKTables As Boolean = False
+        Dim sGLPKModelDir As String = ""
+        Dim sGnuWinDir As String = ""
         Dim uniqueBarrierEIDComparer As FindBarrierEIDPredicate
 
         'm_LLayersFields2.Clear() ' To be safe clear these
@@ -430,121 +442,151 @@ Public Class Analysis
         ' If settings have been set by the user then load them from the extension stream (stored in .mxd doc)
         If m_FiPEx__1.m_bLoaded = True Then
 
-            sDirection = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("direction"))
-            iOrderNum = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("ordernum"))     'May have problems here - need to convert to integer
-            bMaximum = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("maximum"))
-            'If they want the maximum then set ordernum to very large number (haven't found a better way yet)
-            If bMaximum = True Then
-                iOrderNum = 999
-            End If
-            bConnectTab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("connecttab"))
-            bAdvConnectTab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("advconnecttab"))
-            bBarrierPerm = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("barrierperm"))
-            bNaturalYN = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("NaturalYN"))
-            bDCI = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("dciyn"))
-            bDCISectional = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("dcisectionalyn"))
-            bDBF = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDBF"))
-            sGDB = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sGDB"))
-            sPrefix = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("TabPrefix"))
+            Try
 
-            bUpHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("UpHab"))
-            bTotalUpHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("TotalUpHab"))
-            bDownHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("DownHab"))
-            bTotalDownHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("TotalDownHab"))
-            bPathDownHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("PathDownHab"))
-            bTotalPathDownHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("TotalPathDownHab"))
+                sDirection = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("direction"))
+                iOrderNum = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("ordernum"))     'May have problems here - need to convert to integer
+                bMaximum = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("maximum"))
+                'If they want the maximum then set ordernum to very large number (haven't found a better way yet)
+                If bMaximum = True Then
+                    iOrderNum = 999
+                End If
+                bConnectTab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("connecttab"))
+                bAdvConnectTab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("advconnecttab"))
+                bBarrierPerm = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("barrierperm"))
+                bNaturalYN = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("NaturalYN"))
+                bDCI = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("dciyn"))
+                bDCISectional = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("dcisectionalyn"))
 
-            iPolysCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numPolys"))
+                bDBF = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDBF"))
+                sGDB = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sGDB"))
+                sPrefix = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("TabPrefix"))
 
-            HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+                '2020
+                Try
+                    bDistanceDecay = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDistanceDecay"))
+                Catch ex As Exception
+                    MsgBox("Trouble loading FIPEX property bDistanceDecay. Setting it to False.")
+                    bDistanceDecay = False
+                End Try
 
-            ' Populate a list of the layers to use and habitat summary fields.
-            ' match any of the polygon layers saved in stream to those in listboxes 
-            If iPolysCount > 0 Then
-                For k = 0 To iPolysCount - 1
-                    'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
-                    HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                    With HabLayerObj
-                        .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
-                        .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
-                        .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
-                        .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
-                    End With
+                Try
+                    bDistanceLim = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDistanceLim"))
+                Catch ex As Exception
+                    MsgBox("Trouble loading FIPEX property bDistanceLim. Setting it to False.")
+                    bDistanceDecay = False
+                End Try
 
-                    ' Load that object into the list
-                    pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
-                Next
-            End If
+                Try
+                    dMaxDist = Convert.ToDouble(m_FiPEx__1.pPropset.GetProperty("dMaxDist"))
+                Catch ex As Exception
+                    MsgBox("Trouble loading FIPEX property dMaxDist. Setting it to 0.")
+                    dMaxDist = 0.0
+                End Try
 
-            ' Need to be sure that quantity field has been assigned for each
-            ' layer using. 
-            Dim iCount1 As Integer = pPLayersFields.Count
+                bUpHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("UpHab"))
+                bTotalUpHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("TotalUpHab"))
+                bDownHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("DownHab"))
+                bTotalDownHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("TotalDownHab"))
+                bPathDownHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("PathDownHab"))
+                bTotalPathDownHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("TotalPathDownHab"))
 
-            If iCount1 > 0 Then
-                For m = 0 To iCount1 - 1
-                    sTemp = pPLayersFields.Item(m).Layer
-                    If pPLayersFields.Item(m).QuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for lacustrine layer. Please choose a field in the options menu.", "Parameter Missing")
-                        Exit Sub
-                    End If
-                Next
-            End If
+                iPolysCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numPolys"))
 
-            iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
-            Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+                HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
-            ' match any of the line layers saved in stream to those in listboxes
-            If iLinesCount > 0 Then
-                For j = 0 To iLinesCount - 1
-                    'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
-                    HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                    With HabLayerObj2
-                        '.Layer = sLineLayer
-                        .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
-                        .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
-                        .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
-                        .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineUnitField" + j.ToString))
-                    End With
-                    pLLayersFields.Add(HabLayerObj2)
-                Next
-            End If
+                ' Populate a list of the layers to use and habitat summary fields.
+                ' match any of the polygon layers saved in stream to those in listboxes 
+                If iPolysCount > 0 Then
+                    For k = 0 To iPolysCount - 1
+                        'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
+                        HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
+                        With HabLayerObj
+                            .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
+                            .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
+                            .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
+                            .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
+                        End With
 
-            ' Need to be sure that quantity field has been assigned for each
-            ' layer using. 
-            iCount1 = pLLayersFields.Count
-            If iCount1 > 0 Then
-                For m = 0 To iCount1 - 1
-                    If pLLayersFields.Item(m).QuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
-                        Exit Sub
-                    End If
-                Next
-            End If
+                        ' Load that object into the list
+                        pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
+                    Next
+                End If
 
-            ' Get the barrier ID Fields
-            iBarrierIDs = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numBarrierIDs"))
-            If iBarrierIDs > 0 Then
-                For j = 0 To iBarrierIDs - 1
-                    sBarrierIDLayer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDLayer" + j.ToString))
-                    sBarrierIDField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDField" + j.ToString))
-                    sBarrierPermField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierPermField" + j.ToString))
-                    sBarrierNaturalYNField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierNaturalYNField" + j.ToString))
-                    ' TEMP HARD CODE OF BARRIER TYPE - this contains a FIELD to look for
-                    ' in each layer for barrier type ie. 'culvert' 'dam' -- thesis SA
-                    pBarrierIDObj = New BarrierIDObj(sBarrierIDLayer, sBarrierIDField, sBarrierPermField, sBarrierNaturalYNField, "FIPEX_BarrierType")
-                    lBarrierIDs.Add(pBarrierIDObj)
-                Next
-            End If
+                ' Need to be sure that quantity field has been assigned for each
+                ' layer using. 
+                Dim iCount1 As Integer = pPLayersFields.Count
 
-            bGLPKTables = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bGLPKTables"))
-            sGLPKModelDir = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sGLPKModelDir"))
-            sGnuWinDir = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sGnuWinDir"))
+                If iCount1 > 0 Then
+                    For m = 0 To iCount1 - 1
+                        sTemp = pPLayersFields.Item(m).Layer
+                        If pPLayersFields.Item(m).QuanField = "Not set" Then
+                            System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for lacustrine layer. Please choose a field in the options menu.", "Parameter Missing")
+                            Exit Sub
+                        End If
+                    Next
+                End If
 
-            'TEMP HARDCODING
-            bGLPKTables = False
+                iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
+                Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
-            sGLPKModelDir = "c:\GunnsModel\"
-            'sGnuWinDir = "c:\GnuWin32\"
+                ' match any of the line layers saved in stream to those in listboxes
+                If iLinesCount > 0 Then
+                    For j = 0 To iLinesCount - 1
+                        'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
+                        HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
+                        With HabLayerObj2
+                            '.Layer = sLineLayer
+                            .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
+                            .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
+                            .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
+                            .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineUnitField" + j.ToString))
+                        End With
+                        pLLayersFields.Add(HabLayerObj2)
+                    Next
+                End If
+
+                ' Need to be sure that quantity field has been assigned for each
+                ' layer using. 
+                iCount1 = pLLayersFields.Count
+                If iCount1 > 0 Then
+                    For m = 0 To iCount1 - 1
+                        If pLLayersFields.Item(m).QuanField = "Not set" Then
+                            System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
+                            Exit Sub
+                        End If
+                    Next
+                End If
+
+                ' Get the barrier ID Fields
+                iBarrierIDs = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numBarrierIDs"))
+                If iBarrierIDs > 0 Then
+                    For j = 0 To iBarrierIDs - 1
+                        sBarrierIDLayer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDLayer" + j.ToString))
+                        sBarrierIDField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierIDField" + j.ToString))
+                        sBarrierPermField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierPermField" + j.ToString))
+                        sBarrierNaturalYNField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("BarrierNaturalYNField" + j.ToString))
+                        ' TEMP HARD CODE OF BARRIER TYPE - this contains a FIELD to look for
+                        ' in each layer for barrier type ie. 'culvert' 'dam' -- thesis SA
+                        pBarrierIDObj = New BarrierIDObj(sBarrierIDLayer, sBarrierIDField, sBarrierPermField, sBarrierNaturalYNField, "FIPEX_BarrierType")
+                        lBarrierIDs.Add(pBarrierIDObj)
+                    Next
+                End If
+
+                bGLPKTables = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bGLPKTables"))
+                sGLPKModelDir = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sGLPKModelDir"))
+                sGnuWinDir = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sGnuWinDir"))
+
+                'TEMP HARDCODING
+                bGLPKTables = False
+
+                sGLPKModelDir = "c:\GunnsModel\"
+                'sGnuWinDir = "c:\GnuWin32\"
+
+            Catch ex As Exception
+                MsgBox("Error when attempting to load stored FIPEX properties. This is normal if FIPEX has been updated. Try setting options again, saving document, closing document, and re-opening. " + ex.Message)
+                Exit Sub
+            End Try
 
         Else
             ' TODO: Pop-up form with current settings
@@ -649,8 +691,7 @@ Public Class Analysis
         ' 2020: for branch connectivity feature - GO
         ' save the original list so it can be restored later
         pOriginalBarriersListSaved = CType(pOriginalBarriersListSavedGEN, IEnumNetEID)
-        MsgBox("Number of original barriers: " & CStr(pOriginalBarriersListSaved.Count))
-
+        'MsgBox("Number of original barriers: " & CStr(pOriginalBarriersListSaved.Count))
 
         ' Save the flags
         i = 0
@@ -2931,11 +2972,12 @@ Public Class Analysis
                         For k = 0 To lHabStatsList.Count - 1
                             If lHabStatsList(k).bEID = lConnectivity(j).BarrID Then
                                 If lHabStatsList(k).TotalImmedPath = "Path" And lHabStatsList(k).Direction = "downstream" Then
-                                    'MsgBox("Debug2020: Found the distance downstream for EID")
+
                                     pRowBuffer.Value(3) = Math.Round(lHabStatsList(k).Quantity, 2)
                                     pRowBuffer.Value(4) = lHabStatsList(k).Unit
                                     pRowBuffer.Value(11) = Math.Round(lHabStatsList(k).Quantity, 2)
                                     pRowBuffer.Value(12) = lHabStatsList(k).Unit
+
                                 End If
                             End If
                         Next
@@ -2945,8 +2987,16 @@ Public Class Analysis
                         pCursor.Flush()
                     Next
 
-                    ' 2020 test - should be moved
-                    DCI_ADV2020_ShellCall(sAdvConnectTabName, pFWorkspace)
+                    ' 2020 test - should be moved?
+
+                    DCI_ADV2020_ShellCall(sAdvConnectTabName, _
+                                          pFWorkspace,
+                                          bDCISectional, _
+                                          bDistanceLim, _
+                                          dMaxDist, _
+                                          bDistanceDecay)
+
+                    
 
                 End If
 
@@ -9669,22 +9719,28 @@ Public Class Analysis
         ' navigate to the model directory and run the R program.  Pause until completed.
         ChDir(sDCIModelDir)
         If bDCISectional = True Then
-            Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI_Sectional.r", AppWinStyle.NormalFocus, True)
+            Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI_Sectional.r", AppWinStyle.Hide, True)
         Else
-            Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI.r", AppWinStyle.NormalFocus, True)
+            Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI.r", AppWinStyle.Hide, True)
         End If
 
 
 
     End Sub
-    Private Sub DCI_ADV2020_ShellCall(ByVal sAdvConnectTabName As String, ByRef pFWorkspace As IFeatureWorkspace)
+    Private Sub DCI_ADV2020_ShellCall(ByVal sAdvConnectTabName As String, _
+                                      ByRef pFWorkspace As IFeatureWorkspace, _
+                                      ByVal bDCISectional As Boolean, _
+                                      ByVal bDistanceLim As Boolean, _
+                                      ByVal dMaxDist As Double, _
+                                      ByVal bDistanceDecay As Boolean)
+
         ' ====================================================================
         ' Exports 'advanced' connectivity table for distance decay calcs to CSV 
         ' Calls DCI via Shell
 
         Dim sDCIModelDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDCIModelDir"))    ' DCI model install directory
         Dim sRInstallDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sRInstallDir"))     ' R Program install directory
-        Dim bDCISectional As Boolean = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("dcisectionalyn")) ' DCI sectional on/off?
+
         Dim pTable As ITable
         Dim i As Integer
         Dim pTxtFactory As IWorkspaceFactory = New TextFileWorkspaceFactory
@@ -9715,7 +9771,7 @@ Public Class Analysis
         ' Get the output dataset name ready.
         pDataSetOut = CType(pWorkspaceOut, IDataset)
 
-            ' Delete the table if it already exists
+        ' Delete the table if it already exists
         FileToDelete = sDCIModelDir + "/FIPEX_Advanced_DD_2020.csv"
         If System.IO.File.Exists(FileToDelete) = True Then
             System.IO.File.Delete(FileToDelete)
@@ -9729,14 +9785,14 @@ Public Class Analysis
 
         pExportOp = New ExportOperation
 
-            ' Get input table
+        ' Get input table
         pTable = pFWorkspace.OpenTable(sAdvConnectTabName)
 
-            ' Get the dataset name for the input table
+        ' Get the dataset name for the input table
         pDataSetIn = CType(pTable, IDataset)
         pDSNameIn = CType(pDataSetIn.FullName, IDatasetName)
 
-            ' Get dataset for output table
+        ' Get dataset for output table
         pDSNameOut = New TableName
         pDSNameOut.Name = "FIPEX_Advanced_DD_2020.csv"
         pDSNameOut.WorkspaceName = CType(pDataSetOut.FullName, IWorkspaceName)
@@ -9747,6 +9803,37 @@ Public Class Analysis
             MsgBox("Error trying to export DBF table to DCI Directory. " & ex.Message)
         End Try
 
+        ' 2020 Write param file to CSV for R to read for distance decay
+        ' bDCISectional, bDistanceLim, dMaxDist, bDistanceDecay
+        Try
+            If File.Exists(sDCIModelDir & "\FIPEX_2020_Params.csv") Then
+                File.Delete(sDCIModelDir & "\FIPEX_2020_Params.csv")
+            End If
+        Catch ex As Exception
+            MsgBox("Issue reading / writing / deleting to FIPEX param file. Error code: d100" & ex.Message)
+        End Try
+
+        Try
+            Dim sw As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_2020_Params.csv")
+            Dim listP As New List(Of String)()
+            Dim s As String
+            listP.Add("param1")
+
+            sw.Write("bDCISectional,bDistanceLim,dMaxDist,bDistanceDecay")
+            sw.Write(Environment.NewLine)
+            sw.Write(Str(bDCISectional) & "," & Str(bDistanceLim) & "," & Str(dMaxDist) & "," & Str(bDistanceDecay))
+            sw.Close()
+
+        Catch ex As Exception
+            MsgBox("Issue reading / writing / deleting to FIPEX param file. Error code: d101" & ex.Message)
+        End Try
+        
+
+
+
+
+
+
         'Else ' if this is the second loop just ADD data from the input table to output table
         ' navigate to the model directory and run the R program.  Pause until completed.
         'ChDir(sDCIModelDir)
@@ -9756,6 +9843,7 @@ Public Class Analysis
         'Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI.r", AppWinStyle.NormalFocus, True)
         'End If
 
+       
     End Sub
     Private Sub UpdateResultsDCI(ByRef iBarrierCount As Integer, ByRef dDCIp As Double, ByRef dDCId As Double, ByRef bNaturalY As Boolean)
 

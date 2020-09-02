@@ -103,11 +103,18 @@ Public Class frmRunAdvancedAnalysis
         Dim bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab As Boolean
         Dim sPrefix As String
         Dim sDirection As String
-        Dim bConnectTab, bAdvConnectTab As Boolean
+        Dim bConnectTab As Boolean
         Dim bBarrierPerm As Boolean
         Dim bNaturalYN As Boolean
         Dim bDCI As Boolean
         Dim bDCISectional As Boolean
+
+        '2020
+        Dim bAdvConnectTab As Boolean = False
+        Dim bDistanceLim As Boolean = False
+        Dim dMaxDist As Double = 0.0
+        Dim bDistanceDecay As Boolean = False
+
         Dim bMaximum As Boolean
         Dim iOrderNum As Integer
         Dim bGLPKTables As Boolean
@@ -123,7 +130,14 @@ Public Class frmRunAdvancedAnalysis
         End If
 
         ' Set the Order
-        iOrderNum = Convert.ToInt32(TxtOrder.Text)
+
+        Dim sOrderNum As String = TxtOrder.Text
+        If Not Integer.TryParse(sOrderNum, iOrderNum) Then
+            MessageBox.Show("Number in 'Order' Textbox must be an integer. Setting OrderNum to maximum (entire network).")
+            iOrderNum = 10000
+        Else
+            iOrderNum = Convert.ToInt32(TxtOrder.Text)
+        End If
 
         ' Set the Maximum
         If ChkMaxOrd.Checked = True Then
@@ -227,7 +241,6 @@ Public Class frmRunAdvancedAnalysis
             bDCI = False
             bDCISectional = False
             sDCIModelDir = "n/a"
-
         End If
 
         ' If DCI Output box is checked and enabled, and bDBF is true 
@@ -253,7 +266,38 @@ Public Class frmRunAdvancedAnalysis
         Else
             bDCI = False
             sRInstallDir = "n/a"
+        End If
 
+        '2020
+        If chkAdvConnect.Checked = True Then
+            bAdvConnectTab = True
+        Else
+            bAdvConnectTab = False
+        End If
+
+        If chkDistanceLimit.Checked = True Then
+            bDistanceLim = True
+        Else
+            bDistanceLim = False
+        End If
+
+        ' iOrderNum = Convert.ToInt32(TxtOrder.Text)
+
+        '2020
+        Dim sMaxDist = txtMaxDistance.Text
+        dMaxDist = Double.TryParse(sMaxDist, dMaxDist)
+        'MsgBox("dMaxDist after conversionto double: " & dMaxDist)
+
+        'Dim myInt As Integer = 0
+        'If Not Integer.TryParse(MyString, myInt) Then
+        'MessageBox.Show("This is not an integer")
+        'End If
+
+
+        If chkDistanceDecay.Checked = True Then
+            bDistanceDecay = True
+        Else
+            bDistanceDecay = False
         End If
 
         ' Set habitat statistics parameters
@@ -293,7 +337,7 @@ Public Class frmRunAdvancedAnalysis
             bTotalPathDownHab = False
         End If
 
-        ' WOULD THIS GO BETTER IN FORM_LOAD?
+        ' BETTER IN FORM_LOAD?
         ' 1.0 For each of the layers in the global list
         '   2.0 If it matches a layer in the listbox
         '     3.0a Leave it be
@@ -350,6 +394,12 @@ Public Class frmRunAdvancedAnalysis
         m_FiPEx.pPropset.SetProperty("dcisectionalyn", bDCISectional)
         m_FiPEx.pPropset.SetProperty("sRInstallDir", sRInstallDir)
         m_FiPEx.pPropset.SetProperty("sDCIModelDir", sDCIModelDir)
+
+        '2020
+        m_FiPEx.pPropset.SetProperty("bDistanceDecay", bDistanceDecay)
+        m_FiPEx.pPropset.SetProperty("bDistanceLim", bDistanceLim)
+        m_FiPEx.pPropset.SetProperty("dMaxDist", dMaxDist)
+
         m_FiPEx.pPropset.SetProperty("bDBF", bDBF)
         m_FiPEx.pPropset.SetProperty("sGDB", sGDB)
         m_FiPEx.pPropset.SetProperty("TabPrefix", sPrefix)
@@ -494,9 +544,6 @@ Public Class frmRunAdvancedAnalysis
         saveoptions()
 
     End Sub
-
-
-
     Private Sub Options_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
         ' Loads settings from extension
@@ -529,6 +576,12 @@ Public Class frmRunAdvancedAnalysis
         Dim bDCISectional As Boolean = False
         Dim sRInstallDir As String = "n/a"
         Dim sDCIModelDir As String = "n/a"
+
+        '2020
+        Dim bDistanceLim As Boolean = False
+        Dim bDistanceDecay As Boolean = False
+        Dim dMaxDist As Double = 0.0
+
         Dim bMaximum As Boolean = False
         Dim iOrderNum As Integer = 1
 
@@ -570,6 +623,14 @@ Public Class frmRunAdvancedAnalysis
         cmdRInstallDir.Enabled = False
         txtRInstallDir.Enabled = False
         chkDCISectional.Enabled = False
+
+        '2020
+        chkConnect.Enabled = False
+        chkAdvConnect.Enabled = False
+        chkDistanceLimit.Enabled = False
+        chkDistanceDecay.Enabled = False
+        txtMaxDistance.Enabled = False
+
 
         ' obtain reference to current geometric network
         ' and get all participating point feature classes so only
@@ -650,6 +711,29 @@ Public Class frmRunAdvancedAnalysis
                 bDCISectional = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("dcisectionalyn"))
                 sDCIModelDir = Convert.ToString(m_FiPEx.pPropset.GetProperty("sDCIModelDir"))
                 sRInstallDir = Convert.ToString(m_FiPEx.pPropset.GetProperty("sRInstallDir"))
+
+                '2020
+                Try
+                    bDistanceDecay = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bDistanceDecay"))
+                Catch ex As Exception
+                    MessageBox.Show("Trouble loading FIPEX property bDistanceDecay. Setting it to False.")
+                    bDistanceDecay = False
+                End Try
+
+                Try
+                    bDistanceLim = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bDistanceLim"))
+                Catch ex As Exception
+                    MessageBox.Show("Trouble loading FIPEX property bDistanceLim. Setting it to False.")
+                    bDistanceLim = False
+                End Try
+
+                Try
+                    dMaxDist = Convert.ToDouble(m_FiPEx.pPropset.GetProperty("dMaxDist"))
+                Catch ex As Exception
+                    MessageBox.Show("Trouble loading FIPEX property dMaxDist. Setting it to 0.")
+                    dMaxDist = 0.0
+                End Try
+
                 bDBF = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bDBF"))
                 sGDB = Convert.ToString(m_FiPEx.pPropset.GetProperty("sGDB"))
                 sPrefix = Convert.ToString(m_FiPEx.pPropset.GetProperty("TabPrefix"))
@@ -830,8 +914,37 @@ Public Class frmRunAdvancedAnalysis
             End If
 
         Catch ex As Exception
-            System.Windows.Forms.MessageBox.Show(ex.Message, "Load Form")
-            Exit Sub
+            MsgBox("Error loading stored FIPEX Properties. This is normal if it's the first time loading FIPEX Options or if FIPEX has been updated. " & ex.Message)
+
+            sDirection = "up"
+            iOrderNum = 999
+            bMaximum = True
+            bConnectTab = False
+            bAdvConnectTab = False
+            bBarrierPerm = False
+            bNaturalTF = False
+            bDCI = False
+            bDCISectional = False
+            sDCIModelDir = "not set"
+            sRInstallDir = "not set"
+            bDBF = False
+            sGDB = "not set"
+            sPrefix = "not set"
+
+            bUpHab = True
+            bTotalUpHab = True
+            bDownHab = False
+            bTotalDownHab = False
+            bPathDownHab = False
+            bTotalPathDownHab = False
+            m_iPolysCount = 0
+            m_iLinesCount = 0
+            m_iExclusions = 0
+            m_iBarrierCount = 0
+
+            bGLPKTables = False
+            sGLPKModelDir = "not set"
+            sGnuWinDir = "not set"
         End Try
 
         ' Set Analysis Direction
@@ -976,7 +1089,6 @@ Public Class frmRunAdvancedAnalysis
         End If
 
     End Sub
-
 
     Private Sub ChkDBFOutput_Click()
 
@@ -2034,7 +2146,6 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End Set
     End Property
 
-
     ' Use this Predicate object to define search terms and return comparison result
     Private Class CompareLayerNamePred
         Private _name As String
@@ -2057,7 +2168,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End Function
     End Class
 
-    Private Sub ChkMaxOrd_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ChkMaxOrd.CheckedChanged
+    Private Sub ChkMaxOrd_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
         If ChkMaxOrd.Checked = True Then
             TxtOrder.Enabled = False
         Else
@@ -2114,7 +2225,6 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             MsgBox("Error trying to remove exclusion from list" + ex.Message)
         End Try
     End Sub
-
 
     Private Sub lstLayers_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstLayers.SelectedIndexChanged
         ' --------------------------------------------------------
@@ -2479,7 +2589,6 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End If
     End Sub
 
-
     Private Sub cmdSelectBarrierPerm_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
         m_sLayerType = "line"
@@ -2528,7 +2637,6 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             LHabParamList = lLayerToAdd
         End If
     End Sub
-
 
     Private Sub cmdSelectBarrierPerm_Click_1(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSelectBarrierPerm.Click
         ' This command... 
@@ -2639,7 +2747,6 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End If
     End Sub
 
-
     Private Sub ChkDBFOutput_EnabledChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ChkDBFOutput.EnabledChanged
         ' If the DBF Output Checkbox is disabled then we want all 
         ' other options in this group disabled. 
@@ -2679,8 +2786,140 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     End Sub
 
-    Private Sub cmdRInstallDir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdRInstallDir.Click
 
+    'Private Sub chkDCI_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
+
+    'If chkDCI.CheckState = CheckState.Checked Then
+    'cmdDCIModelDir.Enabled = True
+    'txtDCIModelDir.Enabled = True
+    ' cmdRInstallDir.Enabled = True
+    '  txtRInstallDir.Enabled = True
+    '   chkDCISectional.Enabled = True
+    'Else
+    '   cmdDCIModelDir.Enabled = False
+    '    txtDCIModelDir.Enabled = False
+    '     cmdRInstallDir.Enabled = False
+    '      txtRInstallDir.Enabled = False
+    '       chkDCISectional.Enabled = False
+    '    End If
+
+    ' End Sub
+
+    ' Private Sub chkDCI_EnabledChanged(ByVal sender As Object, ByVal e As System.EventArgs)
+    '    MsgBox("chkDCI triggered")
+    '    If chkDCI.Enabled = True And chkDCI.Checked = True Then
+    '        cmdDCIModelDir.Enabled = True
+    '        txtDCIModelDir.Enabled = True
+    '        cmdRInstallDir.Enabled = True
+    '        txtRInstallDir.Enabled = True
+    '        chkDCISectional.Enabled = True
+    '    Else
+    '        cmdDCIModelDir.Enabled = False
+    '        txtDCIModelDir.Enabled = False
+    '        cmdRInstallDir.Enabled = False
+    '        txtRInstallDir.Enabled = False
+    '        chkDCISectional.Enabled = False
+    '    End If
+    'End Sub
+
+    Public Function FileWriteDeleteCheck(ByVal sDCIOutputDir As String) As Boolean
+
+        Dim FILE_NAME As String = "FiPExPermTEST1.txt"
+        If File.Exists(sDCIOutputDir + "\" + FILE_NAME) Then
+            MsgBox("tempmsg: this is the file name tested: " + sDCIOutputDir + FILE_NAME)
+            MsgBox("test file already exists in DCI output directory")
+        End If
+
+        Try
+            Dim path As String = sDCIOutputDir + "\" + FILE_NAME
+            Dim sw As StreamWriter = File.CreateText(path)
+            sw.Close()
+
+            ' Ensure that the target does not exist.
+            File.Delete(path)
+
+            Return True
+
+        Catch e As Exception
+            MsgBox("The following exception was found: " & e.Message)
+            Return False
+        End Try
+
+    End Function
+    Private Sub cmdRun_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdRun.Click
+        saveoptions()
+        m_bRun = True
+        Me.Close()
+    End Sub
+
+    Private Sub chkAdvConnect_CheckedChanged(sender As Object, e As EventArgs) Handles chkAdvConnect.CheckedChanged
+        ' to enable DCI, users must click either this Advanced Connectivity box or Basic Connectivity table box
+        ' they also must have checked barrierperm, dbf out tables, natural tf fields
+        If chkAdvConnect.CheckState = CheckState.Checked Then
+            If chkBarrierPerm.Checked = True And ChkDBFOutput.Checked = True And chkNaturalTF.Checked = True Then
+                If chkDCI.Enabled = False Then
+                    chkDCI.Enabled = True
+                End If
+            End If
+        Else
+            If chkConnect.CheckState = False Then
+                chkDCI.Enabled = False
+            End If
+        End If
+    End Sub
+
+    Private Sub chkDistanceDecay_CheckedChanged(sender As Object, e As EventArgs)
+
+    End Sub
+
+    Private Sub chkDCI_CheckedChanged_1(sender As Object, e As EventArgs) Handles chkDCI.CheckedChanged
+        'MsgBox("chkDCI checked changed 1 triggered")
+        If chkDCI.CheckState = CheckState.Checked Then
+            cmdDCIModelDir.Enabled = True
+            txtDCIModelDir.Enabled = True
+            cmdRInstallDir.Enabled = True
+            txtRInstallDir.Enabled = True
+            chkDCISectional.Enabled = True
+            chkDistanceLimit.Enabled = True
+        Else
+            cmdDCIModelDir.Enabled = False
+            txtDCIModelDir.Enabled = False
+            cmdRInstallDir.Enabled = False
+            txtRInstallDir.Enabled = False
+            chkDCISectional.Enabled = False
+            chkDistanceLimit.Enabled = False
+        End If
+    End Sub
+
+    Private Sub chkDCI_EnabledChanged1(sender As Object, e As EventArgs) Handles chkDCI.EnabledChanged
+        'MsgBox("chkDCI enabled changed triggered")
+        If chkDCI.Enabled = True And chkDCI.Checked = True Then
+            cmdDCIModelDir.Enabled = True
+            txtDCIModelDir.Enabled = True
+            cmdRInstallDir.Enabled = True
+            txtRInstallDir.Enabled = True
+            chkDCISectional.Enabled = True
+        Else
+            cmdDCIModelDir.Enabled = False
+            txtDCIModelDir.Enabled = False
+            cmdRInstallDir.Enabled = False
+            txtRInstallDir.Enabled = False
+            chkDCISectional.Enabled = False
+        End If
+    End Sub
+
+
+
+    Public Sub New()
+
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+
+    End Sub
+
+    Private Sub cmdRInstallDir_Click_1(sender As Object, e As EventArgs) Handles cmdRInstallDir.Click
         ' This button will ask the user to browse to the directory where the R 
         ' Program files are installed.  It will check for the /bin/rterm.exe
         ' program.  
@@ -2708,11 +2947,9 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
             txtRInstallDir.Text = fdlg.SelectedPath
         End If
-
     End Sub
 
-    Private Sub cmdDCIModelDir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdDCIModelDir.Click
-
+    Private Sub cmdDCIModelDir_Click_1(sender As Object, e As EventArgs) Handles cmdDCIModelDir.Click
         ' This button will ask the user to browse to the directory where the DCI
         ' model functions are, check the directory for the presence of the model
         ' functions, and ensure the user has proper permissions to create files
@@ -2758,82 +2995,27 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             ' Set the path in the text dialogue to save to extension stream
             txtDCIModelDir.Text = fdlg.SelectedPath
         End If
-
     End Sub
 
-    Private Sub chkDCI_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkDCI.CheckedChanged
-
-        If chkDCI.CheckState = CheckState.Checked Then
-            cmdDCIModelDir.Enabled = True
-            txtDCIModelDir.Enabled = True
-            cmdRInstallDir.Enabled = True
-            txtRInstallDir.Enabled = True
-            chkDCISectional.Enabled = True
+    Private Sub chkDistanceLimit_CheckedChanged(sender As Object, e As EventArgs) Handles chkDistanceLimit.CheckedChanged
+        'MsgBox("chkDCI checked changed 1 triggered")
+        If chkDistanceLimit.CheckState = CheckState.Checked Then
+            txtMaxDistance.Enabled = True
+            chkDistanceDecay.Enabled = True
         Else
-            cmdDCIModelDir.Enabled = False
-            txtDCIModelDir.Enabled = False
-            cmdRInstallDir.Enabled = False
-            txtRInstallDir.Enabled = False
-            chkDCISectional.Enabled = False
-        End If
-
-    End Sub
-
-    Private Sub chkDCI_EnabledChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles chkDCI.EnabledChanged
-        If chkDCI.Enabled = True And chkDCI.Checked = True Then
-            cmdDCIModelDir.Enabled = True
-            txtDCIModelDir.Enabled = True
-            cmdRInstallDir.Enabled = True
-            txtRInstallDir.Enabled = True
-            chkDCISectional.Enabled = True
-        Else
-            cmdDCIModelDir.Enabled = False
-            txtDCIModelDir.Enabled = False
-            cmdRInstallDir.Enabled = False
-            txtRInstallDir.Enabled = False
-            chkDCISectional.Enabled = False
+            txtMaxDistance.Enabled = False
+            chkDistanceDecay.Enabled = False
         End If
     End Sub
 
-    Public Function FileWriteDeleteCheck(ByVal sDCIOutputDir As String) As Boolean
 
-        Dim FILE_NAME As String = "FiPExPermTEST1.txt"
-        If File.Exists(sDCIOutputDir + "\" + FILE_NAME) Then
-            MsgBox("tempmsg: this is the file name tested: " + sDCIOutputDir + FILE_NAME)
-            MsgBox("test file already exists in DCI output directory")
-        End If
-
-        Try
-            Dim path As String = sDCIOutputDir + "\" + FILE_NAME
-            Dim sw As StreamWriter = File.CreateText(path)
-            sw.Close()
-
-            ' Ensure that the target does not exist.
-            File.Delete(path)
-
-            Return True
-
-        Catch e As Exception
-            MsgBox("The following exception was found: " & e.Message)
-            Return False
-        End Try
-
-    End Function
-    Private Sub cmdRun_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdRun.Click
-        saveoptions()
-        m_bRun = True
-        Me.Close()
-    End Sub
-
-
-   
-    Private Sub chkAdvConnect_CheckedChanged(sender As Object, e As EventArgs) Handles chkAdvConnect.CheckedChanged
-        If chkAdvConnect.CheckState = CheckState.Checked Then
-            If chkBarrierPerm.Checked = True And ChkDBFOutput.Checked = True And chkNaturalTF.Checked = True Then
-                chkDCI.Enabled = True
-            End If
+    Private Sub chkDistanceLimit_EnabledChanged(sender As Object, e As EventArgs) Handles chkDistanceLimit.EnabledChanged
+        If chkDistanceLimit.Enabled = True And chkDistanceLimit.Checked = True Then
+            txtMaxDistance.Enabled = True
+            chkDistanceDecay.Enabled = True
         Else
-            chkDCI.Enabled = False
+            txtMaxDistance.Enabled = False
+            chkDistanceDecay.Enabled = False
         End If
     End Sub
 End Class

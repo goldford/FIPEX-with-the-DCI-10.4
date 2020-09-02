@@ -1723,7 +1723,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
 
     End Sub
-    Private Sub ChkDBFOutput_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ChkDBFOutput.CheckedChanged
+    Private Sub ChkDBFOutput_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
         ' If the checkbox is checked then enable
         ' the table prefix textbox
         If ChkDBFOutput.Checked = True Then
@@ -1750,7 +1750,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End If
     End Sub
 
-    Private Sub cmdAddGDB_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdAddGDB.Click
+    Private Sub cmdAddGDB_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim pGxDialog As IGxDialog
         Dim pDstFilter As IGxObjectFilter
         Dim pEnumGx As IEnumGxObject
@@ -2541,7 +2541,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End If
     End Sub
 
-    Private Sub chkBarrierPerm_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkBarrierPerm.CheckedChanged
+    Private Sub chkBarrierPerm_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
         ' Get reference to the list items in the lstBarriers listbox 
         ' If one is selected and if that selected layer is checked
@@ -2569,7 +2569,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     End Sub
 
-    Private Sub chkNaturalYN_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkNaturalTF.CheckedChanged
+    Private Sub chkNaturalYN_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
         ' Get reference to the list items in the lstBarriers listbox 
         ' If one is selected and if that selected layer is checked
         ' then set the permeability button to 'active' 
@@ -2624,7 +2624,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
     End Sub
 
 
-    Private Sub ChkDBFOutput_EnabledChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ChkDBFOutput.EnabledChanged
+    Private Sub ChkDBFOutput_EnabledChanged(ByVal sender As Object, ByVal e As System.EventArgs)
         ' If the DBF Output Checkbox is disabled then we want all 
         ' other options in this group disabled. 
         ' If it is enables then there are additional checks for a few
@@ -2649,7 +2649,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End If
     End Sub
 
-    Private Sub chkConnect_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkConnect.CheckedChanged
+    Private Sub chkConnect_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
         If chkConnect.CheckState = CheckState.Checked Then
             If chkBarrierPerm.Checked = True And ChkDBFOutput.Checked = True And chkNaturalTF.Checked = True Then
@@ -2661,7 +2661,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     End Sub
 
-    Private Sub cmdRInstallDir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdRInstallDir.Click
+    Private Sub cmdRInstallDir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
         ' This button will ask the user to browse to the directory where the R 
         ' Program files are installed.  It will check for the /bin/rterm.exe
@@ -2670,7 +2670,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         Dim fdlg As FolderBrowserDialog = New FolderBrowserDialog
         fdlg.Description = "Browse to 'R' Statistical Software Installation Dir"
         fdlg.RootFolder = System.Environment.SpecialFolder.MyComputer
-     
+
         If fdlg.ShowDialog = Windows.Forms.DialogResult.OK Then
 
             ' determine if requisite DCI model file(s) exist in this directory
@@ -2693,7 +2693,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     End Sub
 
-    Private Sub cmdDCIModelDir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdDCIModelDir.Click
+    Private Sub cmdDCIModelDir_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
         ' This button will ask the user to browse to the directory where the DCI
         ' model functions are, check the directory for the presence of the model
@@ -2743,7 +2743,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     End Sub
 
-    Private Sub chkDCI_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkDCI.CheckedChanged
+    Private Sub chkDCI_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
         If chkDCI.CheckState = CheckState.Checked Then
             cmdDCIModelDir.Enabled = True
@@ -2761,7 +2761,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     End Sub
 
-    Private Sub chkDCI_EnabledChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles chkDCI.EnabledChanged
+    Private Sub chkDCI_EnabledChanged(ByVal sender As Object, ByVal e As System.EventArgs)
         If chkDCI.Enabled = True And chkDCI.Checked = True Then
             cmdDCIModelDir.Enabled = True
             txtDCIModelDir.Enabled = True
@@ -2802,6 +2802,8 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     End Function
     
+    
+
 End Class
 
 

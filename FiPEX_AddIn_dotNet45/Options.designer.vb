@@ -22,6 +22,7 @@ Partial Class Options
         Me.cmdSave = New System.Windows.Forms.Button()
         Me.TabBarriers = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.Label24 = New System.Windows.Forms.Label()
         Me.PictureBox4 = New System.Windows.Forms.PictureBox()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.chkTotalPathDownHab = New System.Windows.Forms.CheckBox()
@@ -85,11 +86,8 @@ Partial Class Options
         Me.Label8 = New System.Windows.Forms.Label()
         Me.chkLstBarriersLayers = New System.Windows.Forms.CheckedListBox()
         Me.PictureBox2 = New System.Windows.Forms.PictureBox()
-        Me.TabPage4 = New System.Windows.Forms.TabPage()
-        Me.Label22 = New System.Windows.Forms.Label()
-        Me.frmDirection = New System.Windows.Forms.GroupBox()
-        Me.OptDown = New System.Windows.Forms.RadioButton()
-        Me.OptUp = New System.Windows.Forms.RadioButton()
+        Me.TabPage5 = New System.Windows.Forms.TabPage()
+        Me.Label23 = New System.Windows.Forms.Label()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
         Me.chkDCISectional = New System.Windows.Forms.CheckBox()
@@ -106,6 +104,12 @@ Partial Class Options
         Me.ChkDBFOutput = New System.Windows.Forms.CheckBox()
         Me.txtTablesPrefix = New System.Windows.Forms.TextBox()
         Me.txtGDB = New System.Windows.Forms.TextBox()
+        Me.PictureBox5 = New System.Windows.Forms.PictureBox()
+        Me.TabPage4 = New System.Windows.Forms.TabPage()
+        Me.Label22 = New System.Windows.Forms.Label()
+        Me.frmDirection = New System.Windows.Forms.GroupBox()
+        Me.OptDown = New System.Windows.Forms.RadioButton()
+        Me.OptUp = New System.Windows.Forms.RadioButton()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.TxtOrder = New System.Windows.Forms.TextBox()
@@ -128,10 +132,12 @@ Partial Class Options
         Me.GroupBox6.SuspendLayout()
         Me.GroupBox9.SuspendLayout()
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.TabPage4.SuspendLayout()
-        Me.frmDirection.SuspendLayout()
+        Me.TabPage5.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
+        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage4.SuspendLayout()
+        Me.frmDirection.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -152,6 +158,7 @@ Partial Class Options
         Me.TabBarriers.Controls.Add(Me.TabPage1)
         Me.TabBarriers.Controls.Add(Me.TabPage2)
         Me.TabBarriers.Controls.Add(Me.TabPage3)
+        Me.TabBarriers.Controls.Add(Me.TabPage5)
         Me.TabBarriers.Controls.Add(Me.TabPage4)
         Me.TabBarriers.Location = New System.Drawing.Point(18, 18)
         Me.TabBarriers.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
@@ -162,6 +169,7 @@ Partial Class Options
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Label24)
         Me.TabPage1.Controls.Add(Me.PictureBox4)
         Me.TabPage1.Controls.Add(Me.GroupBox3)
         Me.TabPage1.Controls.Add(Me.frmLayersInclude)
@@ -171,8 +179,19 @@ Partial Class Options
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TabPage1.Size = New System.Drawing.Size(934, 721)
         Me.TabPage1.TabIndex = 0
-        Me.TabPage1.Text = "General"
+        Me.TabPage1.Text = "1) General"
         Me.TabPage1.UseVisualStyleBackColor = True
+        '
+        'Label24
+        '
+        Me.Label24.AutoSize = True
+        Me.Label24.Font = New System.Drawing.Font("Calibri", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label24.Location = New System.Drawing.Point(192, 35)
+        Me.Label24.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.Label24.Name = "Label24"
+        Me.Label24.Size = New System.Drawing.Size(203, 35)
+        Me.Label24.TabIndex = 31
+        Me.Label24.Text = "General Options"
         '
         'PictureBox4
         '
@@ -192,7 +211,7 @@ Partial Class Options
         Me.GroupBox3.Controls.Add(Me.chkPathDownHab)
         Me.GroupBox3.Controls.Add(Me.chkDownHab)
         Me.GroupBox3.Controls.Add(Me.chkUpHab)
-        Me.GroupBox3.Location = New System.Drawing.Point(236, 55)
+        Me.GroupBox3.Location = New System.Drawing.Point(188, 88)
         Me.GroupBox3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox3.Name = "GroupBox3"
         Me.GroupBox3.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
@@ -534,19 +553,19 @@ Partial Class Options
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TabPage2.Size = New System.Drawing.Size(934, 721)
         Me.TabPage2.TabIndex = 1
-        Me.TabPage2.Text = "Exclusions"
+        Me.TabPage2.Text = "2) Exclusions"
         Me.TabPage2.UseVisualStyleBackColor = True
         '
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(208, 35)
+        Me.Label4.Font = New System.Drawing.Font("Calibri", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label4.Location = New System.Drawing.Point(192, 35)
         Me.Label4.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(334, 29)
-        Me.Label4.TabIndex = 12
-        Me.Label4.Text = "FIPEX - Exclusions Options"
+        Me.Label4.Size = New System.Drawing.Size(220, 35)
+        Me.Label4.TabIndex = 30
+        Me.Label4.Text = "Exclusion Options"
         '
         'GroupBox5
         '
@@ -750,19 +769,19 @@ Partial Class Options
         Me.TabPage3.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.TabPage3.Size = New System.Drawing.Size(934, 721)
         Me.TabPage3.TabIndex = 2
-        Me.TabPage3.Text = "Barriers"
+        Me.TabPage3.Text = "3) Barriers"
         Me.TabPage3.UseVisualStyleBackColor = True
         '
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(208, 35)
+        Me.Label5.Font = New System.Drawing.Font("Calibri", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label5.Location = New System.Drawing.Point(192, 35)
         Me.Label5.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(302, 29)
-        Me.Label5.TabIndex = 24
-        Me.Label5.Text = "FIPEX - Barriers Options"
+        Me.Label5.Size = New System.Drawing.Size(193, 35)
+        Me.Label5.TabIndex = 29
+        Me.Label5.Text = "Barrier Options"
         '
         'GroupBox6
         '
@@ -931,69 +950,29 @@ Partial Class Options
         Me.PictureBox2.TabIndex = 23
         Me.PictureBox2.TabStop = False
         '
-        'TabPage4
+        'TabPage5
         '
-        Me.TabPage4.Controls.Add(Me.Label22)
-        Me.TabPage4.Controls.Add(Me.frmDirection)
-        Me.TabPage4.Controls.Add(Me.GroupBox4)
-        Me.TabPage4.Controls.Add(Me.GroupBox1)
-        Me.TabPage4.Controls.Add(Me.PictureBox1)
-        Me.TabPage4.Location = New System.Drawing.Point(4, 29)
-        Me.TabPage4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.TabPage4.Name = "TabPage4"
-        Me.TabPage4.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.TabPage4.Size = New System.Drawing.Size(934, 721)
-        Me.TabPage4.TabIndex = 3
-        Me.TabPage4.Text = "Advanced"
-        Me.TabPage4.UseVisualStyleBackColor = True
+        Me.TabPage5.Controls.Add(Me.Label23)
+        Me.TabPage5.Controls.Add(Me.GroupBox4)
+        Me.TabPage5.Controls.Add(Me.PictureBox5)
+        Me.TabPage5.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage5.Name = "TabPage5"
+        Me.TabPage5.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage5.Size = New System.Drawing.Size(934, 721)
+        Me.TabPage5.TabIndex = 4
+        Me.TabPage5.Text = "4) Output"
+        Me.TabPage5.UseVisualStyleBackColor = True
         '
-        'Label22
+        'Label23
         '
-        Me.Label22.AutoSize = True
-        Me.Label22.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label22.Location = New System.Drawing.Point(208, 35)
-        Me.Label22.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(323, 29)
-        Me.Label22.TabIndex = 25
-        Me.Label22.Text = "FIPEX - Advanced Options"
-        '
-        'frmDirection
-        '
-        Me.frmDirection.Controls.Add(Me.OptDown)
-        Me.frmDirection.Controls.Add(Me.OptUp)
-        Me.frmDirection.Location = New System.Drawing.Point(585, 86)
-        Me.frmDirection.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.frmDirection.Name = "frmDirection"
-        Me.frmDirection.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.frmDirection.Size = New System.Drawing.Size(194, 103)
-        Me.frmDirection.TabIndex = 9
-        Me.frmDirection.TabStop = False
-        Me.frmDirection.Text = "Analysis Direction"
-        '
-        'OptDown
-        '
-        Me.OptDown.AutoSize = True
-        Me.OptDown.Location = New System.Drawing.Point(33, 66)
-        Me.OptDown.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.OptDown.Name = "OptDown"
-        Me.OptDown.Size = New System.Drawing.Size(124, 24)
-        Me.OptDown.TabIndex = 1
-        Me.OptDown.TabStop = True
-        Me.OptDown.Text = "Downstream"
-        Me.OptDown.UseVisualStyleBackColor = True
-        '
-        'OptUp
-        '
-        Me.OptUp.AutoSize = True
-        Me.OptUp.Location = New System.Drawing.Point(33, 31)
-        Me.OptUp.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.OptUp.Name = "OptUp"
-        Me.OptUp.Size = New System.Drawing.Size(104, 24)
-        Me.OptUp.TabIndex = 0
-        Me.OptUp.TabStop = True
-        Me.OptUp.Text = "Upstream"
-        Me.OptUp.UseVisualStyleBackColor = True
+        Me.Label23.AutoSize = True
+        Me.Label23.Font = New System.Drawing.Font("Calibri", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label23.Location = New System.Drawing.Point(192, 35)
+        Me.Label23.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.Label23.Name = "Label23"
+        Me.Label23.Size = New System.Drawing.Size(196, 35)
+        Me.Label23.TabIndex = 28
+        Me.Label23.Text = "Output Options"
         '
         'GroupBox4
         '
@@ -1006,12 +985,12 @@ Partial Class Options
         Me.GroupBox4.Controls.Add(Me.ChkDBFOutput)
         Me.GroupBox4.Controls.Add(Me.txtTablesPrefix)
         Me.GroupBox4.Controls.Add(Me.txtGDB)
-        Me.GroupBox4.Location = New System.Drawing.Point(33, 226)
+        Me.GroupBox4.Location = New System.Drawing.Point(33, 210)
         Me.GroupBox4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox4.Name = "GroupBox4"
         Me.GroupBox4.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox4.Size = New System.Drawing.Size(800, 380)
-        Me.GroupBox4.TabIndex = 8
+        Me.GroupBox4.TabIndex = 12
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Table Output (requires at least one barriers layer to be selected in 'Barriers' t" & _
     "ab)"
@@ -1172,6 +1151,79 @@ Partial Class Options
         Me.txtGDB.Size = New System.Drawing.Size(228, 26)
         Me.txtGDB.TabIndex = 1
         '
+        'PictureBox5
+        '
+        Me.PictureBox5.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox5.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox5.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.PictureBox5.Name = "PictureBox5"
+        Me.PictureBox5.Size = New System.Drawing.Size(135, 138)
+        Me.PictureBox5.TabIndex = 11
+        Me.PictureBox5.TabStop = False
+        '
+        'TabPage4
+        '
+        Me.TabPage4.Controls.Add(Me.Label22)
+        Me.TabPage4.Controls.Add(Me.frmDirection)
+        Me.TabPage4.Controls.Add(Me.GroupBox1)
+        Me.TabPage4.Controls.Add(Me.PictureBox1)
+        Me.TabPage4.Location = New System.Drawing.Point(4, 29)
+        Me.TabPage4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.TabPage4.Name = "TabPage4"
+        Me.TabPage4.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.TabPage4.Size = New System.Drawing.Size(934, 721)
+        Me.TabPage4.TabIndex = 3
+        Me.TabPage4.Text = "5) Advanced"
+        Me.TabPage4.UseVisualStyleBackColor = True
+        '
+        'Label22
+        '
+        Me.Label22.AutoSize = True
+        Me.Label22.Font = New System.Drawing.Font("Calibri", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label22.Location = New System.Drawing.Point(192, 35)
+        Me.Label22.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.Label22.Name = "Label22"
+        Me.Label22.Size = New System.Drawing.Size(227, 35)
+        Me.Label22.TabIndex = 27
+        Me.Label22.Text = "Advanced Options"
+        '
+        'frmDirection
+        '
+        Me.frmDirection.Controls.Add(Me.OptDown)
+        Me.frmDirection.Controls.Add(Me.OptUp)
+        Me.frmDirection.Location = New System.Drawing.Point(585, 86)
+        Me.frmDirection.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.frmDirection.Name = "frmDirection"
+        Me.frmDirection.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.frmDirection.Size = New System.Drawing.Size(194, 103)
+        Me.frmDirection.TabIndex = 9
+        Me.frmDirection.TabStop = False
+        Me.frmDirection.Text = "Analysis Direction"
+        '
+        'OptDown
+        '
+        Me.OptDown.AutoSize = True
+        Me.OptDown.Location = New System.Drawing.Point(33, 66)
+        Me.OptDown.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.OptDown.Name = "OptDown"
+        Me.OptDown.Size = New System.Drawing.Size(124, 24)
+        Me.OptDown.TabIndex = 1
+        Me.OptDown.TabStop = True
+        Me.OptDown.Text = "Downstream"
+        Me.OptDown.UseVisualStyleBackColor = True
+        '
+        'OptUp
+        '
+        Me.OptUp.AutoSize = True
+        Me.OptUp.Location = New System.Drawing.Point(33, 31)
+        Me.OptUp.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.OptUp.Name = "OptUp"
+        Me.OptUp.Size = New System.Drawing.Size(104, 24)
+        Me.OptUp.TabIndex = 0
+        Me.OptUp.TabStop = True
+        Me.OptUp.Text = "Upstream"
+        Me.OptUp.UseVisualStyleBackColor = True
+        '
         'GroupBox1
         '
         Me.GroupBox1.Controls.Add(Me.Label6)
@@ -1248,6 +1300,7 @@ Partial Class Options
         Me.Text = "FiPEx - Options"
         Me.TabBarriers.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
+        Me.TabPage1.PerformLayout()
         CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
@@ -1271,14 +1324,17 @@ Partial Class Options
         Me.GroupBox9.ResumeLayout(False)
         Me.GroupBox9.PerformLayout()
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.TabPage4.ResumeLayout(False)
-        Me.TabPage4.PerformLayout()
-        Me.frmDirection.ResumeLayout(False)
-        Me.frmDirection.PerformLayout()
+        Me.TabPage5.ResumeLayout(False)
+        Me.TabPage5.PerformLayout()
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
         Me.GroupBox7.ResumeLayout(False)
         Me.GroupBox7.PerformLayout()
+        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.TabPage4.ResumeLayout(False)
+        Me.TabPage4.PerformLayout()
+        Me.frmDirection.ResumeLayout(False)
+        Me.frmDirection.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -1290,12 +1346,6 @@ Partial Class Options
     Friend WithEvents TabPage1 As System.Windows.Forms.TabPage
     Friend WithEvents TabPage2 As System.Windows.Forms.TabPage
     Friend WithEvents frmLayersInclude As System.Windows.Forms.GroupBox
-    Friend WithEvents ChkDBFOutput As System.Windows.Forms.CheckBox
-    Friend WithEvents Label7 As System.Windows.Forms.Label
-    Friend WithEvents txtTablesPrefix As System.Windows.Forms.TextBox
-    Friend WithEvents cmdAddGDB As System.Windows.Forms.Button
-    Friend WithEvents txtGDB As System.Windows.Forms.TextBox
-    Friend WithEvents chkConnect As System.Windows.Forms.CheckBox
     Friend WithEvents Farme3 As System.Windows.Forms.GroupBox
     Friend WithEvents lstValues As System.Windows.Forms.ListBox
     Friend WithEvents lstFields As System.Windows.Forms.ListBox
@@ -1336,7 +1386,6 @@ Partial Class Options
     Friend WithEvents Label6 As System.Windows.Forms.Label
     Friend WithEvents TxtOrder As System.Windows.Forms.TextBox
     Friend WithEvents ChkMaxOrd As System.Windows.Forms.CheckBox
-    Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
     Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
     Friend WithEvents Label8 As System.Windows.Forms.Label
     Friend WithEvents chkLstBarriersLayers As System.Windows.Forms.CheckedListBox
@@ -1344,20 +1393,12 @@ Partial Class Options
     Friend WithEvents lstBarrierField As System.Windows.Forms.ListBox
     Friend WithEvents cmdBarrierID As System.Windows.Forms.Button
     Friend WithEvents HelpProvider2 As System.Windows.Forms.HelpProvider
-    Friend WithEvents chkBarrierPerm As System.Windows.Forms.CheckBox
-    Friend WithEvents chkNaturalTF As System.Windows.Forms.CheckBox
     Friend WithEvents Label10 As System.Windows.Forms.Label
     Friend WithEvents cmdSelectNaturalTF As System.Windows.Forms.Button
     Friend WithEvents cmdSelectBarrierPerm As System.Windows.Forms.Button
     Friend WithEvents lstNaturalTFField As System.Windows.Forms.ListBox
     Friend WithEvents lstPermField As System.Windows.Forms.ListBox
     Friend WithEvents Label11 As System.Windows.Forms.Label
-    Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
-    Friend WithEvents chkDCI As System.Windows.Forms.CheckBox
-    Friend WithEvents cmdRInstallDir As System.Windows.Forms.Button
-    Friend WithEvents txtRInstallDir As System.Windows.Forms.TextBox
-    Friend WithEvents cmdDCIModelDir As System.Windows.Forms.Button
-    Friend WithEvents txtDCIModelDir As System.Windows.Forms.TextBox
     Friend WithEvents GroupBox3 As System.Windows.Forms.GroupBox
     Friend WithEvents chkPathDownHab As System.Windows.Forms.CheckBox
     Friend WithEvents chkDownHab As System.Windows.Forms.CheckBox
@@ -1370,13 +1411,32 @@ Partial Class Options
     Friend WithEvents frmDirection As System.Windows.Forms.GroupBox
     Friend WithEvents OptDown As System.Windows.Forms.RadioButton
     Friend WithEvents OptUp As System.Windows.Forms.RadioButton
-    Friend WithEvents chkDCISectional As System.Windows.Forms.CheckBox
     Friend WithEvents PictureBox4 As System.Windows.Forms.PictureBox
-    Friend WithEvents Label4 As System.Windows.Forms.Label
     Friend WithEvents PictureBox3 As System.Windows.Forms.PictureBox
-    Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents PictureBox2 As System.Windows.Forms.PictureBox
     Friend WithEvents GroupBox9 As System.Windows.Forms.GroupBox
-    Friend WithEvents Label22 As System.Windows.Forms.Label
     Friend WithEvents PictureBox1 As System.Windows.Forms.PictureBox
+    Friend WithEvents TabPage5 As System.Windows.Forms.TabPage
+    Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+    Friend WithEvents GroupBox7 As System.Windows.Forms.GroupBox
+    Friend WithEvents chkDCISectional As System.Windows.Forms.CheckBox
+    Friend WithEvents cmdDCIModelDir As System.Windows.Forms.Button
+    Friend WithEvents txtDCIModelDir As System.Windows.Forms.TextBox
+    Friend WithEvents txtRInstallDir As System.Windows.Forms.TextBox
+    Friend WithEvents cmdRInstallDir As System.Windows.Forms.Button
+    Friend WithEvents chkDCI As System.Windows.Forms.CheckBox
+    Friend WithEvents chkNaturalTF As System.Windows.Forms.CheckBox
+    Friend WithEvents chkBarrierPerm As System.Windows.Forms.CheckBox
+    Friend WithEvents chkConnect As System.Windows.Forms.CheckBox
+    Friend WithEvents cmdAddGDB As System.Windows.Forms.Button
+    Friend WithEvents Label7 As System.Windows.Forms.Label
+    Friend WithEvents ChkDBFOutput As System.Windows.Forms.CheckBox
+    Friend WithEvents txtTablesPrefix As System.Windows.Forms.TextBox
+    Friend WithEvents txtGDB As System.Windows.Forms.TextBox
+    Friend WithEvents PictureBox5 As System.Windows.Forms.PictureBox
+    Friend WithEvents Label24 As System.Windows.Forms.Label
+    Friend WithEvents Label4 As System.Windows.Forms.Label
+    Friend WithEvents Label5 As System.Windows.Forms.Label
+    Friend WithEvents Label23 As System.Windows.Forms.Label
+    Friend WithEvents Label22 As System.Windows.Forms.Label
 End Class
