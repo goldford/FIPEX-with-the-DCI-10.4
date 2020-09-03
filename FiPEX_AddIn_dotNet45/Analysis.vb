@@ -9815,9 +9815,6 @@ Public Class Analysis
 
         Try
             Dim sw As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_2020_Params.csv")
-            Dim listP As New List(Of String)()
-            Dim s As String
-            listP.Add("param1")
 
             sw.Write("bDCISectional,bDistanceLim,dMaxDist,bDistanceDecay")
             sw.Write(Environment.NewLine)
