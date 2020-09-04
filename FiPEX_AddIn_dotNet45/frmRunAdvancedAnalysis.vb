@@ -285,8 +285,10 @@ Public Class frmRunAdvancedAnalysis
 
         '2020
         Dim sMaxDist = txtMaxDistance.Text
-        dMaxDist = Double.TryParse(sMaxDist, dMaxDist)
-        'MsgBox("dMaxDist after conversionto double: " & dMaxDist)
+        If Double.TryParse(sMaxDist, dMaxDist) = True Then
+            dMaxDist = Convert.ToDouble(sMaxDist)
+        End If
+        MsgBox("dMaxDist after conversionto double: " & dMaxDist)
 
         'Dim myInt As Integer = 0
         'If Not Integer.TryParse(MyString, myInt) Then

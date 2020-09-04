@@ -67,6 +67,52 @@ Public Class DCIStatisticsObject
     End Sub
 
 End Class
+
+Public Class Adv_DCI_Data_Object
+
+    '   NodeEID  (integer)
+    '   NodeLabel (string)
+    '   HabQuantity (double)
+    '   HabQuanUnits (string)
+    '   BarrierPerm (double)
+    '   NaturalTF  (string)
+    '   DownstreamEID (integer)
+    '   DownstreamNodeLabel (string)
+    '   DownstreamNeighDistance (double)
+    '   DistanceUnits (string)
+
+    Public NodeEID As String
+    Public NodeLabel As String
+    Public HabQuantity As Double
+    Public HabQuanUnits As String
+    Public BarrierPerm As Double
+    Public NaturalTF As String
+    Public DownstreamEID As String
+    Public DownstreamNodeLabel As String
+    Public DownstreamNeighDistance As Double
+    Public DistanceUnits As String
+
+
+
+
+    Public Sub New(ByVal NodeEID1 As String, ByVal NodeLabel1 As String, ByVal HabQuantity1 As Double, _
+    ByVal HabQuanUnits1 As String, ByVal BarrierPerm1 As Double, ByVal NaturalTF As String, _
+    ByVal DownstreamEID1 As String, ByVal DownstreamNodeLabel1 As String, ByVal DownstreamNeighDistance1 As Double, _
+    ByVal DistanceUnits1 As String)
+        Me.NodeEID = NodeEID1
+        Me.NodeLabel = NodeLabel1
+        Me.HabQuantity = HabQuantity1
+        Me.HabQuanUnits = HabQuanUnits1
+        Me.BarrierPerm = BarrierPerm1
+        Me.NaturalTF = NaturalTF
+        Me.DownstreamEID = DownstreamEID1
+        Me.DownstreamNodeLabel = DownstreamNodeLabel1
+        Me.DownstreamNeighDistance = DownstreamNeighDistance1
+        Me.DistanceUnits = DistanceUnits1
+    End Sub
+
+End Class
+
 Public Class GLPKStatisticsObject
 
     '   BarrierID (Integer)

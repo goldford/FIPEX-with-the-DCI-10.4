@@ -371,6 +371,12 @@ Public Class Analysis
         'Dim pDCIStatsObject As New DCIStatisticsObject(Nothing, Nothing, Nothing, Nothing)
         Dim lHabStatsList As List(Of StatisticsObject_2) = New List(Of StatisticsObject_2)
         Dim lDCIStatsList As List(Of DCIStatisticsObject) = New List(Of DCIStatisticsObject)
+
+        '2020 new object below to eventually replace lDCIStatsList
+        Dim lAdv_DCI_Data_Object As List(Of Adv_DCI_Data_Object) = New List(Of Adv_DCI_Data_Object)
+        Dim pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, _
+                                                                 Nothing, Nothing, Nothing, Nothing, Nothing)
+
         Dim lGLPKStatsList As List(Of GLPKStatisticsObject) = New List(Of GLPKStatisticsObject) ' for habitat stats for GLPK
         Dim lGLPKOptionsList As List(Of GLPKOptionsObject) = New List(Of GLPKOptionsObject) ' for options stats for GLPK
         Dim lGLPKOptionsListTEMP As List(Of GLPKOptionsObject) = New List(Of GLPKOptionsObject) ' for TEMP options stats for GLPK
@@ -2931,15 +2937,17 @@ Public Class Analysis
                     pTable = pFWorkspace.OpenTable(sAdvConnectTabName)
                     j = 0
                     For j = 0 To lConnectivity.Count - 1
+
                         pRowBuffer = pTable.CreateRowBuffer
+
+                        pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, _
+                                                                 Nothing, Nothing, Nothing, Nothing, Nothing)
 
                         ' objectID
                         ' BarrierID
                         ' BarirerUserLabel
-                        ' Habt len Quan
-                        ' Habit len Quan Units
-                        ' habitat area quan
-                        ' habitat area units
+                        ' Habt Quan
+                        ' Habit Quan Units
                         ' BarrPerm
                         ' BarrnaturalYN
                         ' DownstreamNeighbEID
@@ -2950,33 +2958,46 @@ Public Class Analysis
                         pRowBuffer.Value(1) = lConnectivity(j).BarrID
                         pRowBuffer.Value(2) = lConnectivity(j).BarrLabel
 
+                        pAdvDCIDataObj.NodeEID = lConnectivity(j).BarrID
+                        pAdvDCIDataObj.NodeLabel = lConnectivity(j).BarrLabel
+
                         For k = 0 To lDCIStatsList.Count - 1
                             If lDCIStatsList(k).Barrier = lConnectivity(j).BarrID Then
                                 ' 2020 to-do - fix from here to pCursor
                                 '            - DCIStatsList should have same stats as lhabstatslist need to add 
                                 '              room for all params required for DCI
                                 '              downstream habitat length, hab area, and distance to next barrier 
-                                '              (distance often = length, but not always)
-                                'pRowBuffer.Value(3) = Math.Round(lDCIStatsList(k).Quantity, 2)
-                                'pRowBuffer.Value(4) = "km" ' 2020: to do add units to DCI Stats List Object
-                                pRowBuffer.Value(5) = "0" ' 2020: to do add area quan to DCI Stats List Object
-                                pRowBuffer.Value(6) = "km^2" ' 2020: to do add units to DCI Stats List Objectt
-                                pRowBuffer.Value(7) = lDCIStatsList(k).BarrierPerm
-                                pRowBuffer.Value(8) = lDCIStatsList(k).BarrierYN
+                                '              (distance often = length, but not always) 
+                                pRowBuffer.Value(5) = lDCIStatsList(k).BarrierPerm
+                                pRowBuffer.Value(6) = lDCIStatsList(k).BarrierYN
+
+                                pAdvDCIDataObj.BarrierPerm = lDCIStatsList(k).BarrierPerm
+                                pAdvDCIDataObj.NaturalTF = lDCIStatsList(k).BarrierYN
+
                             End If
                         Next
 
-                        pRowBuffer.Value(9) = lConnectivity(j).DownstreamBarrierID
-                        pRowBuffer.Value(10) = lConnectivity(j).DownstreamBarrLabel
+                        pRowBuffer.Value(7) = lConnectivity(j).DownstreamBarrierID
+                        pRowBuffer.Value(8) = lConnectivity(j).DownstreamBarrLabel
+
+                        pAdvDCIDataObj.DownstreamEID = lConnectivity(j).DownstreamBarrierID
+                        pAdvDCIDataObj.DownstreamNodeLabel = lConnectivity(j).DownstreamBarrLabel
 
                         For k = 0 To lHabStatsList.Count - 1
                             If lHabStatsList(k).bEID = lConnectivity(j).BarrID Then
                                 If lHabStatsList(k).TotalImmedPath = "Path" And lHabStatsList(k).Direction = "downstream" Then
 
+                                    ' 2020 to do: currently this restricts habitat to length  - should fix
+                                    '             and add user-options 
                                     pRowBuffer.Value(3) = Math.Round(lHabStatsList(k).Quantity, 2)
                                     pRowBuffer.Value(4) = lHabStatsList(k).Unit
-                                    pRowBuffer.Value(11) = Math.Round(lHabStatsList(k).Quantity, 2)
-                                    pRowBuffer.Value(12) = lHabStatsList(k).Unit
+                                    pRowBuffer.Value(9) = Math.Round(lHabStatsList(k).Quantity, 2)
+                                    pRowBuffer.Value(10) = lHabStatsList(k).Unit
+
+                                    pAdvDCIDataObj.HabQuantity = Math.Round(lHabStatsList(k).Quantity, 2)
+                                    pAdvDCIDataObj.HabQuanUnits = lHabStatsList(k).Unit
+                                    pAdvDCIDataObj.DownstreamNeighDistance = Math.Round(lHabStatsList(k).Quantity, 2)
+                                    pAdvDCIDataObj.DistanceUnits = lHabStatsList(k).Unit
 
                                 End If
                             End If
@@ -2985,12 +3006,17 @@ Public Class Analysis
                         pCursor = pTable.Insert(True)
                         pCursor.InsertRow(pRowBuffer)
                         pCursor.Flush()
+
+                        '2020
+                        lAdv_DCI_Data_Object.Add(pAdvDCIDataObj)
+
                     Next
 
                     ' 2020 test - should be moved?
 
                     DCI_ADV2020_ShellCall(sAdvConnectTabName, _
                                           pFWorkspace,
+                                          lAdv_DCI_Data_Object,
                                           bDCISectional, _
                                           bDistanceLim, _
                                           dMaxDist, _
@@ -9729,6 +9755,7 @@ Public Class Analysis
     End Sub
     Private Sub DCI_ADV2020_ShellCall(ByVal sAdvConnectTabName As String, _
                                       ByRef pFWorkspace As IFeatureWorkspace, _
+                                      ByRef lAdv_DCI_Data_Object As List(Of Adv_DCI_Data_Object), _
                                       ByVal bDCISectional As Boolean, _
                                       ByVal bDistanceLim As Boolean, _
                                       ByVal dMaxDist As Double, _
@@ -9741,18 +9768,9 @@ Public Class Analysis
         Dim sDCIModelDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDCIModelDir"))    ' DCI model install directory
         Dim sRInstallDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sRInstallDir"))     ' R Program install directory
 
-        Dim pTable As ITable
+        'Dim pTable As ITable
         Dim i As Integer
-        Dim pTxtFactory As IWorkspaceFactory = New TextFileWorkspaceFactory
-        Dim pFWorkspaceOut As IFeatureWorkspace
-        Dim pWorkspaceOut As IWorkspace
-
-        ' Get output workspace
-        pWorkspaceOut = pTxtFactory.OpenFromFile(sDCIModelDir, My.ArcMap.Application.hWnd)
-        pFWorkspaceOut = CType(pWorkspaceOut, IFeatureWorkspace)
-
-        ' Check that the user currently has file permissions to write to 
-        ' this directory
+        
         Dim bPermissionCheck
         bPermissionCheck = FileWriteDeleteCheck(sDCIModelDir)
         If bPermissionCheck = False Then
@@ -9761,48 +9779,93 @@ Public Class Analysis
             Exit Sub
         End If
 
-        Dim pExportOp As IExportOperation = New ExportOperation
-        Dim pDataSetIn As IDataset
-        Dim pDataSetOut As IDataset
-        Dim pDSNameIn As IDatasetName
-        Dim pDSNameOut As IDatasetName
-        Dim FileToDelete As String
-
-        ' Get the output dataset name ready.
-        pDataSetOut = CType(pWorkspaceOut, IDataset)
-
-        ' Delete the table if it already exists
-        FileToDelete = sDCIModelDir + "/FIPEX_Advanced_DD_2020.csv"
-        If System.IO.File.Exists(FileToDelete) = True Then
-            System.IO.File.Delete(FileToDelete)
-
-            ' need to reset the workspace so the file list will refresh and
-            ' arcgis will know the file doesn't exist now.
-            pWorkspaceOut = pTxtFactory.OpenFromFile(sDCIModelDir, 0)
-            pFWorkspaceOut = CType(pWorkspaceOut, IFeatureWorkspace)
-            pDataSetOut = CType(pWorkspaceOut, IDataset)
-        End If
-
-        pExportOp = New ExportOperation
-
-        ' Get input table
-        pTable = pFWorkspace.OpenTable(sAdvConnectTabName)
-
-        ' Get the dataset name for the input table
-        pDataSetIn = CType(pTable, IDataset)
-        pDSNameIn = CType(pDataSetIn.FullName, IDatasetName)
-
-        ' Get dataset for output table
-        pDSNameOut = New TableName
-        pDSNameOut.Name = "FIPEX_Advanced_DD_2020.csv"
-        pDSNameOut.WorkspaceName = CType(pDataSetOut.FullName, IWorkspaceName)
+    
+        ' ##############################################################
+        ' 2020 Write FIPEX FIPEX_Advanced_DD_2020
+        ' objectID
+        ' BarrierID
+        ' BarirerUserLabel
+        ' Habt Quan
+        ' Habit Quan Units
+        ' BarrPerm
+        ' BarrnaturalYN
+        ' DownstreamNeighbEID
+        ' DownstreamNeighbUserLabel
+        ' DownstreamNeighbDistance
+        ' DownstreamNeighbUnits
+        'ObID,NodeEID,NodeLabel,HabQuantity,HabUnits,BarrierPerm,NaturalTF,DownstreamEID,DownstreamNodeLabel,DownstreamNeighDistance,DistanceUnits
 
         Try
-            pExportOp.ExportTable(pDSNameIn, Nothing, Nothing, pDSNameOut, My.ArcMap.Application.hWnd)
+            If File.Exists(sDCIModelDir & "\FIPEX_Advanced_DD_2020.csv") Then
+                File.Delete(sDCIModelDir & "\FIPEX_Advanced_DD_2020.csv")
+            End If
         Catch ex As Exception
-            MsgBox("Error trying to export DBF table to DCI Directory. " & ex.Message)
+            MsgBox("Issue reading / writing / deleting to FIPEX FIPEX_Advanced_DD_2020 file. Error code: d101" & ex.Message)
         End Try
 
+
+        Dim sw1 As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_Advanced_DD_2020.csv")
+     
+        Try
+            sw1.Write("NodeEID,NodeLabel,HabQuantity,HabUnits,BarrierPerm,NaturalTF,DownstreamEID,DownstreamNodeLabel,DownstreamNeighDistance,DistanceUnits")
+            sw1.Write(Environment.NewLine)
+        Catch ex As Exception
+            MsgBox("Issue  writing to FIPEX_Advanced_DD_2020 file. Error code: d102 " & ex.Message)
+        End Try
+
+
+        Dim sNodeEID, sNodeLabel, sHabQuantity, sHabQuanUnits, sBarrierPerm, sNaturalTF As String
+        Dim sDownstreamEID, sDownstreamNodeLabel, sDownstreamNeighDistance, sDistanceUnits As String
+
+        Try
+            For i = 0 To lAdv_DCI_Data_Object.Count - 1
+                MsgBox(lAdv_DCI_Data_Object(i).NodeEID)
+
+                sNodeEID = Convert.ToString(lAdv_DCI_Data_Object(i).NodeEID)
+
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).NodeLabel, sNodeLabel) = True Then
+                sNodeLabel = Convert.ToString(lAdv_DCI_Data_Object(i).NodeLabel)
+                'End If
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).HabQuantity, sHabQuantity) = True Then
+                sHabQuantity = Convert.ToString(lAdv_DCI_Data_Object(i).HabQuantity)
+                'End If
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).HabQuanUnits, sHabQuanUnits) = True Then
+                sHabQuanUnits = Convert.ToString(lAdv_DCI_Data_Object(i).HabQuanUnits)
+                'End If
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).BarrierPerm, sBarrierPerm) = True Then
+                sBarrierPerm = Convert.ToString(lAdv_DCI_Data_Object(i).BarrierPerm)
+                'End If
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).NaturalTF, sNaturalTF) = True Then
+                sNaturalTF = Convert.ToString(lAdv_DCI_Data_Object(i).NaturalTF)
+                'End If
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).DownstreamEID, sDownstreamEID) = True Then
+                sDownstreamEID = lAdv_DCI_Data_Object(i).DownstreamEID
+                'End If
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).DownstreamNodeLabel, sDownstreamNodeLabel) = True Then
+                sDownstreamNodeLabel = Convert.ToString(lAdv_DCI_Data_Object(i).DownstreamNodeLabel)
+                'End If
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).DownstreamNeighDistance, sDownstreamNeighDistance) = True Then
+                sDownstreamNeighDistance = Convert.ToString(lAdv_DCI_Data_Object(i).DownstreamNeighDistance)
+                'End If
+                'If Char.TryParse(lAdv_DCI_Data_Object(i).DistanceUnits, sDistanceUnits) Then
+                sDistanceUnits = Convert.ToString(lAdv_DCI_Data_Object(i).DistanceUnits)
+                'End If
+
+                sw1.Write(sNodeEID & "," & sNodeLabel & "," & _
+                          sHabQuantity & "," & sHabQuanUnits & "," & _
+                          sBarrierPerm & "," & sNaturalTF & "," & _
+                          sDownstreamEID & "," & sDownstreamNodeLabel & "," & _
+                          sDownstreamNeighDistance & "," & sDistanceUnits)
+                sw1.Write(Environment.NewLine)
+            Next
+        Catch ex As Exception
+            MsgBox("Issue  writing to FIPEX_Advanced_DD_2020 file. Error code: d103 " & ex.Message)
+        End Try
+
+        sw1.Close()
+
+
+        ' ##############################################################
         ' 2020 Write param file to CSV for R to read for distance decay
         ' bDCISectional, bDistanceLim, dMaxDist, bDistanceDecay
         Try
@@ -9814,21 +9877,17 @@ Public Class Analysis
         End Try
 
         Try
-            Dim sw As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_2020_Params.csv")
+            Dim sw2 As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_2020_Params.csv")
 
-            sw.Write("bDCISectional,bDistanceLim,dMaxDist,bDistanceDecay")
-            sw.Write(Environment.NewLine)
-            sw.Write(Str(bDCISectional) & "," & Str(bDistanceLim) & "," & Str(dMaxDist) & "," & Str(bDistanceDecay))
-            sw.Close()
+            sw2.Write("bDCISectional,bDistanceLim,dMaxDist,bDistanceDecay")
+            sw2.Write(Environment.NewLine)
+            sw2.Write(Str(bDCISectional) & "," & Str(bDistanceLim) & "," & Str(dMaxDist) & "," & Str(bDistanceDecay))
+            sw2.Write(Environment.NewLine)
+            sw2.Close()
 
         Catch ex As Exception
-            MsgBox("Issue reading / writing / deleting to FIPEX param file. Error code: d101" & ex.Message)
+            MsgBox("Issue writing to FIPEX param file. Error code: d101" & ex.Message)
         End Try
-        
-
-
-
-
 
 
         'Else ' if this is the second loop just ADD data from the input table to output table
@@ -9840,7 +9899,7 @@ Public Class Analysis
         'Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI.r", AppWinStyle.NormalFocus, True)
         'End If
 
-       
+
     End Sub
     Private Sub UpdateResultsDCI(ByRef iBarrierCount As Integer, ByRef dDCIp As Double, ByRef dDCId As Double, ByRef bNaturalY As Boolean)
 
@@ -11064,16 +11123,14 @@ Public Class Analysis
 
         Dim iFields As Integer ' to keep track of number of fields
 
-        pFieldsEdit.FieldCount_2 = 13
-        iFields = 13
+        pFieldsEdit.FieldCount_2 = 11
+        iFields = 11
 
         ' objectID
         ' BarrierID
         ' BarirerUserLabel
-        ' Habt len Quan
-        ' Habit len Quan Units
-        ' habitat area quan
-        ' habitat area units
+        ' Habt Quan
+        ' Habit Quan Units
         ' BarrPerm
         ' BarrnaturalYN
         ' DownstreamNeighbEID
@@ -11113,36 +11170,19 @@ Public Class Analysis
         ' ============Field ============
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
-        pFieldEdit.AliasName_2 = "Habitat Quantity Length"
-        pFieldEdit.Name_2 = "Quantity_Len"
+        pFieldEdit.AliasName_2 = "Habitat Quantity"
+        pFieldEdit.Name_2 = "Quantity"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
         pFieldsEdit.Field_2(3) = pField
 
         ' ============  Field ============
         pField = New Field
         pFieldEdit = CType(pField, IFieldEdit)
-        pFieldEdit.AliasName_2 = "Habitat Length Units"
-        pFieldEdit.Name_2 = "HabLenUnits"
+        pFieldEdit.AliasName_2 = "Habitat Units"
+        pFieldEdit.Name_2 = "HabUnits"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
         pFieldsEdit.Field_2(4) = pField
-
-        ' ============Field ============
-        pField = New Field
-        pFieldEdit = CType(pField, IFieldEdit)
-        pFieldEdit.AliasName_2 = "Habitat Quantity Area"
-        pFieldEdit.Name_2 = "Quantity_Area"
-        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
-        pFieldsEdit.Field_2(5) = pField
-
-        ' ============  Field ============
-        pField = New Field
-        pFieldEdit = CType(pField, IFieldEdit)
-        pFieldEdit.AliasName_2 = "Habitat Area Units"
-        pFieldEdit.Name_2 = "HabAreaUnits"
-        pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
-        pFieldEdit.Length_2 = 55
-        pFieldsEdit.Field_2(6) = pField
 
         ' =========== Field ===========
         pField = New Field
@@ -11150,7 +11190,7 @@ Public Class Analysis
         pFieldEdit.AliasName_2 = "Barrier Permeability"
         pFieldEdit.Name_2 = "BarrierPerm"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
-        pFieldsEdit.Field_2(7) = pField
+        pFieldsEdit.Field_2(5) = pField
 
         ' =========== Field ===========
         pField = New Field
@@ -11159,7 +11199,7 @@ Public Class Analysis
         pFieldEdit.Name_2 = "NaturalTF"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
-        pFieldsEdit.Field_2(8) = pField
+        pFieldsEdit.Field_2(6) = pField
 
         ' =========== Field ===========
         pField = New Field
@@ -11168,7 +11208,7 @@ Public Class Analysis
         pFieldEdit.Name_2 = "DownstreamEID"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
-        pFieldsEdit.Field_2(9) = pField
+        pFieldsEdit.Field_2(7) = pField
 
         ' ============= Field ============
         ' Create ObjectID Field
@@ -11178,7 +11218,7 @@ Public Class Analysis
         pFieldEdit.Name_2 = "DownstreamNodeLabel"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
-        pFieldsEdit.Field_2(10) = pField
+        pFieldsEdit.Field_2(8) = pField
 
         ' =========== Field ===========
         pField = New Field
@@ -11186,7 +11226,7 @@ Public Class Analysis
         pFieldEdit.AliasName_2 = "Downstream Neighbour Distance"
         pFieldEdit.Name_2 = "DownstreamNeighDistance"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble
-        pFieldsEdit.Field_2(11) = pField
+        pFieldsEdit.Field_2(9) = pField
 
         ' =========== Field ===========
         pField = New Field
@@ -11195,7 +11235,7 @@ Public Class Analysis
         pFieldEdit.Name_2 = "DistanceUnits"
         pFieldEdit.Type_2 = esriFieldType.esriFieldTypeString
         pFieldEdit.Length_2 = 55
-        pFieldsEdit.Field_2(12) = pField
+        pFieldsEdit.Field_2(10) = pField
 
         ' MsgBox "Going to create table in workspace named - & sTableName
         ' May be possible to add optional params for RDBMS behaviour
