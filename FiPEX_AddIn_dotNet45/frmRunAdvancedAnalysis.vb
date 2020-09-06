@@ -114,6 +114,7 @@ Public Class frmRunAdvancedAnalysis
         Dim bDistanceLim As Boolean = False
         Dim dMaxDist As Double = 0.0
         Dim bDistanceDecay As Boolean = False
+        Dim sDDFunction As String = "none"
 
         Dim bMaximum As Boolean
         Dim iOrderNum As Integer
@@ -295,11 +296,22 @@ Public Class frmRunAdvancedAnalysis
         'MessageBox.Show("This is not an integer")
         'End If
 
-
         If chkDistanceDecay.Checked = True Then
             bDistanceDecay = True
+            If rdoLinear.Checked = True Then
+                sDDFunction = "linear"
+            ElseIf rdoNatExp1.Checked = True Then
+                sDDFunction = "natexp1"
+            ElseIf rdoCircle.Checked = True Then
+                sDDFunction = "circle"
+            ElseIf rdoSigmoid.Checked = True Then
+                sDDFunction = "sigmoid"
+            Else
+                sDDFunction = "none"
+            End If
         Else
             bDistanceDecay = False
+            sDDFunction = "none"
         End If
 
         ' Set habitat statistics parameters
@@ -398,9 +410,10 @@ Public Class frmRunAdvancedAnalysis
         m_FiPEx.pPropset.SetProperty("sDCIModelDir", sDCIModelDir)
 
         '2020
-        m_FiPEx.pPropset.SetProperty("bDistanceDecay", bDistanceDecay)
         m_FiPEx.pPropset.SetProperty("bDistanceLim", bDistanceLim)
         m_FiPEx.pPropset.SetProperty("dMaxDist", dMaxDist)
+        m_FiPEx.pPropset.SetProperty("bDistanceDecay", bDistanceDecay)
+        m_FiPEx.pPropset.SetProperty("sDDFunction", sDDFunction)
 
         m_FiPEx.pPropset.SetProperty("bDBF", bDBF)
         m_FiPEx.pPropset.SetProperty("sGDB", sGDB)
@@ -583,6 +596,7 @@ Public Class frmRunAdvancedAnalysis
         Dim bDistanceLim As Boolean = False
         Dim bDistanceDecay As Boolean = False
         Dim dMaxDist As Double = 0.0
+        Dim sDDFunction As String = "none"
 
         Dim bMaximum As Boolean = False
         Dim iOrderNum As Integer = 1
@@ -632,6 +646,10 @@ Public Class frmRunAdvancedAnalysis
         chkDistanceLimit.Enabled = False
         chkDistanceDecay.Enabled = False
         txtMaxDistance.Enabled = False
+        rdoLinear.Enabled = False
+        rdoNatExp1.Enabled = False
+        rdoCircle.Enabled = False
+        rdoSigmoid.Enabled = False
 
 
         ' obtain reference to current geometric network
@@ -735,6 +753,14 @@ Public Class frmRunAdvancedAnalysis
                     MessageBox.Show("Trouble loading FIPEX property dMaxDist. Setting it to 0.")
                     dMaxDist = 0.0
                 End Try
+
+                Try
+                    sDDFunction = Convert.ToString(m_FiPEx.pPropset.GetProperty("sDDFunction"))
+                Catch ex As Exception
+                    MessageBox.Show("Trouble loading FIPEX property sDDFunction. Setting it to 'none'.")
+                    sDDFunction = "none"
+                End Try
+
 
                 bDBF = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bDBF"))
                 sGDB = Convert.ToString(m_FiPEx.pPropset.GetProperty("sGDB"))
@@ -894,6 +920,13 @@ Public Class frmRunAdvancedAnalysis
                 bDCISectional = False
                 sDCIModelDir = "not set"
                 sRInstallDir = "not set"
+
+                '2020
+                bDistanceLim = False
+                dMaxDist = 0.0
+                bDistanceDecay = False
+                sDDFunction = "none"
+
                 bDBF = False
                 sGDB = "not set"
                 sPrefix = "not set"
@@ -929,6 +962,12 @@ Public Class frmRunAdvancedAnalysis
             bDCISectional = False
             sDCIModelDir = "not set"
             sRInstallDir = "not set"
+
+            bDistanceLim = False
+            dMaxDist = 0.0
+            bDistanceDecay = False
+            sDDFunction = "none"
+
             bDBF = False
             sGDB = "not set"
             sPrefix = "not set"
@@ -1083,11 +1122,36 @@ Public Class frmRunAdvancedAnalysis
             chkDCISectional.Checked = bDCISectional
             txtDCIModelDir.Text = sDCIModelDir
             txtRInstallDir.Text = sRInstallDir
+
+            '2020
+            chkDistanceLimit.Checked = bDistanceLim
+            txtMaxDistance.Text = dMaxDist
+            chkDistanceDecay.Checked = bDistanceDecay
+            If sDDFunction = "linear" Then
+                rdoLinear.Checked = True
+            ElseIf sDDFunction = "natexp1" Then
+                rdoNatExp1.Checked = True
+            ElseIf sDDFunction = "circle" Then
+                rdoCircle.Checked = True
+            ElseIf sDDFunction = "sigmoid" Then
+                rdoSigmoid.Checked = True
+            End If
+
         Else
             chkDCI.Checked = False
             chkDCISectional.Checked = False
             txtDCIModelDir.Text = "n/a"
             txtRInstallDir.Text = "n/a"
+
+            '2020
+            chkDistanceLimit.Checked = False
+            txtMaxDistance.Text = 0.0
+            chkDistanceDecay.Checked = False
+            bDistanceDecay = False
+            rdoLinear.Checked = False
+            rdoNatExp1.Checked = False
+            rdoCircle.Checked = False
+            rdoSigmoid.Checked = False
         End If
 
     End Sub
@@ -3018,6 +3082,26 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         Else
             txtMaxDistance.Enabled = False
             chkDistanceDecay.Enabled = False
+        End If
+    End Sub
+
+    Private Sub RadioButton1_CheckedChanged(sender As Object, e As EventArgs) Handles rdoLinear.CheckedChanged
+        If rdoLinear.Checked = True Then
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        End If
+    End Sub
+
+    Private Sub chkDistanceDecay_CheckedChanged_1(sender As Object, e As EventArgs) Handles chkDistanceDecay.CheckedChanged
+        If chkDistanceDecay.Checked = True Then
+            rdoCircle.Enabled = True
+            rdoLinear.Enabled = True
+            rdoSigmoid.Enabled = True
+            rdoNatExp1.Enabled = True
+        Else
+            rdoCircle.Enabled = False
+            rdoLinear.Enabled = False
+            rdoSigmoid.Enabled = False
+            rdoNatExp1.Enabled = False
         End If
     End Sub
 End Class

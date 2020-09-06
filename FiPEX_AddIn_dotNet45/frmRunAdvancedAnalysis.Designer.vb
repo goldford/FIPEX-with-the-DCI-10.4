@@ -120,14 +120,17 @@ Partial Class frmRunAdvancedAnalysis
         Me.TabPage5 = New System.Windows.Forms.TabPage()
         Me.Label25 = New System.Windows.Forms.Label()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
-        Me.Label27 = New System.Windows.Forms.Label()
-        Me.Label26 = New System.Windows.Forms.Label()
-        Me.txtMaxDistance = New System.Windows.Forms.TextBox()
+        Me.GroupBox11 = New System.Windows.Forms.GroupBox()
+        Me.GroupBox12 = New System.Windows.Forms.GroupBox()
+        Me.rdoCircle = New System.Windows.Forms.RadioButton()
         Me.chkDistanceDecay = New System.Windows.Forms.CheckBox()
-        Me.RadioButton3 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton2 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton1 = New System.Windows.Forms.RadioButton()
+        Me.rdoLinear = New System.Windows.Forms.RadioButton()
+        Me.rdoNatExp1 = New System.Windows.Forms.RadioButton()
+        Me.rdoSigmoid = New System.Windows.Forms.RadioButton()
         Me.chkDistanceLimit = New System.Windows.Forms.CheckBox()
+        Me.txtMaxDistance = New System.Windows.Forms.TextBox()
+        Me.Label26 = New System.Windows.Forms.Label()
+        Me.Label27 = New System.Windows.Forms.Label()
         Me.chkDCISectional = New System.Windows.Forms.CheckBox()
         Me.cmdDCIModelDir = New System.Windows.Forms.Button()
         Me.txtDCIModelDir = New System.Windows.Forms.TextBox()
@@ -135,8 +138,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.cmdRInstallDir = New System.Windows.Forms.Button()
         Me.chkDCI = New System.Windows.Forms.CheckBox()
         Me.PictureBox6 = New System.Windows.Forms.PictureBox()
-        Me.GroupBox11 = New System.Windows.Forms.GroupBox()
-        Me.GroupBox12 = New System.Windows.Forms.GroupBox()
+        Me.PictureBox7 = New System.Windows.Forms.PictureBox()
         Me.TabBarriers.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -162,9 +164,10 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox1.SuspendLayout()
         Me.TabPage5.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
-        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox11.SuspendLayout()
         Me.GroupBox12.SuspendLayout()
+        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'cmdRun
@@ -1332,33 +1335,46 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox7.Size = New System.Drawing.Size(876, 511)
         Me.GroupBox7.TabIndex = 12
         Me.GroupBox7.TabStop = False
-        Me.GroupBox7.Text = "DCI Calculation"
+        Me.GroupBox7.Text = "DCI Calculation in R 3.6.1"
         '
-        'Label27
+        'GroupBox11
         '
-        Me.Label27.AutoSize = True
-        Me.Label27.Location = New System.Drawing.Point(63, 77)
-        Me.Label27.Name = "Label27"
-        Me.Label27.Size = New System.Drawing.Size(193, 20)
-        Me.Label27.TabIndex = 13
-        Me.Label27.Text = "Maximum distance / cutoff"
+        Me.GroupBox11.Controls.Add(Me.PictureBox7)
+        Me.GroupBox11.Controls.Add(Me.GroupBox12)
+        Me.GroupBox11.Controls.Add(Me.chkDistanceLimit)
+        Me.GroupBox11.Controls.Add(Me.txtMaxDistance)
+        Me.GroupBox11.Controls.Add(Me.Label26)
+        Me.GroupBox11.Controls.Add(Me.Label27)
+        Me.GroupBox11.Location = New System.Drawing.Point(30, 174)
+        Me.GroupBox11.Name = "GroupBox11"
+        Me.GroupBox11.Size = New System.Drawing.Size(796, 318)
+        Me.GroupBox11.TabIndex = 14
+        Me.GroupBox11.TabStop = False
+        Me.GroupBox11.Text = "Distance Limits"
         '
-        'Label26
+        'GroupBox12
         '
-        Me.Label26.AutoSize = True
-        Me.Label26.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label26.Location = New System.Drawing.Point(199, 104)
-        Me.Label26.Name = "Label26"
-        Me.Label26.Size = New System.Drawing.Size(139, 20)
-        Me.Label26.TabIndex = 12
-        Me.Label26.Text = "(units set in Tab 1)"
+        Me.GroupBox12.Controls.Add(Me.rdoCircle)
+        Me.GroupBox12.Controls.Add(Me.chkDistanceDecay)
+        Me.GroupBox12.Controls.Add(Me.rdoLinear)
+        Me.GroupBox12.Controls.Add(Me.rdoNatExp1)
+        Me.GroupBox12.Controls.Add(Me.rdoSigmoid)
+        Me.GroupBox12.Location = New System.Drawing.Point(52, 136)
+        Me.GroupBox12.Name = "GroupBox12"
+        Me.GroupBox12.Size = New System.Drawing.Size(325, 176)
+        Me.GroupBox12.TabIndex = 14
+        Me.GroupBox12.TabStop = False
         '
-        'txtMaxDistance
+        'rdoCircle
         '
-        Me.txtMaxDistance.Location = New System.Drawing.Point(67, 104)
-        Me.txtMaxDistance.Name = "txtMaxDistance"
-        Me.txtMaxDistance.Size = New System.Drawing.Size(123, 26)
-        Me.txtMaxDistance.TabIndex = 11
+        Me.rdoCircle.AutoSize = True
+        Me.rdoCircle.Location = New System.Drawing.Point(89, 116)
+        Me.rdoCircle.Name = "rdoCircle"
+        Me.rdoCircle.Size = New System.Drawing.Size(167, 24)
+        Me.rdoCircle.TabIndex = 11
+        Me.rdoCircle.TabStop = True
+        Me.rdoCircle.Text = "Circular (1-x^2)^0.5"
+        Me.rdoCircle.UseVisualStyleBackColor = True
         '
         'chkDistanceDecay
         '
@@ -1370,38 +1386,38 @@ Partial Class frmRunAdvancedAnalysis
         Me.chkDistanceDecay.Text = "Apply Distance Decay"
         Me.chkDistanceDecay.UseVisualStyleBackColor = True
         '
-        'RadioButton3
+        'rdoLinear
         '
-        Me.RadioButton3.AutoSize = True
-        Me.RadioButton3.Location = New System.Drawing.Point(91, 116)
-        Me.RadioButton3.Name = "RadioButton3"
-        Me.RadioButton3.Size = New System.Drawing.Size(128, 24)
-        Me.RadioButton3.TabIndex = 9
-        Me.RadioButton3.TabStop = True
-        Me.RadioButton3.Text = "todo: others?"
-        Me.RadioButton3.UseVisualStyleBackColor = True
+        Me.rdoLinear.AutoSize = True
+        Me.rdoLinear.Location = New System.Drawing.Point(91, 56)
+        Me.rdoLinear.Name = "rdoLinear"
+        Me.rdoLinear.Size = New System.Drawing.Size(78, 24)
+        Me.rdoLinear.TabIndex = 7
+        Me.rdoLinear.TabStop = True
+        Me.rdoLinear.Text = "Linear"
+        Me.rdoLinear.UseVisualStyleBackColor = True
         '
-        'RadioButton2
+        'rdoNatExp1
         '
-        Me.RadioButton2.AutoSize = True
-        Me.RadioButton2.Location = New System.Drawing.Point(91, 86)
-        Me.RadioButton2.Name = "RadioButton2"
-        Me.RadioButton2.Size = New System.Drawing.Size(62, 24)
-        Me.RadioButton2.TabIndex = 8
-        Me.RadioButton2.TabStop = True
-        Me.RadioButton2.Text = "1 / x"
-        Me.RadioButton2.UseVisualStyleBackColor = True
+        Me.rdoNatExp1.AutoSize = True
+        Me.rdoNatExp1.Location = New System.Drawing.Point(91, 86)
+        Me.rdoNatExp1.Name = "rdoNatExp1"
+        Me.rdoNatExp1.Size = New System.Drawing.Size(209, 24)
+        Me.rdoNatExp1.TabIndex = 9
+        Me.rdoNatExp1.TabStop = True
+        Me.rdoNatExp1.Text = "Natural Exponential (e^x)"
+        Me.rdoNatExp1.UseVisualStyleBackColor = True
         '
-        'RadioButton1
+        'rdoSigmoid
         '
-        Me.RadioButton1.AutoSize = True
-        Me.RadioButton1.Location = New System.Drawing.Point(91, 56)
-        Me.RadioButton1.Name = "RadioButton1"
-        Me.RadioButton1.Size = New System.Drawing.Size(78, 24)
-        Me.RadioButton1.TabIndex = 7
-        Me.RadioButton1.TabStop = True
-        Me.RadioButton1.Text = "Linear"
-        Me.RadioButton1.UseVisualStyleBackColor = True
+        Me.rdoSigmoid.AutoSize = True
+        Me.rdoSigmoid.Location = New System.Drawing.Point(91, 146)
+        Me.rdoSigmoid.Name = "rdoSigmoid"
+        Me.rdoSigmoid.Size = New System.Drawing.Size(91, 24)
+        Me.rdoSigmoid.TabIndex = 8
+        Me.rdoSigmoid.TabStop = True
+        Me.rdoSigmoid.Text = "Sigmoid"
+        Me.rdoSigmoid.UseVisualStyleBackColor = True
         '
         'chkDistanceLimit
         '
@@ -1413,6 +1429,32 @@ Partial Class frmRunAdvancedAnalysis
         Me.chkDistanceLimit.TabIndex = 6
         Me.chkDistanceLimit.Text = "Apply Distance Limit"
         Me.chkDistanceLimit.UseVisualStyleBackColor = True
+        '
+        'txtMaxDistance
+        '
+        Me.txtMaxDistance.Location = New System.Drawing.Point(67, 104)
+        Me.txtMaxDistance.Name = "txtMaxDistance"
+        Me.txtMaxDistance.Size = New System.Drawing.Size(123, 26)
+        Me.txtMaxDistance.TabIndex = 11
+        '
+        'Label26
+        '
+        Me.Label26.AutoSize = True
+        Me.Label26.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label26.Location = New System.Drawing.Point(199, 104)
+        Me.Label26.Name = "Label26"
+        Me.Label26.Size = New System.Drawing.Size(139, 20)
+        Me.Label26.TabIndex = 12
+        Me.Label26.Text = "(units set in Tab 1)"
+        '
+        'Label27
+        '
+        Me.Label27.AutoSize = True
+        Me.Label27.Location = New System.Drawing.Point(63, 77)
+        Me.Label27.Name = "Label27"
+        Me.Label27.Size = New System.Drawing.Size(193, 20)
+        Me.Label27.TabIndex = 13
+        Me.Label27.Text = "Maximum distance / cutoff"
         '
         'chkDCISectional
         '
@@ -1482,31 +1524,13 @@ Partial Class frmRunAdvancedAnalysis
         Me.PictureBox6.TabIndex = 11
         Me.PictureBox6.TabStop = False
         '
-        'GroupBox11
+        'PictureBox7
         '
-        Me.GroupBox11.Controls.Add(Me.GroupBox12)
-        Me.GroupBox11.Controls.Add(Me.chkDistanceLimit)
-        Me.GroupBox11.Controls.Add(Me.txtMaxDistance)
-        Me.GroupBox11.Controls.Add(Me.Label26)
-        Me.GroupBox11.Controls.Add(Me.Label27)
-        Me.GroupBox11.Location = New System.Drawing.Point(30, 174)
-        Me.GroupBox11.Name = "GroupBox11"
-        Me.GroupBox11.Size = New System.Drawing.Size(796, 318)
-        Me.GroupBox11.TabIndex = 14
-        Me.GroupBox11.TabStop = False
-        Me.GroupBox11.Text = "Distance Limits"
-        '
-        'GroupBox12
-        '
-        Me.GroupBox12.Controls.Add(Me.chkDistanceDecay)
-        Me.GroupBox12.Controls.Add(Me.RadioButton1)
-        Me.GroupBox12.Controls.Add(Me.RadioButton3)
-        Me.GroupBox12.Controls.Add(Me.RadioButton2)
-        Me.GroupBox12.Location = New System.Drawing.Point(52, 136)
-        Me.GroupBox12.Name = "GroupBox12"
-        Me.GroupBox12.Size = New System.Drawing.Size(325, 159)
-        Me.GroupBox12.TabIndex = 14
-        Me.GroupBox12.TabStop = False
+        Me.PictureBox7.Location = New System.Drawing.Point(397, 122)
+        Me.PictureBox7.Name = "PictureBox7"
+        Me.PictureBox7.Size = New System.Drawing.Size(184, 184)
+        Me.PictureBox7.TabIndex = 15
+        Me.PictureBox7.TabStop = False
         '
         'frmRunAdvancedAnalysis
         '
@@ -1564,11 +1588,12 @@ Partial Class frmRunAdvancedAnalysis
         Me.TabPage5.PerformLayout()
         Me.GroupBox7.ResumeLayout(False)
         Me.GroupBox7.PerformLayout()
-        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox11.ResumeLayout(False)
         Me.GroupBox11.PerformLayout()
         Me.GroupBox12.ResumeLayout(False)
         Me.GroupBox12.PerformLayout()
+        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -1678,13 +1703,15 @@ Partial Class frmRunAdvancedAnalysis
     Friend WithEvents Label4 As System.Windows.Forms.Label
     Friend WithEvents Label5 As System.Windows.Forms.Label
     Friend WithEvents Label22 As System.Windows.Forms.Label
-    Friend WithEvents RadioButton3 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton2 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton1 As System.Windows.Forms.RadioButton
+    Friend WithEvents rdoNatExp1 As System.Windows.Forms.RadioButton
+    Friend WithEvents rdoSigmoid As System.Windows.Forms.RadioButton
+    Friend WithEvents rdoLinear As System.Windows.Forms.RadioButton
     Friend WithEvents txtMaxDistance As System.Windows.Forms.TextBox
     Friend WithEvents chkDistanceDecay As System.Windows.Forms.CheckBox
     Friend WithEvents Label27 As System.Windows.Forms.Label
     Friend WithEvents Label26 As System.Windows.Forms.Label
     Friend WithEvents GroupBox11 As System.Windows.Forms.GroupBox
     Friend WithEvents GroupBox12 As System.Windows.Forms.GroupBox
+    Friend WithEvents rdoCircle As System.Windows.Forms.RadioButton
+    Friend WithEvents PictureBox7 As System.Windows.Forms.PictureBox
 End Class

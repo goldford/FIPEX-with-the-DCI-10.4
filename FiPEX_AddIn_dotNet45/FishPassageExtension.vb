@@ -694,6 +694,7 @@ Public Class FishPassageExtension
                     .SetProperty("bDistanceDecay", Convert.ToBoolean(sDictionary.Item("bDistanceDecay")))
                     .SetProperty("bDistanceLim", Convert.ToBoolean(sDictionary.Item("bDistanceLim")))
                     .SetProperty("dMaxDist", Convert.ToDouble(sDictionary.Item("dMaxDist")))
+                    .SetProperty("sDDFunction", Convert.ToString(sDictionary.Item("sDDFunction")))
 
                     .SetProperty("bDBF", Convert.ToBoolean(sDictionary.Item("bDBF")))
                     .SetProperty("sGDB", Convert.ToString(sDictionary.Item("sGDB")))
@@ -804,7 +805,6 @@ Public Class FishPassageExtension
                ex.Message)
             End Try
 
-           
             m_bLoaded = True
         Else
             Try
@@ -823,6 +823,13 @@ Public Class FishPassageExtension
                 .SetProperty("dcisectionalyn", Convert.ToBoolean("False"))
                 .SetProperty("sDCIModelDir", Convert.ToString("not set"))
                 .SetProperty("sRInstallDir", Convert.ToString("not set"))
+
+                '2020
+                    .SetProperty("bDistanceDecay", Convert.ToBoolean("False"))
+                    .SetProperty("bDistanceLim", Convert.ToBoolean("False"))
+                    .SetProperty("dMaxDist", Convert.ToDouble(0))
+                    .SetProperty("sDDFunction", Convert.ToString("none"))
+
                 .SetProperty("bDBF", Convert.ToBoolean("False"))
                 .SetProperty("sGDB", Convert.ToString("not set"))
                 .SetProperty("TabPrefix", Convert.ToString("not set"))
@@ -1096,6 +1103,7 @@ Public Class FishPassageExtension
             sDictionary.Add("bDistanceDecay", Convert.ToString(pPropset.GetProperty("bDistanceDecay")))
             sDictionary.Add("bDistanceLim", Convert.ToString(pPropset.GetProperty("bDistanceLim")))
             sDictionary.Add("dMaxDist", Convert.ToString(pPropset.GetProperty("dMaxDist")))
+            sDictionary.Add("sDDFunction", Convert.ToString(pPropset.GetProperty("sDDFunction")))
 
             sDictionary.Add("sRInstallDir", Convert.ToString(pPropset.GetProperty("sRInstallDir")))
             sDictionary.Add("bDBF", Convert.ToString(pPropset.GetProperty("bDBF")))
@@ -1203,6 +1211,13 @@ Public Class FishPassageExtension
             sDictionary.Add("dcisectionalyn", Convert.ToString(False))
             sDictionary.Add("sDCIModelDir", "not set")
             sDictionary.Add("sRInstallDir", "not set")
+
+            '2020
+            sDictionary.Add("bDistanceDecay", Convert.ToString(False))
+            sDictionary.Add("bDistanceLim", Convert.ToString(False))
+            sDictionary.Add("dMaxDist", Convert.ToString(0))
+            sDictionary.Add("sDDFunction", "none")
+
             sDictionary.Add("bDBF", Convert.ToString(False))
             sDictionary.Add("sGDB", "not set")
             sDictionary.Add("TabPrefix", "not set")

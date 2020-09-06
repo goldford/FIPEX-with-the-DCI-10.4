@@ -413,6 +413,7 @@ Public Class Analysis
         Dim bDistanceLim As Boolean = False
         Dim bDistanceDecay As Boolean = False
         Dim dMaxDist As Double = 0.0
+        Dim sDDFunction As String = "none"
 
         Dim bDBF As Boolean = False         ' Include DBF output default none
         Dim sGDB As String = ""             ' Output GDB for DBF output
@@ -482,6 +483,14 @@ Public Class Analysis
                     MsgBox("Trouble loading FIPEX property bDistanceLim. Setting it to False.")
                     bDistanceDecay = False
                 End Try
+
+                Try
+                    sDDFunction = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDDFunction"))
+                Catch ex As Exception
+                    MsgBox("Trouble loading FIPEX property sDDFunction. Setting it to 'none'")
+                    sDDFunction = "none"
+                End Try
+
 
                 Try
                     dMaxDist = Convert.ToDouble(m_FiPEx__1.pPropset.GetProperty("dMaxDist"))
@@ -3020,7 +3029,7 @@ Public Class Analysis
                                           bDCISectional, _
                                           bDistanceLim, _
                                           dMaxDist, _
-                                          bDistanceDecay)
+                                          bDistanceDecay, sDDFunction)
 
                     
 
@@ -9759,7 +9768,8 @@ Public Class Analysis
                                       ByVal bDCISectional As Boolean, _
                                       ByVal bDistanceLim As Boolean, _
                                       ByVal dMaxDist As Double, _
-                                      ByVal bDistanceDecay As Boolean)
+                                      ByVal bDistanceDecay As Boolean, _
+                                      ByVal sDDFunction As String)
 
         ' ====================================================================
         ' Exports 'advanced' connectivity table for distance decay calcs to CSV 
@@ -9770,7 +9780,7 @@ Public Class Analysis
 
         'Dim pTable As ITable
         Dim i As Integer
-        
+
         Dim bPermissionCheck
         bPermissionCheck = FileWriteDeleteCheck(sDCIModelDir)
         If bPermissionCheck = False Then
@@ -9779,7 +9789,7 @@ Public Class Analysis
             Exit Sub
         End If
 
-    
+
         ' ##############################################################
         ' 2020 Write FIPEX FIPEX_Advanced_DD_2020
         ' objectID
@@ -9805,7 +9815,7 @@ Public Class Analysis
 
 
         Dim sw1 As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_Advanced_DD_2020.csv")
-     
+
         Try
             sw1.Write("NodeEID,NodeLabel,HabQuantity,HabUnits,BarrierPerm,NaturalTF,DownstreamEID,DownstreamNodeLabel,DownstreamNeighDistance,DistanceUnits")
             sw1.Write(Environment.NewLine)
@@ -9873,20 +9883,30 @@ Public Class Analysis
                 File.Delete(sDCIModelDir & "\FIPEX_2020_Params.csv")
             End If
         Catch ex As Exception
-            MsgBox("Issue reading / writing / deleting to FIPEX param file. Error code: d100" & ex.Message)
+            MsgBox("Issue reading / writing / deleting to FIPEX param file. Error code: d100 " & ex.Message)
         End Try
 
         Try
             Dim sw2 As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_2020_Params.csv")
 
-            sw2.Write("bDCISectional,bDistanceLim,dMaxDist,bDistanceDecay")
+            Dim sDCISectional As String = Convert.ToString(bDCISectional)
+            Dim sDistanceLim As String = Convert.ToString(bDistanceLim)
+            Dim sMaxDist As String = Convert.ToString(dMaxDist)
+            Dim sDistanceDecay As String = Convert.ToString(bDistanceDecay)
+
+            sw2.Write("bDCISectional,bDistanceLim,dMaxDist,bDistanceDecay, sDDFunction")
             sw2.Write(Environment.NewLine)
-            sw2.Write(Str(bDCISectional) & "," & Str(bDistanceLim) & "," & Str(dMaxDist) & "," & Str(bDistanceDecay))
+            sw2.Write(sDCISectional & "," _
+                      & sDistanceLim & "," _
+                      & sMaxDist & "," _
+                      & sDistanceDecay & "," _
+                      & sDDFunction
+                      )
             sw2.Write(Environment.NewLine)
             sw2.Close()
 
         Catch ex As Exception
-            MsgBox("Issue writing to FIPEX param file. Error code: d101" & ex.Message)
+            MsgBox("Issue writing to FIPEX param file. Error code: d101 " & ex.Message)
         End Try
 
 
