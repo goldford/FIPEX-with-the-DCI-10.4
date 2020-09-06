@@ -154,11 +154,6 @@ Public Class frmRunAdvancedAnalysis
             bConnectTab = False
         End If
 
-        If chkAdvConnect.Checked = True Then
-            bAdvConnectTab = True
-        Else
-            bAdvConnectTab = False
-        End If
 
         If chkBarrierPerm.Checked = True Then
             bBarrierPerm = True
@@ -270,16 +265,20 @@ Public Class frmRunAdvancedAnalysis
         End If
 
         '2020
-        If chkAdvConnect.Checked = True Then
-            bAdvConnectTab = True
-        Else
-            bAdvConnectTab = False
-        End If
+        'If chkAdvConnect.Checked = True Then
+        'bAdvConnectTab = True
+        'Else
+        'bAdvConnectTab = False
+        'End If
+        ' 2020 - user no longer selects this checkbox
+        '      - instead 'advanced' analysis turned on if 'apply distance limit' is checked
 
         If chkDistanceLimit.Checked = True Then
             bDistanceLim = True
+            bAdvConnectTab = True
         Else
             bDistanceLim = False
+            bAdvConnectTab = False
         End If
 
         ' iOrderNum = Convert.ToInt32(TxtOrder.Text)
@@ -289,7 +288,7 @@ Public Class frmRunAdvancedAnalysis
         If Double.TryParse(sMaxDist, dMaxDist) = True Then
             dMaxDist = Convert.ToDouble(sMaxDist)
         End If
-        MsgBox("dMaxDist after conversionto double: " & dMaxDist)
+        'MsgBox("dMaxDist after conversionto double: " & dMaxDist)
 
         'Dim myInt As Integer = 0
         'If Not Integer.TryParse(MyString, myInt) Then

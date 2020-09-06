@@ -121,6 +121,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.Label25 = New System.Windows.Forms.Label()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
         Me.GroupBox11 = New System.Windows.Forms.GroupBox()
+        Me.PictureBox7 = New System.Windows.Forms.PictureBox()
         Me.GroupBox12 = New System.Windows.Forms.GroupBox()
         Me.rdoCircle = New System.Windows.Forms.RadioButton()
         Me.chkDistanceDecay = New System.Windows.Forms.CheckBox()
@@ -138,7 +139,6 @@ Partial Class frmRunAdvancedAnalysis
         Me.cmdRInstallDir = New System.Windows.Forms.Button()
         Me.chkDCI = New System.Windows.Forms.CheckBox()
         Me.PictureBox6 = New System.Windows.Forms.PictureBox()
-        Me.PictureBox7 = New System.Windows.Forms.PictureBox()
         Me.TabBarriers.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -165,9 +165,9 @@ Partial Class frmRunAdvancedAnalysis
         Me.TabPage5.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox11.SuspendLayout()
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox12.SuspendLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'cmdRun
@@ -1048,6 +1048,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'GroupBox10
         '
+        Me.GroupBox10.BackColor = System.Drawing.Color.Transparent
         Me.GroupBox10.Controls.Add(Me.rdoAdvancedNet)
         Me.GroupBox10.Controls.Add(Me.rdoBasicConnect)
         Me.GroupBox10.Location = New System.Drawing.Point(37, 391)
@@ -1056,6 +1057,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox10.TabIndex = 13
         Me.GroupBox10.TabStop = False
         Me.GroupBox10.Text = "Network Connectivity Output"
+        Me.GroupBox10.Visible = False
         '
         'rdoAdvancedNet
         '
@@ -1082,12 +1084,14 @@ Partial Class frmRunAdvancedAnalysis
         'chkAdvConnect
         '
         Me.chkAdvConnect.AutoSize = True
+        Me.chkAdvConnect.BackColor = System.Drawing.Color.Transparent
         Me.chkAdvConnect.Location = New System.Drawing.Point(37, 308)
         Me.chkAdvConnect.Name = "chkAdvConnect"
         Me.chkAdvConnect.Size = New System.Drawing.Size(354, 24)
         Me.chkAdvConnect.TabIndex = 10
         Me.chkAdvConnect.Text = "Generate Advanced Network Summary Table"
-        Me.chkAdvConnect.UseVisualStyleBackColor = True
+        Me.chkAdvConnect.UseVisualStyleBackColor = False
+        Me.chkAdvConnect.Visible = False
         '
         'chkNaturalTF
         '
@@ -1352,6 +1356,14 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox11.TabStop = False
         Me.GroupBox11.Text = "Distance Limits"
         '
+        'PictureBox7
+        '
+        Me.PictureBox7.Location = New System.Drawing.Point(397, 122)
+        Me.PictureBox7.Name = "PictureBox7"
+        Me.PictureBox7.Size = New System.Drawing.Size(184, 184)
+        Me.PictureBox7.TabIndex = 15
+        Me.PictureBox7.TabStop = False
+        '
         'GroupBox12
         '
         Me.GroupBox12.Controls.Add(Me.rdoCircle)
@@ -1524,14 +1536,6 @@ Partial Class frmRunAdvancedAnalysis
         Me.PictureBox6.TabIndex = 11
         Me.PictureBox6.TabStop = False
         '
-        'PictureBox7
-        '
-        Me.PictureBox7.Location = New System.Drawing.Point(397, 122)
-        Me.PictureBox7.Name = "PictureBox7"
-        Me.PictureBox7.Size = New System.Drawing.Size(184, 184)
-        Me.PictureBox7.TabIndex = 15
-        Me.PictureBox7.TabStop = False
-        '
         'frmRunAdvancedAnalysis
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
@@ -1590,10 +1594,10 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox7.PerformLayout()
         Me.GroupBox11.ResumeLayout(False)
         Me.GroupBox11.PerformLayout()
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox12.ResumeLayout(False)
         Me.GroupBox12.PerformLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub

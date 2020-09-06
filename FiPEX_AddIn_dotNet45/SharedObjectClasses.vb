@@ -69,7 +69,7 @@ Public Class DCIStatisticsObject
 End Class
 
 Public Class Adv_DCI_Data_Object
-
+    '   NodeType (string)
     '   NodeEID  (integer)
     '   NodeLabel (string)
     '   HabQuantity (double)
@@ -81,6 +81,7 @@ Public Class Adv_DCI_Data_Object
     '   DownstreamNeighDistance (double)
     '   DistanceUnits (string)
 
+    Public NodeType As String
     Public NodeEID As String
     Public NodeLabel As String
     Public HabQuantity As Double
@@ -95,10 +96,11 @@ Public Class Adv_DCI_Data_Object
 
 
 
-    Public Sub New(ByVal NodeEID1 As String, ByVal NodeLabel1 As String, ByVal HabQuantity1 As Double, _
+    Public Sub New(ByVal NodeType1 As String, ByVal NodeEID1 As String, ByVal NodeLabel1 As String, ByVal HabQuantity1 As Double, _
     ByVal HabQuanUnits1 As String, ByVal BarrierPerm1 As Double, ByVal NaturalTF As String, _
     ByVal DownstreamEID1 As String, ByVal DownstreamNodeLabel1 As String, ByVal DownstreamNeighDistance1 As Double, _
     ByVal DistanceUnits1 As String)
+        Me.NodeType = NodeType1
         Me.NodeEID = NodeEID1
         Me.NodeLabel = NodeLabel1
         Me.HabQuantity = HabQuantity1
@@ -294,12 +296,14 @@ Public Class BarrAndBarrEIDAndSinkEIDs
     Public SinkEID As Integer
     Public BarrEID As Integer
     Public BarrLabel As String
+    Public NodeType As String '2020
 
 
-    Public Sub New(ByVal sinkeid As Integer, ByVal barreid As Integer, ByVal barrlabel As String)
+    Public Sub New(ByVal sinkeid As Integer, ByVal barreid As Integer, ByVal barrlabel As String, ByVal nodetype As String)
         Me.SinkEID = sinkeid
         Me.BarrEID = barreid
         Me.BarrLabel = barrlabel
+        Me.NodeType = nodetype
     End Sub
 End Class
 

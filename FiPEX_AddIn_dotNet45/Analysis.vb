@@ -199,11 +199,11 @@ Public Class Analysis
 
     End Sub
     Private Sub RunAnalysis()
-        ' 2020 changed from was 'Protected' sub due to debugging problem
+        ' 2020 changed from 'Protected' sub due to debugging problem
 
         ' ==================================================================
-        ' Command:       AnalysisCMD
-        ' Author:        Greig Oldford
+        ' Command:       RunAnalysis
+        ' Modified:      Sep 2020, G Oldford
         '
         ' Description:   read settings from the extension stream,
         '                perform a network trace, 
@@ -374,7 +374,7 @@ Public Class Analysis
 
         '2020 new object below to eventually replace lDCIStatsList
         Dim lAdv_DCI_Data_Object As List(Of Adv_DCI_Data_Object) = New List(Of Adv_DCI_Data_Object)
-        Dim pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, _
+        Dim pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, _
                                                                  Nothing, Nothing, Nothing, Nothing, Nothing)
 
         Dim lGLPKStatsList As List(Of GLPKStatisticsObject) = New List(Of GLPKStatisticsObject) ' for habitat stats for GLPK
@@ -386,7 +386,7 @@ Public Class Analysis
         Dim f_sOutID, f_sType As String ' To hold the (possibly) user-set ID and the 'type' of each flag
         Dim f_siOutEID As Integer
         Dim lBarrierAndSinkEIDs As List(Of BarrAndBarrEIDAndSinkEIDs) = New List(Of BarrAndBarrEIDAndSinkEIDs)
-        Dim pBarrierAndSinkEIDs As New BarrAndBarrEIDAndSinkEIDs(Nothing, Nothing, Nothing)
+        Dim pBarrierAndSinkEIDs As New BarrAndBarrEIDAndSinkEIDs(Nothing, Nothing, Nothing, Nothing)
 
         ' for pairing with DCI stats at the end of each flag's loop 
 
@@ -437,6 +437,8 @@ Public Class Analysis
 
         Dim iBarrierIDs As Integer = 0
         Dim sBarrierIDLayer, sBarrierIDField, sBarrierNaturalYNField, sBarrierPermField As String
+        Dim sBarrierType As String = "Barrier" ' field name found in layers (GLPK / 2020 adv connect)
+
 
         Dim bGLPKTables As Boolean = False
         Dim sGLPKModelDir As String = ""
@@ -448,6 +450,8 @@ Public Class Analysis
 
         ' If settings have been set by the user then load them from the extension stream (stored in .mxd doc)
         If m_FiPEx__1.m_bLoaded = True Then
+
+            ' to do 2020: 'loadproperties should be a 'shared function' 
 
             Try
 
@@ -1789,7 +1793,8 @@ Public Class Analysis
                             'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iEID: " + Str(iEID))
                             If iEID = iEID_p Then
                                 bSourceJunction = True
-                                'MsgBox("Debug2020: Found junction will set perm to 1")
+                                'MsgBox("Debug2020: Found source junction will set perm to 1")
+                                'MsgBox("Debug2020 The source iEID_p: " + Str(iEID_p) + " And the iEID: " + Str(iEID))
                                 Exit For
                             End If
                         Next
@@ -1853,20 +1858,22 @@ Public Class Analysis
                     ' of the layer... right now not in stored property set 
                     ' of the FIPEX extension - so temporary switch and function here
                     Dim bBarrierType As Boolean = True
-                    '(temp switch)
-                    Dim sBarrierType As String ' field name found in layers
+                    '(- temp switch)
                     If bBranchJunction = True Then
                         sBarrierType = "Branch Junction"
                     ElseIf bSourceJunction = True Then
                         sBarrierType = "Source Junction"
                     Else
                         If bBarrierType = True Then
-
+                            'Get BarrierType retrieves barrier type from user-set attribute
                             sBarrierType = GetBarrierType(iFCID, iFID, lBarrierIDs)
                         Else
                             sBarrierType = "Not Set"
                         End If
 
+                    End If
+                    If sBarrierType = "not found" Or sBarrierType = "Not Set" Then
+                        sBarrierType = "Barrier"
                     End If
                    
 
@@ -1915,7 +1922,8 @@ Public Class Analysis
                     Else
                         pBarrierAndSinkEIDs = New BarrAndBarrEIDAndSinkEIDs(f_siOutEID, _
                                                                             iEID, _
-                                                                            sOutID)
+                                                                            sOutID,
+                                                                            sBarrierType)
                         lBarrierAndSinkEIDs.Add(pBarrierAndSinkEIDs)
                     End If
 
@@ -2736,7 +2744,9 @@ Public Class Analysis
 
                 sAnalysisCode = sb.ToString
 
-                If bDCI = True Then
+                ' creates a table to be sent to R for DCI, but only needed
+                ' if 'advanced' table isn't already created - GO, 2020
+                If bDCI = True And bAdvConnectTab = False Then
                     ' check if user has hit 'close/cancel'
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
@@ -2758,7 +2768,7 @@ Public Class Analysis
 
                 End If
 
-                If bConnectTab = True Then
+                If bConnectTab = True And bAdvConnectTab = False Then
                     ' check if user has hit 'close/cancel'
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
@@ -2899,8 +2909,8 @@ Public Class Analysis
                 End If
                 ' ============== End New DCI, Hab and Metric Table Name ==========
 
-
-                If bConnectTab = True Then
+                '2020 if advanced connectivity then no regular connectivity table
+                If bConnectTab = True And bAdvConnectTab = False Then
                     ' check if user has hit 'close/cancel'
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
@@ -2949,7 +2959,7 @@ Public Class Analysis
 
                         pRowBuffer = pTable.CreateRowBuffer
 
-                        pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, _
+                        pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, _
                                                                  Nothing, Nothing, Nothing, Nothing, Nothing)
 
                         ' objectID
@@ -2998,11 +3008,13 @@ Public Class Analysis
 
                                     ' 2020 to do: currently this restricts habitat to length  - should fix
                                     '             and add user-options 
+
                                     pRowBuffer.Value(3) = Math.Round(lHabStatsList(k).Quantity, 2)
                                     pRowBuffer.Value(4) = lHabStatsList(k).Unit
                                     pRowBuffer.Value(9) = Math.Round(lHabStatsList(k).Quantity, 2)
                                     pRowBuffer.Value(10) = lHabStatsList(k).Unit
 
+                                    pAdvDCIDataObj.NodeType = lHabStatsList(k).bType
                                     pAdvDCIDataObj.HabQuantity = Math.Round(lHabStatsList(k).Quantity, 2)
                                     pAdvDCIDataObj.HabQuanUnits = lHabStatsList(k).Unit
                                     pAdvDCIDataObj.DownstreamNeighDistance = Math.Round(lHabStatsList(k).Quantity, 2)
@@ -3021,18 +3033,6 @@ Public Class Analysis
 
                     Next
 
-                    ' 2020 test - should be moved?
-
-                    DCI_ADV2020_ShellCall(sAdvConnectTabName, _
-                                          pFWorkspace,
-                                          lAdv_DCI_Data_Object,
-                                          bDCISectional, _
-                                          bDistanceLim, _
-                                          dMaxDist, _
-                                          bDistanceDecay, sDDFunction)
-
-                    
-
                 End If
 
                 ' DO NOT DELETE!
@@ -3049,8 +3049,6 @@ Public Class Analysis
                 '    Next
                 'End If
 
-
-
                 If bDCI = True Then
                     ' check if user has hit 'close/cancel'
                     If m_bCancel = True Then
@@ -3061,36 +3059,38 @@ Public Class Analysis
                     backgroundworker1.ReportProgress(iProgress, "Writing To Output Tables" & ControlChars.NewLine & _
                                                              "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count & ControlChars.NewLine & _
                                                                                                                          "Table: DCI Statistics (for output to 'R' Stats Software)"))
-                    'MsgBox("Debug:54")
-                    ' ==== BEGIN WRITE TO DCI TABLE =====
-                    ' convert to generic
-                    'Dim lConnectTabName As New List(Of String)
-                    'lConnectTabName.Add(sConnectTabName)
-                    pTable = pFWorkspace.OpenTable(sDCITableName)
-                    j = 0
-                    bNoPerm = False ' NoPerm false means there aren't any barriers encountered in 
-                    ' this list yet that have less than one permeability
-                    For j = 0 To lDCIStatsList.Count - 1
-                        pRowBuffer = pTable.CreateRowBuffer
-                        pRowBuffer.Value(1) = lDCIStatsList(j).Barrier
-                        pRowBuffer.Value(2) = Math.Round(lDCIStatsList(j).Quantity, 2)
-                        pRowBuffer.Value(3) = lDCIStatsList(j).BarrierPerm
-                        If lDCIStatsList(j).BarrierPerm < 1 Then
-                            bNoPerm = True
-                        End If
-                        pRowBuffer.Value(4) = lDCIStatsList(j).BarrierYN
+                    ' used to check there isn't an issue with table during regular DCI
+                    ' (if zero rows then don't call R)
+                    Dim iDCIRowCountTEMP As Integer = 1
+                    If bAdvConnectTab = False Or bDistanceLim = False Then
+                        ' ==== BEGIN WRITE TO DCI TABLE =====
+                        ' convert to generic
+                        'Dim lConnectTabName As New List(Of String)
+                        'lConnectTabName.Add(sConnectTabName)
+                        pTable = pFWorkspace.OpenTable(sDCITableName)
+                        j = 0
+                        bNoPerm = False ' NoPerm false means there aren't any barriers encountered in 
+                        ' this list yet that have less than one permeability
+                        For j = 0 To lDCIStatsList.Count - 1
+                            pRowBuffer = pTable.CreateRowBuffer
+                            pRowBuffer.Value(1) = lDCIStatsList(j).Barrier
+                            pRowBuffer.Value(2) = Math.Round(lDCIStatsList(j).Quantity, 2)
+                            pRowBuffer.Value(3) = lDCIStatsList(j).BarrierPerm
+                            If lDCIStatsList(j).BarrierPerm < 1 Then
+                                bNoPerm = True
+                            End If
+                            pRowBuffer.Value(4) = lDCIStatsList(j).BarrierYN
 
-                        pCursor = pTable.Insert(True)
-                        pCursor.InsertRow(pRowBuffer)
-                        pCursor.Flush()
-                    Next
-                    ' ===== END WRITE TO DCI TABLE =======
+                            pCursor = pTable.Insert(True)
+                            pCursor.InsertRow(pRowBuffer)
+                            pCursor.Flush()
+                        Next
+                        ' ===== END WRITE TO DCI TABLE =======
+                        iDCIRowCountTEMP = pTable.RowCount(Nothing)
 
-                    ' ====== BEGIN DCI CALCULATION ======
-                    ' TEMPORARY CHECK - if DCI Table has no rows then the 
-                    ' DCI model will fail.  If there are no barriers then 
-                    ' in UpdateResultsDCI function the DCIp and DCId will be
-                    ' set to 100.   ' check if user has hit 'close/cancel'
+                    End If
+                    
+                    '
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
@@ -3099,60 +3099,100 @@ Public Class Analysis
                     backgroundworker1.ReportProgress(iProgress, "Calculating DCI" & ControlChars.NewLine & _
                                                             "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count))
 
-                    Dim iDCIRowCountTEMP As Integer
-                    iDCIRowCountTEMP = pTable.RowCount(Nothing)
+                    '====== BEGIN DCI CALCULATION ======
+                    ' TEMPORARY CHECK - if DCI Table has no rows then the 
+                    ' DCI model will fail.  If there are no barriers then 
+                    ' in UpdateResultsDCI function the DCIp and DCId will be
+                    ' set to 100.   ' check if user has hit 'close/cancel'
 
-                    ' this code is awkward 
-                    If iDCIRowCountTEMP = 0 Or bNoPerm = False Then
-                        UpdateResultsDCI(iDCIRowCountTEMP, dDCIp, dDCId, bNaturalY)
-                    ElseIf iDCIRowCountTEMP > 0 Then
-                        DCIShellCall(sDCITableName, sConnectTabName, pFWorkspace)
-                        UpdateResultsDCI(iDCIRowCountTEMP, dDCIp, dDCId, bNaturalY)
-                    End If
-
-                    ' Insert a row into the Metrics Object List
-                    ' using pair of ID and Type for flag saved earlier
-                    pMetricsObject = New MetricsObject(f_sOutID, f_siOutEID, f_sOutID, f_siOutEID, f_sType, "DCIp", dDCIp)
-                    lMetricsObject.Add(pMetricsObject)
-                    pMetricsObject = New MetricsObject(f_sOutID, f_siOutEID, f_sOutID, f_siOutEID, f_sType, "DCId", dDCId)
-                    lMetricsObject.Add(pMetricsObject)
-
-                    ' Update the metrics object with the sectional DCI
-                    If bDCISectional = True Then
-                        ' check if user has hit 'close/cancel'
-                        If m_bCancel = True Then
-                            backgroundworker1.CancelAsync()
-                            backgroundworker1.Dispose()
+                    ' run regular analysis if 'advanced connectivity' isn't checked
+                    ' DCIRowCountTEmp checks that there is more than one segments in DCI table 
+                    ' and if not skips R call
+                 
+                    If bAdvConnectTab = False Or bDistanceLim = False Then
+                        If iDCIRowCountTEMP = 0 Or bNoPerm = False Then
+                            UpdateResultsDCI(iDCIRowCountTEMP, dDCIp, dDCId, bNaturalY, "out.txt")
+                        ElseIf iDCIRowCountTEMP > 0 Then
+                            DCIShellCall(sDCITableName, sConnectTabName, pFWorkspace)
+                            UpdateResultsDCI(iDCIRowCountTEMP, dDCIp, dDCId, bNaturalY, "out.txt")
+                        Else
+                            MsgBox("Debug2020: Error 306 in RunAnalysis. bAdvConnectTab must = True And bDistanceLim must = True to proceed with DCI. Exiting")
                             Exit Sub
                         End If
-                        If iProgress < 70 Then
-                            iProgress = iProgress + 1
+                    ElseIf bAdvConnectTab = True And bDistanceLim = True Then
+                        If lAdv_DCI_Data_Object.Count > 1 Then
+                            DCI_ADV2020_ShellCall(sAdvConnectTabName, _
+                                      pFWorkspace,
+                                      lAdv_DCI_Data_Object,
+                                      bDCISectional, _
+                                      bDistanceLim, _
+                                      dMaxDist, _
+                                      bDistanceDecay, sDDFunction)
+                            UpdateResultsDCI(lAdv_DCI_Data_Object.Count, dDCIp, dDCId, bNaturalY, "out_dd.txt")
+                        Else
+                            MsgBox("Debug2020: Error 204 in RunAnalysis. There must be more than 1 row in the advanced summary table object. Exiting")
+                            Exit Sub
                         End If
-                        backgroundworker1.ReportProgress(iProgress, "Calculating DCI Sectional" & ControlChars.NewLine & _
-                                                                "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count))
-                        'MsgBox("Debug:55")
-                        ' read output table if it exists
-                        ' and add sectional DCIs to the metrics object
-                        'UpdateResultsDCISectional()
+                    Else
+                        MsgBox("Debug2020: Error 210 in RunAnalysis. bAdvConnectTab must = True And bDistanceLim must = True to proceed with DCI. Exiting")
+                        Exit Sub
 
-                        ' Read the DCI Model Directory from the document properties
-                        Dim sDCIModelDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDCIModelDir"))
-                        'Dim bDCISectional As Boolean = Convert.ToBoolean(m_FiPEX__1.pPropset.GetProperty("dcisectionalyn"))
+                    End If
 
-                        ' Read the file and return two values - line one and line two from output
-                        Dim ErrInfo As String
 
-                        Dim objReader As StreamReader
-                        Dim sLine As String
-                        Dim iPosit As Integer
-                        Dim dDCIs As Double
-                        Dim iBarrierEID As Integer
+                ' Insert a row into the Metrics Object List
+                ' using pair of ID and Type for flag saved earlier
+                pMetricsObject = New MetricsObject(f_sOutID, f_siOutEID, f_sOutID, f_siOutEID, f_sType, "DCIp", dDCIp)
+                lMetricsObject.Add(pMetricsObject)
+                pMetricsObject = New MetricsObject(f_sOutID, f_siOutEID, f_sOutID, f_siOutEID, f_sType, "DCId", dDCId)
+                lMetricsObject.Add(pMetricsObject)
 
-                        Dim iLoopCount As Integer = 0
-                        iLoopCount = 0
-                        Try
-                            If iDCIRowCountTEMP > 1 Then
-                                objReader = New StreamReader(sDCIModelDir + "/DCI_all_sections.csv")
+                ' Update the metrics object with the sectional DCI
+                If bDCISectional = True Then
+                    ' check if user has hit 'close/cancel'
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        Exit Sub
+                    End If
+                    If iProgress < 70 Then
+                        iProgress = iProgress + 1
+                    End If
+                    backgroundworker1.ReportProgress(iProgress, "Calculating DCI Sectional" & ControlChars.NewLine & _
+                                                            "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count))
+                    'MsgBox("Debug:55")
+                    ' read output table if it exists
+                    ' and add sectional DCIs to the metrics object
+                    'UpdateResultsDCISectional()
+
+                    ' Read the DCI Model Directory from the document properties
+                    Dim sDCIModelDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDCIModelDir"))
+                    'Dim bDCISectional As Boolean = Convert.ToBoolean(m_FiPEX__1.pPropset.GetProperty("dcisectionalyn"))
+
+                    ' Read the file and return two values - line one and line two from output
+                    Dim ErrInfo As String
+
+                    Dim objReader As StreamReader
+                    Dim sLine As String
+                    Dim iPosit As Integer
+                    Dim dDCIs As Double
+                    Dim iBarrierEID As Integer
+
+                    Dim iLoopCount As Integer = 0
+
+                        '2020
+                        Dim DCIsFileName As String = "DCI_all_sections.csv"
+                        Dim iDCIRowCount As Integer = iDCIRowCountTEMP
+
+                        If bAdvConnectTab = True And bDistanceLim = True Then
+                            DCIsFileName = "DCI_all_sections_dd.csv"
+                            iDCIRowCount = lAdv_DCI_Data_Object.Count
+                        End If
+
+
+                    Try
+                            If iDCIRowCount > 1 Then
+                                objReader = New StreamReader(sDCIModelDir + "/" + DCIsFileName)
                                 Do Until objReader.EndOfStream = True
                                     iLoopCount = iLoopCount + 1
                                     sLine = objReader.ReadLine()
@@ -3160,7 +3200,6 @@ Public Class Analysis
                                     ' because the first line of a successful DCI will say "Value" - skip.  
                                     ' Using FINDME to get to the position at top of results box.  
                                     If iLoopCount = 1 Then
-
                                         If sLine = "ERROR" Then
                                             Exit Do
                                         End If
@@ -3196,20 +3235,20 @@ Public Class Analysis
                                         ' if EID = branch junction EID
                                         '  then flag and do not do next step
                                         bBranchJunction = False
-                                        If bAdvConnectTab = True Then
-                                            'MsgBox("Debug2020: filtered branch juncs: " + Str(pFilteredBranchJunctionsList.Count))
+                                        'If bAdvConnectTab = True Then
+                                        '    'MsgBox("Debug2020: filtered branch juncs: " + Str(pFilteredBranchJunctionsList.Count))
 
-                                            pFilteredBranchJunctionsList.Reset()
-                                            For p = 0 To pFilteredBranchJunctionsList.Count - 1
-                                                iEID_p = pFilteredBranchJunctionsList.Next()
-                                                'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iBarrierEID: " + Str(iBarrierEID))
-                                                If iBarrierEID = iEID_p Then
-                                                    bBranchJunction = True
-                                                    'MsgBox("Debug2020: MAtch found")
-                                                    Exit For
-                                                End If
-                                            Next
-                                        End If
+                                        '    pFilteredBranchJunctionsList.Reset()
+                                        '    For p = 0 To pFilteredBranchJunctionsList.Count - 1
+                                        '        iEID_p = pFilteredBranchJunctionsList.Next()
+                                        '        'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iBarrierEID: " + Str(iBarrierEID))
+                                        '        If iBarrierEID = iEID_p Then
+                                        '            bBranchJunction = True
+                                        '            'MsgBox("Debug2020: MAtch found")
+                                        '            Exit For
+                                        '        End If
+                                        '    Next
+                                        'End If
 
                                         bSourceJunction = False
                                         If bAdvConnectTab = True Then
@@ -3248,319 +3287,320 @@ Public Class Analysis
                             Else ' if there are no barriers encountered
                                 dDCIs = 100
                             End If
-                        Catch Ex As Exception
+                    Catch Ex As Exception
                             ErrInfo = Ex.Message
-                            MsgBox("Error reading Sectional DCI output file. " + ErrInfo)
-                        End Try
+                            objReader.Close()
+                        MsgBox("Error reading Sectional DCI output file. " + ErrInfo)
+                    End Try
 
-                    End If ' output to DCI sectional = True
-                End If 'output to DCI = True
-                ' ======= END DCI CALCULATION =======
+                End If ' output to DCI sectional = True
+            End If 'output to DCI = True
+            ' ======= END DCI CALCULATION =======
 
-                ' Insert a randomization check here.  
-                Dim bCostRandomization As Boolean '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bCostRandomization"))
-                Dim bPermRandomization As Boolean '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bPermRandomization"))
-                Dim iCostRandomCount As Integer '= Convert.ToInt16(m_FiPEx__1.pPropset.GetProperty("iCostRandomCount"))
-                Dim iPermRandomCount As Integer '= Convert.ToInt16(m_FiPEx__1.pPropset.GetProperty("iPermRandomCount"))
-                Dim bExcludeDams As Boolean '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bExcludeDams"))
-                ' THIS NEEDS TO BE ADDED TO DOC STREAM IN ALL READ/WRITE LOCATIONShttp://www.boingboing.net/features/cassini/cassini6.jpg
-                ' MAY CORRUPT EXISTING DOCUMENTS
-                Dim bUndirected As Boolean = False '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bUndirected"))
-                Dim bDirected As Boolean = False '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDirected"))
+            ' Insert a randomization check here.  
+            Dim bCostRandomization As Boolean '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bCostRandomization"))
+            Dim bPermRandomization As Boolean '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bPermRandomization"))
+            Dim iCostRandomCount As Integer '= Convert.ToInt16(m_FiPEx__1.pPropset.GetProperty("iCostRandomCount"))
+            Dim iPermRandomCount As Integer '= Convert.ToInt16(m_FiPEx__1.pPropset.GetProperty("iPermRandomCount"))
+            Dim bExcludeDams As Boolean '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bExcludeDams"))
+            ' THIS NEEDS TO BE ADDED TO DOC STREAM IN ALL READ/WRITE LOCATIONShttp://www.boingboing.net/features/cassini/cassini6.jpg
+            ' MAY CORRUPT EXISTING DOCUMENTS
+            Dim bUndirected As Boolean = False '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bUndirected"))
+            Dim bDirected As Boolean = False '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDirected"))
 
-                bPermRandomization = False
-                bCostRandomization = False
-                iCostRandomCount = 40
+            bPermRandomization = False
+            bCostRandomization = False
+            iCostRandomCount = 40
 
-                Dim dRandomCost As Double
-                Dim bUseRandomPerm As Boolean
-                Dim bCreateRandomPerm As Boolean
+            Dim dRandomCost As Double
+            Dim bUseRandomPerm As Boolean
+            Dim bCreateRandomPerm As Boolean
 
-                If bGLPKTables = True Then
-                    ' ===== BEGIN GLPK TABLES WRITE =====
-                    'MsgBox("Debug:56")
-                    pTable = pFWorkspace.OpenTable(sGLPKHabitatTableName)
+            If bGLPKTables = True Then
+                ' ===== BEGIN GLPK TABLES WRITE =====
+                'MsgBox("Debug:56")
+                pTable = pFWorkspace.OpenTable(sGLPKHabitatTableName)
+                j = 0
+                'bNoPe2wrm = False ' NoPerm false means there aren't any barriers encountered in 
+                '' this list yet that have less than one permeability
+                For j = 0 To lGLPKStatsList.Count - 1
+                    pRowBuffer = pTable.CreateRowBuffer
+                    pRowBuffer.Value(0) = lGLPKStatsList(j).Barrier
+                    'pRowBuffer.Value(1) = 1
+                    Try
+                        pRowBuffer.Value(1) = Math.Round(lGLPKStatsList(j).Quantity, 1)
+                        'pRowBuffer.Value(1) = Convert.ToInt32(lGLPKStatsList(j).Quantity)
+
+                    Catch ex As Exception
+                        MsgBox("Error attempting to insert quantity into GLPKHabitatTable. Code4455. Continuing... " + ex.Message)
+                        pRowBuffer.Value(1) = lGLPKStatsList(j).Quantity
+                    End Try
+                    pCursor = pTable.Insert(True)
+                    pCursor.InsertRow(pRowBuffer)
+                    pCursor.Flush()
+                Next
+
+
+                pTable = pFWorkspace.OpenTable(sGLPKConnectTabName)
+                j = 0
+                For j = 0 To lGLPKConnectivity.Count - 1
+                    pRowBuffer = pTable.CreateRowBuffer
+                    pRowBuffer.Value(0) = lGLPKConnectivity(j).DownstreamBarrierEID
+                    pRowBuffer.Value(1) = lGLPKConnectivity(j).BarrEID
+                    pRowBuffer.Value(2) = 1
+
+                    pCursor = pTable.Insert(True)
+                    pCursor.InsertRow(pRowBuffer)
+                    pCursor.Flush()
+                Next
+
+                pTable = pFWorkspace.OpenTable(sGLPKOptionsTableName)
+
+                ' if there's no randomization then update options normally
+                ' and run the GLPKShellCall once
+                If bCostRandomization = False And bPermRandomization = False Then
+
                     j = 0
-                    'bNoPe2wrm = False ' NoPerm false means there aren't any barriers encountered in 
-                    '' this list yet that have less than one permeability
-                    For j = 0 To lGLPKStatsList.Count - 1
-                        pRowBuffer = pTable.CreateRowBuffer
-                        pRowBuffer.Value(0) = lGLPKStatsList(j).Barrier
-                        'pRowBuffer.Value(1) = 1
-                        Try
-                            pRowBuffer.Value(1) = Math.Round(lGLPKStatsList(j).Quantity, 1)
-                            'pRowBuffer.Value(1) = Convert.ToInt32(lGLPKStatsList(j).Quantity)
+                    For j = 0 To lGLPKOptionsList.Count - 1
 
-                        Catch ex As Exception
-                            MsgBox("Error attempting to insert quantity into GLPKHabitatTable. Code4455. Continuing... " + ex.Message)
-                            pRowBuffer.Value(1) = lGLPKStatsList(j).Quantity
-                        End Try
-                        pCursor = pTable.Insert(True)
-                        pCursor.InsertRow(pRowBuffer)
-                        pCursor.Flush()
+                        'If Not lGLPKUniqueEIDs.Contains(lGLPKOptionsList(j).BarrierEID) Then
+                        '    lGLPKUniqueEIDs.Add(lGLPKOptionsList(j).BarrierEID)
+                        'End If
+
+                        ' TEMP - to eliminate all options except 'do nothing' - should make UNDIR work
+                        'If lGLPKOptionsList(j).OptionNum < 2 Then
+
+                        If lGLPKOptionsList(j).BarrierPerm <> 9999 And lGLPKOptionsList(j).OptionCost <> 9999 Then
+                            pRowBuffer = pTable.CreateRowBuffer
+                            pRowBuffer.Value(0) = lGLPKOptionsList(j).BarrierEID
+                            pRowBuffer.Value(1) = lGLPKOptionsList(j).OptionNum
+                            ' keep track of max options for use in input to GLPK Model
+                            If iMaxOptionNum < lGLPKOptionsList(j).OptionNum Then
+                                iMaxOptionNum = lGLPKOptionsList(j).OptionNum
+                            End If
+                            pRowBuffer.Value(2) = Math.Round(lGLPKOptionsList(j).BarrierPerm, 2)
+                            'pRowBuffer.Value(3) = Math.Round(lGLPKOptionsList(j).OptionCost, 2)
+                            pRowBuffer.Value(3) = Math.Round(lGLPKOptionsList(j).OptionCost)
+                            pCursor = pTable.Insert(True)
+                            pCursor.InsertRow(pRowBuffer)
+                            pCursor.Flush()
+                        End If
+                        'End If
+                    Next ' j
+
+                    'j = 0
+                    'For j = 0 To lGLPKUniqueEIDs.Count - 1
+                    '    pRowBuffer = pTable.CreateRowBuffer
+                    '    pRowBuffer.Value(0) = lGLPKOptionsList(j).BarrierEID
+                    '    pRowBuffer.Value(1) = 1
+                    '    pRowBuffer.Value(2) = Math.Round(lGLPKOptionsList(j).BarrierPerm, 2)
+                    '    pRowBuffer.Value(3) = 0
+
+                    '    pCursor = pTable.Insert(True)
+                    '    pCursor.InsertRow(pRowBuffer)
+                    'Next
+
+                    ' ===== END GLPK TABLES WRITE =======
+
+                    ' ===== BEGIN GLPK CALCULATION =====
+                    ' check if user has hit 'close/cancel'
+                    'MsgBox("Debug:57")
+
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        Exit Sub
+                    End If
+
+                    If iProgress < 70 Then
+                        iProgress = iProgress + 1
+                    End If
+
+                    backgroundworker1.ReportProgress(iProgress, "Performing Optimization Analysis" & ControlChars.NewLine & _
+                                                 "User Flag " & (i + 1).ToString & " of " & (pOriginaljuncFlagsList.Count).ToString)
+
+                    If bDirected = True Then
+                        GLPKShellCall(sGLPKHabitatTableName, _
+                                      sGLPKOptionsTableName, _
+                                      sGLPKConnectTabName, _
+                                      iMaxOptionNum, _
+                                      f_siOutEID, _
+                                      pFWorkspace, _
+                                      iProgress, _
+                                      sAnalysisCode, _
+                                      "DIR", _
+                                      False)
+                        ' run once to get 'initial state' of network
+                        ' measured in permeability weighted accessible network
+                        ' Need to eliminate all other options in 'options' table
+                        'other(than) 'do nothing' in order to get the model to 
+                        ' work, i.e., force a decision. 
+                        'PrepareZeroBudgetOptionsTable(sGLPKOptionsTableName, _
+                        '                              pFWorkspace, _
+                        '                              lGLPKOptionsList)
+                        'GLPKShellCall(sGLPKHabitatTableName, _
+                        '           sGLPKOptionsTableName, _
+                        '           sGLPKConnectTabName, _
+                        '           1, _
+                        '           f_siOutEID, _
+                        '           pFWorkspace, _
+                        '           iProgress, _
+                        '           sAnalysisCode, _
+                        '           "DIR", _
+                        '           True)
+                    End If
+
+                    If bUndirected = True Then
+
+                        GLPKShellCall(sGLPKHabitatTableName, _
+                                      sGLPKOptionsTableName, _
+                                      sGLPKConnectTabName, _
+                                   iMaxOptionNum, _
+                                    f_siOutEID, _
+                                 pFWorkspace, _
+                                 iProgress, _
+                                sAnalysisCode, _
+                               "UNDIR", _
+                               False)
+
+                        ' run once to get 'initial state' of network
+                        ' measured in permeability weighted accessible network
+                        ' Need to eliminate all other options in 'options' table
+                        'other(than) 'do nothing' in order to get the model to 
+                        ' work, i.e., force a decision. 
+                        'PrepareZeroBudgetOptionsTable(sGLPKOptionsTableName, _
+                        '                              pFWorkspace, _
+                        '                              lGLPKOptionsList)
+                        'GLPKShellCall(sGLPKHabitatTableName, _
+                        '           sGLPKOptionsTableName, _
+                        '           sGLPKConnectTabName, _
+                        '           1, _
+                        '           f_siOutEID, _
+                        '           pFWorkspace, _
+                        '           iProgress, _
+                        '           sAnalysisCode, _
+                        '           "UNDIR", _
+                        '           True)
+                    End If
+
+                Else ' if Randomization is on then 
+                    ' update Options table with random permeabilty and run 
+                    ' for as many iterations as are chosen
+
+                    ' 1. First run analysis as usual
+                    '    But add a _A after the analysis code ('best guess' treatment)
+                    ' 2. After optimization, delete all rows in the options table
+                    ' 3. update options table again, with randomized variable (permeability or cost). 
+                    ' 4. re-run, but add a _C1 (cost, run #1) or _P1 (perm, run #1) 
+                    '    after the analysis code 
+                    '  in the case of permeability randomization...
+                    ' 5. re-run, but forcing the 'best guess' decisions under the new
+                    ' permeability randomization to see the result (ZMAX)
+
+                    j = 0
+                    For j = 0 To lGLPKOptionsList.Count - 1
+
+                        'If Not lGLPKUniqueEIDs.Contains(lGLPKOptionsList(j).BarrierEID) Then
+                        '    lGLPKUniqueEIDs.Add(lGLPKOptionsList(j).BarrierEID)
+                        'End If
+
+                        If lGLPKOptionsList(j).BarrierPerm <> 9999 And lGLPKOptionsList(j).OptionCost <> 9999 Then
+                            pRowBuffer = pTable.CreateRowBuffer
+                            pRowBuffer.Value(0) = lGLPKOptionsList(j).BarrierEID
+                            pRowBuffer.Value(1) = lGLPKOptionsList(j).OptionNum
+                            ' keep track of max options for use in input to GLPK Model
+                            If iMaxOptionNum < lGLPKOptionsList(j).OptionNum Then
+                                iMaxOptionNum = lGLPKOptionsList(j).OptionNum
+                            End If
+                            pRowBuffer.Value(2) = Math.Round(lGLPKOptionsList(j).BarrierPerm, 2)
+                            'pRowBuffer.Value(3) = Math.Round(lGLPKOptionsList(j).OptionCost, 2)
+                            pRowBuffer.Value(3) = Math.Round(lGLPKOptionsList(j).OptionCost)
+                            pCursor = pTable.Insert(True)
+                            pCursor.InsertRow(pRowBuffer)
+                            pCursor.Flush()
+                        End If
                     Next
 
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        Exit Sub
+                    End If
+                    If iProgress < 70 Then
+                        iProgress = iProgress + 1
+                    End If
+                    backgroundworker1.ReportProgress(iProgress, "Performing Optimization Analysis" & ControlChars.NewLine & _
+                                                 "User Flag " & (i + 1).ToString & " of " & (pOriginaljuncFlagsList.Count).ToString & _
+                                                 ControlChars.NewLine & "Primary Run")
 
-                    pTable = pFWorkspace.OpenTable(sGLPKConnectTabName)
-                    j = 0
-                    For j = 0 To lGLPKConnectivity.Count - 1
-                        pRowBuffer = pTable.CreateRowBuffer
-                        pRowBuffer.Value(0) = lGLPKConnectivity(j).DownstreamBarrierEID
-                        pRowBuffer.Value(1) = lGLPKConnectivity(j).BarrEID
-                        pRowBuffer.Value(2) = 1
+                    If bDirected = True Then
+                        GLPKShellCall(sGLPKHabitatTableName, _
+                                 sGLPKOptionsTableName, _
+                                 sGLPKConnectTabName, _
+                                 iMaxOptionNum, _
+                                 f_siOutEID, _
+                                 pFWorkspace, _
+                                 iProgress, _
+                                 sAnalysisCode + "_A", _
+                                 "DIR", _
+                                 False)
+                        If bPermRandomization = True Then
+                            runRandomization(sGLPKHabitatTableName, _
+                                             sGLPKOptionsTableName, _
+                                             sGLPKConnectTabName, _
+                                             "DIR", _
+                                             pTable, _
+                                             lGLPKOptionsList, _
+                                             iProgress, _
+                                             iMaxOptionNum, _
+                                             f_siOutEID, _
+                                             pFWorkspace, _
+                                             sAnalysisCode, _
+                                             sPrefix)
+                        End If
+                        If bCostRandomization = True Then
 
-                        pCursor = pTable.Insert(True)
-                        pCursor.InsertRow(pRowBuffer)
-                        pCursor.Flush()
-                    Next
+                        End If
+                    End If ' DIR
 
-                    pTable = pFWorkspace.OpenTable(sGLPKOptionsTableName)
-
-                    ' if there's no randomization then update options normally
-                    ' and run the GLPKShellCall once
-                    If bCostRandomization = False And bPermRandomization = False Then
-
-                        j = 0
-                        For j = 0 To lGLPKOptionsList.Count - 1
-
-                            'If Not lGLPKUniqueEIDs.Contains(lGLPKOptionsList(j).BarrierEID) Then
-                            '    lGLPKUniqueEIDs.Add(lGLPKOptionsList(j).BarrierEID)
-                            'End If
-
-                            ' TEMP - to eliminate all options except 'do nothing' - should make UNDIR work
-                            'If lGLPKOptionsList(j).OptionNum < 2 Then
-
-                            If lGLPKOptionsList(j).BarrierPerm <> 9999 And lGLPKOptionsList(j).OptionCost <> 9999 Then
-                                pRowBuffer = pTable.CreateRowBuffer
-                                pRowBuffer.Value(0) = lGLPKOptionsList(j).BarrierEID
-                                pRowBuffer.Value(1) = lGLPKOptionsList(j).OptionNum
-                                ' keep track of max options for use in input to GLPK Model
-                                If iMaxOptionNum < lGLPKOptionsList(j).OptionNum Then
-                                    iMaxOptionNum = lGLPKOptionsList(j).OptionNum
-                                End If
-                                pRowBuffer.Value(2) = Math.Round(lGLPKOptionsList(j).BarrierPerm, 2)
-                                'pRowBuffer.Value(3) = Math.Round(lGLPKOptionsList(j).OptionCost, 2)
-                                pRowBuffer.Value(3) = Math.Round(lGLPKOptionsList(j).OptionCost)
-                                pCursor = pTable.Insert(True)
-                                pCursor.InsertRow(pRowBuffer)
-                                pCursor.Flush()
-                            End If
-                            'End If
-                        Next ' j
-
-                        'j = 0
-                        'For j = 0 To lGLPKUniqueEIDs.Count - 1
-                        '    pRowBuffer = pTable.CreateRowBuffer
-                        '    pRowBuffer.Value(0) = lGLPKOptionsList(j).BarrierEID
-                        '    pRowBuffer.Value(1) = 1
-                        '    pRowBuffer.Value(2) = Math.Round(lGLPKOptionsList(j).BarrierPerm, 2)
-                        '    pRowBuffer.Value(3) = 0
-
-                        '    pCursor = pTable.Insert(True)
-                        '    pCursor.InsertRow(pRowBuffer)
-                        'Next
-
-                        ' ===== END GLPK TABLES WRITE =======
-
-                        ' ===== BEGIN GLPK CALCULATION =====
-                        ' check if user has hit 'close/cancel'
-                        'MsgBox("Debug:57")
-
-                        If m_bCancel = True Then
-                            backgroundworker1.CancelAsync()
-                            backgroundworker1.Dispose()
-                            Exit Sub
+                    ' For SA, need to know the decisions reached -- added option to store in global variable in GLPKShell Call
+                    ' m_lSABestGuessDecisionsObject
+                    ' 
+                    If bUndirected = True Then
+                        GLPKShellCall(sGLPKHabitatTableName, _
+                                 sGLPKOptionsTableName, _
+                                 sGLPKConnectTabName, _
+                                 iMaxOptionNum, _
+                                 f_siOutEID, _
+                                 pFWorkspace, _
+                                 iProgress, _
+                                 sAnalysisCode + "_A", _
+                                 "UNDIR", _
+                                 False)
+                        If bPermRandomization = True Then
+                            runRandomization(sGLPKHabitatTableName, _
+                                           sGLPKOptionsTableName, _
+                                           sGLPKConnectTabName, _
+                                           "UNDIR", _
+                                           pTable, _
+                                           lGLPKOptionsList, _
+                                           iProgress, _
+                                           iMaxOptionNum, _
+                                           f_siOutEID, _
+                                           pFWorkspace, _
+                                           sAnalysisCode, _
+                                           sPrefix)
                         End If
 
-                        If iProgress < 70 Then
-                            iProgress = iProgress + 1
+                        If bCostRandomization = True Then
+
                         End If
+                    End If ' UNDIR
+                End If ' RANDOMIZATION - SA IS ON
 
-                        backgroundworker1.ReportProgress(iProgress, "Performing Optimization Analysis" & ControlChars.NewLine & _
-                                                     "User Flag " & (i + 1).ToString & " of " & (pOriginaljuncFlagsList.Count).ToString)
-
-                        If bDirected = True Then
-                            GLPKShellCall(sGLPKHabitatTableName, _
-                                          sGLPKOptionsTableName, _
-                                          sGLPKConnectTabName, _
-                                          iMaxOptionNum, _
-                                          f_siOutEID, _
-                                          pFWorkspace, _
-                                          iProgress, _
-                                          sAnalysisCode, _
-                                          "DIR", _
-                                          False)
-                            ' run once to get 'initial state' of network
-                            ' measured in permeability weighted accessible network
-                            ' Need to eliminate all other options in 'options' table
-                            'other(than) 'do nothing' in order to get the model to 
-                            ' work, i.e., force a decision. 
-                            'PrepareZeroBudgetOptionsTable(sGLPKOptionsTableName, _
-                            '                              pFWorkspace, _
-                            '                              lGLPKOptionsList)
-                            'GLPKShellCall(sGLPKHabitatTableName, _
-                            '           sGLPKOptionsTableName, _
-                            '           sGLPKConnectTabName, _
-                            '           1, _
-                            '           f_siOutEID, _
-                            '           pFWorkspace, _
-                            '           iProgress, _
-                            '           sAnalysisCode, _
-                            '           "DIR", _
-                            '           True)
-                        End If
-
-                        If bUndirected = True Then
-
-                            GLPKShellCall(sGLPKHabitatTableName, _
-                                          sGLPKOptionsTableName, _
-                                          sGLPKConnectTabName, _
-                                       iMaxOptionNum, _
-                                        f_siOutEID, _
-                                     pFWorkspace, _
-                                     iProgress, _
-                                    sAnalysisCode, _
-                                   "UNDIR", _
-                                   False)
-
-                            ' run once to get 'initial state' of network
-                            ' measured in permeability weighted accessible network
-                            ' Need to eliminate all other options in 'options' table
-                            'other(than) 'do nothing' in order to get the model to 
-                            ' work, i.e., force a decision. 
-                            'PrepareZeroBudgetOptionsTable(sGLPKOptionsTableName, _
-                            '                              pFWorkspace, _
-                            '                              lGLPKOptionsList)
-                            'GLPKShellCall(sGLPKHabitatTableName, _
-                            '           sGLPKOptionsTableName, _
-                            '           sGLPKConnectTabName, _
-                            '           1, _
-                            '           f_siOutEID, _
-                            '           pFWorkspace, _
-                            '           iProgress, _
-                            '           sAnalysisCode, _
-                            '           "UNDIR", _
-                            '           True)
-                        End If
-
-                    Else ' if Randomization is on then 
-                        ' update Options table with random permeabilty and run 
-                        ' for as many iterations as are chosen
-
-                        ' 1. First run analysis as usual
-                        '    But add a _A after the analysis code ('best guess' treatment)
-                        ' 2. After optimization, delete all rows in the options table
-                        ' 3. update options table again, with randomized variable (permeability or cost). 
-                        ' 4. re-run, but add a _C1 (cost, run #1) or _P1 (perm, run #1) 
-                        '    after the analysis code 
-                        '  in the case of permeability randomization...
-                        ' 5. re-run, but forcing the 'best guess' decisions under the new
-                        ' permeability randomization to see the result (ZMAX)
-
-                        j = 0
-                        For j = 0 To lGLPKOptionsList.Count - 1
-
-                            'If Not lGLPKUniqueEIDs.Contains(lGLPKOptionsList(j).BarrierEID) Then
-                            '    lGLPKUniqueEIDs.Add(lGLPKOptionsList(j).BarrierEID)
-                            'End If
-
-                            If lGLPKOptionsList(j).BarrierPerm <> 9999 And lGLPKOptionsList(j).OptionCost <> 9999 Then
-                                pRowBuffer = pTable.CreateRowBuffer
-                                pRowBuffer.Value(0) = lGLPKOptionsList(j).BarrierEID
-                                pRowBuffer.Value(1) = lGLPKOptionsList(j).OptionNum
-                                ' keep track of max options for use in input to GLPK Model
-                                If iMaxOptionNum < lGLPKOptionsList(j).OptionNum Then
-                                    iMaxOptionNum = lGLPKOptionsList(j).OptionNum
-                                End If
-                                pRowBuffer.Value(2) = Math.Round(lGLPKOptionsList(j).BarrierPerm, 2)
-                                'pRowBuffer.Value(3) = Math.Round(lGLPKOptionsList(j).OptionCost, 2)
-                                pRowBuffer.Value(3) = Math.Round(lGLPKOptionsList(j).OptionCost)
-                                pCursor = pTable.Insert(True)
-                                pCursor.InsertRow(pRowBuffer)
-                                pCursor.Flush()
-                            End If
-                        Next
-
-                        If m_bCancel = True Then
-                            backgroundworker1.CancelAsync()
-                            backgroundworker1.Dispose()
-                            Exit Sub
-                        End If
-                        If iProgress < 70 Then
-                            iProgress = iProgress + 1
-                        End If
-                        backgroundworker1.ReportProgress(iProgress, "Performing Optimization Analysis" & ControlChars.NewLine & _
-                                                     "User Flag " & (i + 1).ToString & " of " & (pOriginaljuncFlagsList.Count).ToString & _
-                                                     ControlChars.NewLine & "Primary Run")
-
-                        If bDirected = True Then
-                            GLPKShellCall(sGLPKHabitatTableName, _
-                                     sGLPKOptionsTableName, _
-                                     sGLPKConnectTabName, _
-                                     iMaxOptionNum, _
-                                     f_siOutEID, _
-                                     pFWorkspace, _
-                                     iProgress, _
-                                     sAnalysisCode + "_A", _
-                                     "DIR", _
-                                     False)
-                            If bPermRandomization = True Then
-                                runRandomization(sGLPKHabitatTableName, _
-                                                 sGLPKOptionsTableName, _
-                                                 sGLPKConnectTabName, _
-                                                 "DIR", _
-                                                 pTable, _
-                                                 lGLPKOptionsList, _
-                                                 iProgress, _
-                                                 iMaxOptionNum, _
-                                                 f_siOutEID, _
-                                                 pFWorkspace, _
-                                                 sAnalysisCode, _
-                                                 sPrefix)
-                            End If
-                            If bCostRandomization = True Then
-
-                            End If
-                        End If ' DIR
-
-                        ' For SA, need to know the decisions reached -- added option to store in global variable in GLPKShell Call
-                        ' m_lSABestGuessDecisionsObject
-                        ' 
-                        If bUndirected = True Then
-                            GLPKShellCall(sGLPKHabitatTableName, _
-                                     sGLPKOptionsTableName, _
-                                     sGLPKConnectTabName, _
-                                     iMaxOptionNum, _
-                                     f_siOutEID, _
-                                     pFWorkspace, _
-                                     iProgress, _
-                                     sAnalysisCode + "_A", _
-                                     "UNDIR", _
-                                     False)
-                            If bPermRandomization = True Then
-                                runRandomization(sGLPKHabitatTableName, _
-                                               sGLPKOptionsTableName, _
-                                               sGLPKConnectTabName, _
-                                               "UNDIR", _
-                                               pTable, _
-                                               lGLPKOptionsList, _
-                                               iProgress, _
-                                               iMaxOptionNum, _
-                                               f_siOutEID, _
-                                               pFWorkspace, _
-                                               sAnalysisCode, _
-                                               sPrefix)
-                            End If
-
-                            If bCostRandomization = True Then
-
-                            End If
-                        End If ' UNDIR
-                    End If ' RANDOMIZATION - SA IS ON
-
-                    'MsgBox("Debug:58")
-                End If ' GLPK is on
-                ' ===== END GLPK CALCULATION =======
+                'MsgBox("Debug:58")
+            End If ' GLPK is on
+            ' ===== END GLPK CALCULATION =======
 
 
             End If ' output to dbf = true
@@ -3618,15 +3658,13 @@ Public Class Analysis
         Next ' Flag /sink
 
 
-
         ' ============== 2020 DON'T WRITE REDUNDANT METRICS Objects And Correct ==========
         ' ################################################################################
         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_2020
 
-
-        ' reevaluate the metrics and habitat to remove reference to branch junctions (gets
+        ' to do: reevaluate the metrics and habitat to remove reference to branch junctions (gets
         ' too long in table output! 10,000's of thousands of rows
         ' 
 
@@ -3730,8 +3768,8 @@ Public Class Analysis
 
         Dim pEdgeFlagDisplay As IEdgeFlagDisplay
 
-        '               Reset things the way the user had them
         ' ========================= RESET BARRIERS ===========================
+        '               Reset things the way the user had them
         ' check if user has hit 'close/cancel'
         If m_bCancel = True Then
             backgroundworker1.CancelAsync()
@@ -3928,10 +3966,13 @@ Public Class Analysis
         'column = New DataColumn("Type", GetType(System.String))
         'pSinkTable.Columns.Add(column)
 
+        Dim bPrintToResultsForm As Boolean = True
+
         If lMetricsObject.Count > 50 Then
-            Dim result = Windows.Forms.MessageBox.Show("There are more than 50 barriers analyzed.  It may take some time to write to results form.  Continue?", "continue", Windows.Forms.MessageBoxButtons.YesNo)
+            Dim sMetricsCount As String = Convert.ToString(lMetricsObject.Count)
+            Dim result = Windows.Forms.MessageBox.Show("There are more than " & sMetricsCount & " barriers / junctions analyzed.  It may take some time to write to results form.  Continue?", "continue", Windows.Forms.MessageBoxButtons.YesNo)
             If result = Windows.Forms.DialogResult.No Then
-                Exit Sub
+                bPrintToResultsForm = False
             End If
         End If
 
@@ -3955,538 +3996,206 @@ Public Class Analysis
             End If
         Next
 
-        ' ===================================
-        'lHabStatsList
-
-        ' = lHabStatsList(j).Sink
-        ' = lHabStatsList(j).bID
-        ' = lHabStatsList(j).bType
-        ' = lHabStatsList(j).Layer
-        ' = lHabStatsList(j).Direction
-        ' = lHabStatsList(j).TotalImmedPath
-        ' = lHabStatsList(j).UniqueClass
-        ' = lHabStatsList(j).ClassName
-        ' = lHabStatsList(j).Quantity
-        ' = lHabStatsList(j).Unit
-
-
-        'Dim pMetricsTable As DataTable = New DataTable("Metrics Table")
-
-        'Dim sTempstring As String
-        'If bDCI = True Then
-        '    column = New DataColumn("DCIp", GetType(System.Double))
-        '    table.Columns.Add(column)
-        '    column = New DataColumn("DCId", GetType(System.Double))
-        '    table.Columns.Add(column)
-
-        '    column = New DataColumn("Sink", GetType(System.String))
-        '    pMetricsTable.Columns.Add(column)
-        '    column = New DataColumn("DCIp", GetType(System.Double))
-        '    pMetricsTable.Columns.Add(column)
-        '    column = New DataColumn("DCId", GetType(System.Double))
-        '    pMetricsTable.Columns.Add(column)
-
-        '    i = 0
-        '    For i = 0 To lSinkIDandTypes.Count - 1
-        '        j = 0
-        '        bDCIpMatch = False
-        '        bDCIdMatch = False
-        '        For j = 0 To lMetricsObject.Count - 1
-
-        '            If lMetricsObject(j).ID = lSinkIDandTypes(i).SinkID Then
-        '                sTempstring = lMetricsObject(j).MetricName
-        '                If lMetricsObject(j).MetricName = "DCIp" Then
-        '                    dDCIp = lMetricsObject(j).Metric
-        '                    bDCIpMatch = True
-        '                End If
-        '                If lMetricsObject(j).MetricName = "DCId" Then
-        '                    dDCId = lMetricsObject(j).Metric
-        '                    bDCIdMatch = True
-        '                End If
-
-        '                If bDCIpMatch = True And bDCIdMatch = True Then
-        '                    pSinkAndDCIS = New SinkandDCIs(lSinkIDandTypes(i).SinkID, lSinkIDandTypes(i).Type, dDCIp, dDCId)
-        '                    lSinkAndDCIS.Add(pSinkAndDCIS)
-        '                    row = pMetricsTable.NewRow()
-        '                    row.ItemArray = New Object() {lSinkIDandTypes(i).SinkID, dDCIp, dDCId}
-        '                    pMetricsTable.Rows.Add(row)
-        '                    Exit For
-        '                End If ' bDCIpMatch and bDCIdMatch are true
-
-        '            End If
-        '        Next ' row in the metrics object
-        '    Next ' sink in list of unique sink ID strings
-
-        '    ' insert the sink row into the table
-        '    'i = 0
-
-        '    'For i = 0 To lSinkAndDCIS.Count - 1
-
-        '    '    row = table.NewRow()
-        '    '    row.ItemArray = New Object() {lSinkAndDCIS(i).SinkID, "", lSinkAndDCIS(i).Type, lSinkAndDCIS(i).DCIp, lSinkAndDCIS(i).DCId}
-        '    '    table.Rows.Add(row)
-
-
-        '    'Next
-
-        'Else ' just insert the sink ID and type
-
-        'End If ' bDCI = True
-
-        'Dim pHabTable As DataTable = New DataTable("HabitatTable")
-
-        'column = New DataColumn("Sink", GetType(System.String))
-        'pHabTable.Columns.Add(column)
-        'column = New DataColumn("Layer", GetType(System.String))
-        'pHabTable.Columns.Add(column)
-        'column = New DataColumn("Direction", GetType(System.String))
-        'pHabTable.Columns.Add(column)
-        'column = New DataColumn("TraceType", GetType(System.String))
-        'pHabTable.Columns.Add(column)
-        'column = New DataColumn("Class", GetType(System.String))
-        'pHabTable.Columns.Add(column)
-        'column = New DataColumn("Quantity", GetType(System.Double))
-        'pHabTable.Columns.Add(column)
-        'column = New DataColumn("Unit", GetType(System.String))
-        'pHabTable.Columns.Add(column)
-
-        '' create data table for habitat statistics
-        'i = 0
-        'For i = 0 To lSinkAndDCIS.Count - 1
-
-        '    j = 0
-        '    For j = 0 To lHabStatsList.Count - 1
-
-        '        If lSinkAndDCIS(i).SinkID = lHabStatsList(j).Sink And lSinkAndDCIS(i).SinkID = lHabStatsList(j).bID Then
-
-        '            ' = lHabStatsList(j).Sink
-        '            ' = lHabStatsList(j).bID
-        '            ' = lHabStatsList(j).bType
-        '            ' = lHabStatsList(j).Layer
-        '            ' = lHabStatsList(j).Direction
-        '            ' = lHabStatsList(j).TotalImmedPath
-        '            ' = lHabStatsList(j).UniqueClass
-        '            ' = lHabStatsList(j).ClassName
-        '            ' = lHabStatsList(j).Quantity
-        '            ' = lHabStatsList(j).Unit
-
-        '            row = pHabTable.NewRow()
-        '            row.ItemArray = New Object() {lHabStatsList(j).Sink, lHabStatsList(j).Layer, lHabStatsList(j).Direction, lHabStatsList(j).TotalImmedPath, lHabStatsList(j).UniqueClass, lHabStatsList(j).Quantity, lHabStatsList(j).Unit}
-        '            pHabTable.Rows.Add(row)
-
-
-        '        End If
-
-        '    Next
-
-        'Next
-
-        '' gonna do a join based on some shit
-        '' create a dataset
-        'Dim dataset As New DataSet("output_tables")
-        'dataset.Tables.Add(pHabTable)
-        'dataset.Tables.Add(pMetricsTable)
-        'dataset.Tables.Add(pSinkTable)
-
-        'Dim obj_ParentClmn, obj_ChildClmn As DataColumn
-
-        ''Get the reference of columns to create a relation between.
-        'obj_ParentClmn = dataset.Tables("Sink Table").Columns("Sink")
-        'obj_ChildClmn = dataset.Tables("HabitatTable").Columns("Sink")
-
-        ''Creates a relation object, Parameters required are
-        ''New Relation Name, Object of Parent & Child column respectively.
-        'Dim obj_DataRelation = New DataRelation("relation_Sink_Habitat", _
-        '            obj_ParentClmn, obj_ChildClmn)
-
-        ''Adding Relation to the dataset that holds the tables.
-        'dataset.Relations.Add(obj_DataRelation)
-
-        '============================
-
-        '  The challenge is to put two tables side-by-side
-        '  Master sinks table next to the child hab list table. 
-        '  challenge is spacing and column variability.  
-
-
-
-        'pSinkTable.PrimaryKey = 
-
-        ' example:
-        ' int n = dataGridView1.Rows.Add();
-        'dataGridView1.Rows[n].Cells[0].Value = title;
-        'dataGridView1.Rows[n].Cells[1].Value = dateTimeNow;
-
-        '  column one   - sink ID
-        '  column two   - sink stat label
-        '  column three - sink stat
-        '  column four  - barrier ID
-        '  column five  - trace direction (i.e. upstream:)  (Loop)
-        '  column six   - trace type (i.e. total)
-        '  column six   - habitat layer (i.e. Lines) (Loop) (OMIT)
-        '  column seven - habitat class (i.e. river or stream)(Loop)
-        '                 if there are classes insert a 'total' at the bottom 
-        '                 of the list of classes (run totalling function?)
-        '  column eight - the quantity
-        '  column nine  - unit 
-
-        ' For each Sink in the master Sinks List
-        '   If it's the first iteration of that sink. 
-        '     if DCI stats were calculated then 
-        '     insert the DCIp stat label and value in column 2 and three
-        ' 
-
-        ' Do NOT bind the data table so I can program flexible
-        ' rows and columns to handle the variety of input data necessary
-
         ' ============ BEGIN WRITE TO DATAGRID OUTPUT SUMMARY TABLE =============
+        ' to do 2020 - this should be a separate sub wrapped in following 'if'
+        If bPrintToResultsForm = True Then
 
-        ' Set up the table - create columns 
+            '  column one   - sink ID
+            '  column two   - sink stat label
+            '  column three - sink stat
+            '  column four  - barrier ID
+            '  column five  - trace direction (i.e. upstream:)  (Loop)
+            '  column six   - trace type (i.e. total)
+            '  column six   - habitat layer (i.e. Lines) (Loop) (OMIT)
+            '  column seven - habitat class (i.e. river or stream)(Loop)
+            '                 if there are classes insert a 'total' at the bottom 
+            '                 of the list of classes (run totalling function?)
+            '  column eight - the quantity
+            '  column nine  - unit 
 
-        pResultsForm3.DataGridView1.Columns.Add("Sink", "Sink")           '0
-        pResultsForm3.DataGridView1.Columns.Add("SinkID", "SinkID")       '1
-        pResultsForm3.DataGridView1.Columns.Add("Type", "Type")           '2
-        pResultsForm3.DataGridView1.Columns.Add("Barrier", "Barrier")     '3
-        pResultsForm3.DataGridView1.Columns.Add("BarrierID", "BarrierID") '4
-        pResultsForm3.DataGridView1.Columns.Add("Metric", "Metric")       '5
-        pResultsForm3.DataGridView1.Columns.Add("Value", "Value")         '6
+            ' For each Sink in the master Sinks List
+            '   If it's the first iteration of that sink. 
+            '     if DCI stats were calculated then 
+            '     insert the DCIp stat label and value in column 2 and three
+            ' 
 
-        ' If there are habitat statistics then add the proper columns
-        If lHabStatsList.Count > 0 Then
-            pResultsForm3.DataGridView1.Columns.Add("Layer", "Layer")                 '7
-            pResultsForm3.DataGridView1.Columns.Add("Direction", "Direction")         '8
-            pResultsForm3.DataGridView1.Columns.Add("Type", "Type")                   '9
-            pResultsForm3.DataGridView1.Columns.Add("HabitatClass", "Habitat_Class")  '10
-            pResultsForm3.DataGridView1.Columns.Add("Quantity", "Quantity")           '11
-            pResultsForm3.DataGridView1.Columns.Add("Unit", "Unit")                   '12
-
-
-            '' Conditionally add columns and track number
-            'Dim iUpHabColumn, iTotalUpHabColumn, iDownHabColumn, iPathDownHabColumn, iTotalPathDownHabColumn As Integer
-
-            'iUpHabColumn = 0
-            'iTotalUpHabColumn = 0
-            'iDownHabColumn = 0
-            'iPathDownHabColumn = 0
-            'iTotalPathDownHabColumn = 0
-
-            'bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab
-
-        End If
-
-        i = 0
-        For i = 0 To pResultsForm3.DataGridView1.Columns.Count - 1
-            pResultsForm3.DataGridView1.Columns.Item(i).SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic
-        Next i
-
-        Dim iMaxRowIndex, iSinkRowIndex, iSinkRowCount, iHabRowIndex, iHabRowcount, iBarrRowIndex, iBarrRowCount As Integer ' loop counters and grid indices
-        Dim iMetricRowIndex, iMetricRowCount, iThisHabRowIndex, iThisHabRowCount As Integer
-        Dim iSinkEID, iBarrEID As Integer
-        Dim dTotalHab As Double 'running total of habitat for table
-        Dim sLayer, sDirection2, sTraceType As String
-        Dim bTrigger As Boolean = False
-        Dim bTrigger2 As Boolean = False
-        Dim bColorSwitcher = False
-        Dim bSinkVisit As Boolean = True
-        Dim t As Integer = 0
-        i = 0
-        iMaxRowIndex = 0
-        j = 0
-
-        Dim sinkBarrierLayerComparer As FindLayerAndBarrEIDAndSinkEIDPredicate ' for refining large stats object, reduce looping
-
-        Dim sinkcomparer As FindBarriersBySinkEIDPredicate
-        Dim barriercomparer As FindBarriersBySinkEIDPredicate ' used for refining habitat stats list 
-        Dim barriermetriccomparer As FindBarrierMetricsBySinkEIDPredicate  ' used for refining barrier metrics stats list
-
-        Dim refinedHabitatList As List(Of StatisticsObject_2)           ' for refining habitat stats list
-        Dim refinedBarrierEIDList As List(Of BarrAndBarrEIDAndSinkEIDs) ' for refining barrier list
-        Dim refinedBarrierMetricsList As List(Of MetricsObject)
-        Dim refinedGLPKOptionsList As List(Of GLPKOptionsObject)
-
-        Dim HabStatsComparer As RefineHabStatsListPredicate
+            ' Do NOT bind the data table so I can program flexible
+            ' rows and columns to handle the variety of input data necessary
 
 
-        Dim pDataGridViewCellStyle As System.Windows.Forms.DataGridViewCellStyle
+            ' Set up the table - create columns 
 
-        ' two tables joined manually (no SQL 'join' available):
-        ' - the metrics table / list
-        ' and 
-        ' - the habitat statistics table / list
-        '  the table added second should tend to be the larger, 
-        '  and the table going second needs to know the  
-        '  number of rows already inserted in the table so it 
-        '  knows whether to insert another. 
-        '  iterate through both tables for each unique sink
+            pResultsForm3.DataGridView1.Columns.Add("Sink", "Sink")           '0
+            pResultsForm3.DataGridView1.Columns.Add("SinkID", "SinkID")       '1
+            pResultsForm3.DataGridView1.Columns.Add("Type", "Type")           '2
+            pResultsForm3.DataGridView1.Columns.Add("Node", "Node")           '3
+            pResultsForm3.DataGridView1.Columns.Add("NodeID", "NodeID")       '4
+            pResultsForm3.DataGridView1.Columns.Add("Metric", "Metric")       '5
+            pResultsForm3.DataGridView1.Columns.Add("Value", "Value")         '6
 
-
-        ' For each sink
-        ' 1. for each sink in the master sinks object list
-        ' 2. for each barrier associated with the sink in the master barriers list.  
-        ' 2a add the metrics.
-
-        ' notes: -the maxrow index keeps track of which row we're at,
-        '        it's needed if there are multiple sinks
-        '        -the isinkrow count keeps track of which row for this
-        '        sink we're at so that the first row can be found
-        '        -results form is populated with sinkID, not EID
-
-        'iProgressIncrementFactor = (40 / lBarrierAndSinkEIDs.Count)
-
-        For i = 0 To lSinkIDandTypes.Count - 1
-
-            iSinkRowCount = 0
-            iBarrRowCount = 0
-            j = 0
-            k = 0
-            iSinkRowIndex = pResultsForm3.DataGridView1.Rows.Add()
-            iMaxRowIndex = iSinkRowIndex ' the new maximum row count
-            iSinkEID = lSinkIDandTypes(i).SinkEID
-
-            ' Add the sink ID to the table
-            '    record the row number
-            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Style
-            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(1).Style
-            'pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
-            pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, 14, FontStyle.Bold)
-            pDataGridViewCellStyle.ForeColor = Color.DarkGreen
-            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Style = pDataGridViewCellStyle
-
-            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Value = lSinkIDandTypes(i).SinkID
-            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(1).Value = lSinkIDandTypes(i).SinkEID
-            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lSinkIDandTypes(i).Type
-
-            ' post up the sink-specific metrics and stats. 
-            '    For each of the records in the metrics list
-            '     add the values associated with this sink
-            '     keep track of the number of rows added
-            '     and the max row count of the table.  
-
-            For k = 0 To lMetricsObject.Count - 1
-                ' matching the 'barrier' EID - which is redundant
-                ' and includes 'sink' metrics, too.  
-                If lMetricsObject(k).BarrEID = iSinkEID Then
-                    If iSinkRowCount = 0 Then
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Value = lMetricsObject(k).MetricName
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Value = Math.Round(lMetricsObject(k).Metric, 2)
-                    ElseIf iSinkRowCount > 0 Then
-                        pResultsForm3.DataGridView1.Rows.Add()
-                        ' keep track of the maximum number of rows in the table
-                        iMaxRowIndex = iMaxRowIndex + 1 ' Row tracker
-                        'pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lMetricsObject(j).ID
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Value = lMetricsObject(k).MetricName
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Value = Math.Round(lMetricsObject(k).Metric, 2)
-
-                    End If
-                    iSinkRowCount += 1
-                End If
-            Next 'Metric Object
-
-            t = 0
-            iHabRowIndex = iSinkRowIndex
-            iBarrRowIndex = iSinkRowIndex
-            iHabRowcount = 0
-            bSinkVisit = True ' to pass to Sub to tell it whether to increment the barrier loop counter
-            For t = 0 To lAllFCIDs.Count - 1
-                If m_bCancel = True Then
-                    backgroundworker1.CancelAsync()
-                    backgroundworker1.Dispose()
-                    Exit Sub
-                End If
-                If iProgress < 90 Then
-                    backgroundworker1.ReportProgress(iProgress + 1, "Writing to Output Form")
-                End If
-                'MsgBox("Debug:65")
-                Dim iTemp As Integer
-                'bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab
-                iTemp = lAllFCIDs(t).FCID
-
-                If bUpHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "upstream", "Immediate")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bTotalUpHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "upstream", "Total")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bDownHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Immediate")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bTotalDownHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Total")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bPathDownHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Path")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bTotalPathDownHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Total Path")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-            Next ' layer included (t)
-
-            If bColorSwitcher = True Then
-                bColorSwitcher = False
-            Else
-                bColorSwitcher = True
+            ' If there are habitat statistics then add the proper columns
+            If lHabStatsList.Count > 0 Then
+                pResultsForm3.DataGridView1.Columns.Add("Layer", "Layer")                 '7
+                pResultsForm3.DataGridView1.Columns.Add("Direction", "Direction")         '8
+                pResultsForm3.DataGridView1.Columns.Add("Type", "Type")                   '9
+                pResultsForm3.DataGridView1.Columns.Add("HabitatClass", "Habitat_Class")  '10
+                pResultsForm3.DataGridView1.Columns.Add("Quantity", "Quantity")           '11
+                pResultsForm3.DataGridView1.Columns.Add("Unit", "Unit")                   '12
             End If
 
-            iHabRowcount = 0
-            iBarrRowIndex = 0
-            iBarrRowCount = 0
-            bTrigger = False 'indicates if the there's been another row added beyond the sink (any barriers)
-            dTotalHab = 0
-            bColorSwitcher = True
+            i = 0
+            For i = 0 To pResultsForm3.DataGridView1.Columns.Count - 1
+                pResultsForm3.DataGridView1.Columns.Item(i).SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic
+            Next i
 
-            ' 1. a refined list of all barriers for the sink
-            ' use a comparer to get all the records from the barriers and sinks list that match the sink
-            barriercomparer = New FindBarriersBySinkEIDPredicate(iSinkEID)
-            refinedBarrierEIDList = lBarrierAndSinkEIDs.FindAll(AddressOf barriercomparer.CompareEID)
+            Dim iMaxRowIndex, iSinkRowIndex, iSinkRowCount, iHabRowIndex, iHabRowcount, iBarrRowIndex, iBarrRowCount As Integer ' loop counters and grid indices
+            Dim iMetricRowIndex, iMetricRowCount, iThisHabRowIndex, iThisHabRowCount As Integer
+            Dim iSinkEID, iBarrEID As Integer
+            Dim dTotalHab As Double 'running total of habitat for table
+            Dim sLayer, sDirection2, sTraceType As String
+            Dim bTrigger As Boolean = False
+            Dim bTrigger2 As Boolean = False
+            Dim bColorSwitcher = False
+            Dim bSinkVisit As Boolean = True
+            Dim t As Integer = 0
+            i = 0
+            iMaxRowIndex = 0
+            j = 0
 
-            'MsgBox("Debug:66")
+            Dim sinkBarrierLayerComparer As FindLayerAndBarrEIDAndSinkEIDPredicate ' for refining large stats object, reduce looping
 
-            ' For each barrier
-            '  1. a refined list of all habitat stats for this barrier 
-            '     and sink and layer
-            '  2. for each layer get a refined list of habitat metrics 
-            '     associated with each layer, sink, barrier combo
-            k = 0
-            For k = 0 To refinedBarrierEIDList.Count - 1
+            Dim sinkcomparer As FindBarriersBySinkEIDPredicate
+            Dim barriercomparer As FindBarriersBySinkEIDPredicate ' used for refining habitat stats list 
+            Dim barriermetriccomparer As FindBarrierMetricsBySinkEIDPredicate  ' used for refining barrier metrics stats list
 
-                iBarrRowIndex = pResultsForm3.DataGridView1.Rows.Add()
-                iMaxRowIndex = iBarrRowIndex
+            Dim refinedHabitatList As List(Of StatisticsObject_2)           ' for refining habitat stats list
+            Dim refinedBarrierEIDList As List(Of BarrAndBarrEIDAndSinkEIDs) ' for refining barrier list
+            Dim refinedBarrierMetricsList As List(Of MetricsObject)
+            Dim refinedGLPKOptionsList As List(Of GLPKOptionsObject)
+
+            Dim HabStatsComparer As RefineHabStatsListPredicate
+
+            Dim pDataGridViewCellStyle As System.Windows.Forms.DataGridViewCellStyle
+
+            ' two tables joined manually (no SQL 'join' available):
+            ' - the metrics table / list
+            ' and 
+            ' - the habitat statistics table / list
+            '  the table added second should tend to be the larger, 
+            '  and the table going second needs to know the  
+            '  number of rows already inserted in the table so it 
+            '  knows whether to insert another. 
+            '  iterate through both tables for each unique sink
+
+
+            ' For each sink
+            ' 1. for each sink in the master sinks object list
+            ' 2. for each barrier associated with the sink in the master barriers list.  
+            ' 2a add the metrics.
+
+            ' notes: -the maxrow index keeps track of which row we're at,
+            '        it's needed if there are multiple sinks
+            '        -the isinkrow count keeps track of which row for this
+            '        sink we're at so that the first row can be found
+            '        -results form is populated with sinkID, not EID
+
+            'iProgressIncrementFactor = (40 / lBarrierAndSinkEIDs.Count)
+
+            For i = 0 To lSinkIDandTypes.Count - 1
+
+                iSinkRowCount = 0
                 iBarrRowCount = 0
-                iSinkRowCount += 1
-                iBarrRowCount += 1
-                bTrigger = False
-                If m_bCancel = True Then
-                    backgroundworker1.CancelAsync()
-                    backgroundworker1.Dispose()
-                    Exit Sub
-                End If
-                If iProgress < 90 Then
-                    backgroundworker1.ReportProgress(iProgress + 1, "Writing to Output Form" & ControlChars.NewLine & _
-                                                     " Barrier #: " & k.ToString)
-                End If
-                ' attempt at a border
-                ' border control not available as of 2005 and .net 2.0
-                'Dim pPainter As Windows.Forms.DataGridViewRowPrePaintEventArgs
-                'pPainter = pResultsForm3.DataGridView1..Rows(iMaxRowIndex).
-                '' add barrier ID to the datagrid
+                j = 0
+                k = 0
+                iSinkRowIndex = pResultsForm3.DataGridView1.Rows.Add()
+                iMaxRowIndex = iSinkRowIndex ' the new maximum row count
+                iSinkEID = lSinkIDandTypes(i).SinkEID
+
+                ' Add the sink ID to the table
                 '    record the row number
-                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style
-                If bColorSwitcher = False Then
-                    pDataGridViewCellStyle.BackColor = Color.PowderBlue
-                Else
-                    pDataGridViewCellStyle.BackColor = Color.Lavender
-                End If
-                pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
-                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Value = refinedBarrierEIDList(k).BarrLabel
-                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Value = refinedBarrierEIDList(k).BarrEID
+                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Style
+                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(1).Style
+                'pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
+                pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, 14, FontStyle.Bold)
+                pDataGridViewCellStyle.ForeColor = Color.DarkGreen
+                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Style = pDataGridViewCellStyle
 
-                ' get refined list of barrier/sink metrics
-                barriermetriccomparer = New FindBarrierMetricsBySinkEIDPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID)
-                refinedBarrierMetricsList = lMetricsObject.FindAll(AddressOf barriermetriccomparer.CompareEID)
+                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Value = lSinkIDandTypes(i).SinkID
+                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(1).Value = lSinkIDandTypes(i).SinkEID
+                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lSinkIDandTypes(i).Type
 
-                ' For each metric in the refined list
-                ' insert a new row if necessary
-                ' add the metric to the table
-                t = 0
-                iMetricRowCount = 0
-                iMetricRowIndex = iMaxRowIndex
-                For t = 0 To refinedBarrierMetricsList.Count - 1
+                ' post up the sink-specific metrics and stats. 
+                '    For each of the records in the metrics list
+                '     add the values associated with this sink
+                '     keep track of the number of rows added
+                '     and the max row count of the table.  
 
+                For k = 0 To lMetricsObject.Count - 1
+                    ' matching the 'barrier' EID - which is redundant
+                    ' and includes 'sink' metrics, too.  
+                    If lMetricsObject(k).BarrEID = iSinkEID Then
+                        If iSinkRowCount = 0 Then
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Value = lMetricsObject(k).MetricName
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Value = Math.Round(lMetricsObject(k).Metric, 2)
+                        ElseIf iSinkRowCount > 0 Then
+                            pResultsForm3.DataGridView1.Rows.Add()
+                            ' keep track of the maximum number of rows in the table
+                            iMaxRowIndex = iMaxRowIndex + 1 ' Row tracker
+                            'pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lMetricsObject(j).ID
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Value = lMetricsObject(k).MetricName
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Value = Math.Round(lMetricsObject(k).Metric, 2)
 
-                    If iMetricRowCount = 0 Then
-                        'pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lMetricsObject(j).ID
-                        If bColorSwitcher = True Then
-                            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
-                            pDataGridViewCellStyle.BackColor = Color.Lavender
-                        Else
-                            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
-                            pDataGridViewCellStyle.BackColor = Color.PowderBlue
                         End If
-                        pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(5).Style = pDataGridViewCellStyle
-                        pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(6).Style = pDataGridViewCellStyle
-
-                        pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(5).Value = refinedBarrierMetricsList(t).MetricName
-                        pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(6).Value = Math.Round(refinedBarrierMetricsList(t).Metric, 2)
-                        iMetricRowCount += 1
-                    ElseIf iMetricRowCount > 0 Then
-                        If iMaxRowIndex <= (iBarrRowIndex + iMetricRowCount) Then
-                            iMetricRowIndex = pResultsForm3.DataGridView1.Rows.Add()
-                            'iBarrRowIndex = iMetricRowIndex
-                            iBarrRowCount += 1
-                            iMetricRowCount += 1
-                            iMaxRowIndex += 1 ' Row tracker
-                            iSinkRowCount += 1
-                        End If
-                        If bColorSwitcher = True Then
-                            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
-                            pDataGridViewCellStyle.BackColor = Color.Lavender
-                        Else
-                            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
-                            pDataGridViewCellStyle.BackColor = Color.PowderBlue
-                        End If
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style = pDataGridViewCellStyle
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style = pDataGridViewCellStyle
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Style = pDataGridViewCellStyle
-
-
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Value = refinedBarrierMetricsList(t).MetricName
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Value = Math.Round(refinedBarrierMetricsList(t).Metric, 2)
+                        iSinkRowCount += 1
                     End If
-                Next ' refined metric (t)
+                Next 'Metric Object
 
-                'MsgBox("Debug:67")
                 t = 0
-                iHabRowIndex = iBarrRowIndex
+                iHabRowIndex = iSinkRowIndex
+                iBarrRowIndex = iSinkRowIndex
                 iHabRowcount = 0
-                bSinkVisit = False
+                bSinkVisit = True ' to pass to Sub to tell it whether to increment the barrier loop counter
                 For t = 0 To lAllFCIDs.Count - 1
-
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        Exit Sub
+                    End If
+                    If iProgress < 90 Then
+                        backgroundworker1.ReportProgress(iProgress + 1, "Writing to Output Form")
+                    End If
+                    'MsgBox("Debug:65")
                     Dim iTemp As Integer
                     'bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab
                     iTemp = lAllFCIDs(t).FCID
 
                     If bUpHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "upstream", "Immediate")
+                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "upstream", "Immediate")
                         refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
                         UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
                     End If
                     If bTotalUpHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "upstream", "Total")
+                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "upstream", "Total")
                         refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
                         UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
                     End If
                     If bDownHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Immediate")
+                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Immediate")
                         refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
                         UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
                     End If
                     If bTotalDownHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Total")
+                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Total")
                         refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
                         UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
                     End If
                     If bPathDownHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Path")
+                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Path")
                         refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
                         UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
                     End If
                     If bTotalPathDownHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Total Path")
+                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Total Path")
                         refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
                         UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
                     End If
@@ -4497,40 +4206,207 @@ Public Class Analysis
                 Else
                     bColorSwitcher = True
                 End If
-            Next ' barrier for this sink (k)
-        Next ' sink 
 
-        'MsgBox("Debug:68")
-        pResultsForm3.DataGridView1.AutoResizeColumns()
-        EndTime = DateTime.Now
-        pResultsForm3.lblBeginTime.Text = "Begin Time: " & BeginTime
-        pResultsForm3.lblEndtime.Text = "End Time: " & EndTime
+                iHabRowcount = 0
+                iBarrRowIndex = 0
+                iBarrRowCount = 0
+                bTrigger = False 'indicates if the there's been another row added beyond the sink (any barriers)
+                dTotalHab = 0
+                bColorSwitcher = True
 
-        TotalTime = EndTime - BeginTime
-        pResultsForm3.lblTotalTime.Text = "Total Time: " & TotalTime.Hours & "hrs " & TotalTime.Minutes & "minutes " & TotalTime.Seconds & "seconds"
-        pResultsForm3.lblDirection.Text = "Analysis Direction: " + sDirection
-        If iOrderNum <> 999 Then
-            'MsgBox("Debug:69")
-            pResultsForm3.lblOrder.Text = "Order of Analysis: " & CStr(iOrderNum)
-            'MsgBox("Debug:70")
-        Else
-            pResultsForm3.lblOrder.Text = "Order of Analysis: Max"
-        End If
+                ' 1. a refined list of all barriers for the sink
+                ' use a comparer to get all the records from the barriers and sinks list that match the sink
+                barriercomparer = New FindBarriersBySinkEIDPredicate(iSinkEID)
+                refinedBarrierEIDList = lBarrierAndSinkEIDs.FindAll(AddressOf barriercomparer.CompareEID)
 
-        If Not pAllFlowEndBarriers Is Nothing Then
-            If pAllFlowEndBarriers.Count <> 0 Then
-                'MsgBox("Debug:71")
-                pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: " & CStr(pAllFlowEndBarriers.Count + pOriginaljuncFlagsList.Count)
-                'MsgBox("Debug:72")
+                'MsgBox("Debug:66")
+
+                ' For each barrier
+                '  1. a refined list of all habitat stats for this barrier 
+                '     and sink and layer
+                '  2. for each layer get a refined list of habitat metrics 
+                '     associated with each layer, sink, barrier combo
+                k = 0
+                For k = 0 To refinedBarrierEIDList.Count - 1
+
+                    iBarrRowIndex = pResultsForm3.DataGridView1.Rows.Add()
+                    iMaxRowIndex = iBarrRowIndex
+                    iBarrRowCount = 0
+                    iSinkRowCount += 1
+                    iBarrRowCount += 1
+                    bTrigger = False
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        Exit Sub
+                    End If
+                    If iProgress < 90 Then
+                        backgroundworker1.ReportProgress(iProgress + 1, "Writing to Output Form" & ControlChars.NewLine & _
+                                                         " Barrier #: " & k.ToString)
+                    End If
+                    ' attempt at a border
+                    ' border control not available as of 2005 and .net 2.0
+                    'Dim pPainter As Windows.Forms.DataGridViewRowPrePaintEventArgs
+                    'pPainter = pResultsForm3.DataGridView1..Rows(iMaxRowIndex).
+                    '' add barrier ID to the datagrid
+                    '    record the row number
+                    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style
+                    If bColorSwitcher = False Then
+                        pDataGridViewCellStyle.BackColor = Color.PowderBlue
+                    Else
+                        pDataGridViewCellStyle.BackColor = Color.Lavender
+                    End If
+                    pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
+                    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Style = pDataGridViewCellStyle
+                    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
+                    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style = pDataGridViewCellStyle
+                    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = refinedBarrierEIDList(k).NodeType
+                    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Value = refinedBarrierEIDList(k).BarrLabel
+                    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Value = refinedBarrierEIDList(k).BarrEID
+
+                    ' get refined list of barrier/sink metrics
+                    barriermetriccomparer = New FindBarrierMetricsBySinkEIDPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID)
+                    refinedBarrierMetricsList = lMetricsObject.FindAll(AddressOf barriermetriccomparer.CompareEID)
+
+                    ' For each metric in the refined list
+                    ' insert a new row if necessary
+                    ' add the metric to the table
+                    t = 0
+                    iMetricRowCount = 0
+                    iMetricRowIndex = iMaxRowIndex
+                    For t = 0 To refinedBarrierMetricsList.Count - 1
+
+
+                        If iMetricRowCount = 0 Then
+                            'pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lMetricsObject(j).ID
+                            If bColorSwitcher = True Then
+                                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
+                                pDataGridViewCellStyle.BackColor = Color.Lavender
+                            Else
+                                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
+                                pDataGridViewCellStyle.BackColor = Color.PowderBlue
+                            End If
+                            pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(5).Style = pDataGridViewCellStyle
+                            pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(6).Style = pDataGridViewCellStyle
+
+                            pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(5).Value = refinedBarrierMetricsList(t).MetricName
+                            pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(6).Value = Math.Round(refinedBarrierMetricsList(t).Metric, 2)
+                            iMetricRowCount += 1
+                        ElseIf iMetricRowCount > 0 Then
+                            If iMaxRowIndex <= (iBarrRowIndex + iMetricRowCount) Then
+                                iMetricRowIndex = pResultsForm3.DataGridView1.Rows.Add()
+                                'iBarrRowIndex = iMetricRowIndex
+                                iBarrRowCount += 1
+                                iMetricRowCount += 1
+                                iMaxRowIndex += 1 ' Row tracker
+                                iSinkRowCount += 1
+                            End If
+                            If bColorSwitcher = True Then
+                                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
+                                pDataGridViewCellStyle.BackColor = Color.Lavender
+                            Else
+                                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
+                                pDataGridViewCellStyle.BackColor = Color.PowderBlue
+                            End If
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style = pDataGridViewCellStyle
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style = pDataGridViewCellStyle
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Style = pDataGridViewCellStyle
+
+
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Value = refinedBarrierMetricsList(t).MetricName
+                            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Value = Math.Round(refinedBarrierMetricsList(t).Metric, 2)
+                        End If
+                    Next ' refined metric (t)
+
+                    'MsgBox("Debug:67")
+                    t = 0
+                    iHabRowIndex = iBarrRowIndex
+                    iHabRowcount = 0
+                    bSinkVisit = False
+                    For t = 0 To lAllFCIDs.Count - 1
+
+                        Dim iTemp As Integer
+                        'bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab
+                        iTemp = lAllFCIDs(t).FCID
+
+                        If bUpHab = True Then
+                            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "upstream", "Immediate")
+                            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+                            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+                        End If
+                        If bTotalUpHab = True Then
+                            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "upstream", "Total")
+                            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+                            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+                        End If
+                        If bDownHab = True Then
+                            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Immediate")
+                            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+                            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+                        End If
+                        If bTotalDownHab = True Then
+                            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Total")
+                            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+                            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+                        End If
+                        If bPathDownHab = True Then
+                            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Path")
+                            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+                            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+                        End If
+                        If bTotalPathDownHab = True Then
+                            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Total Path")
+                            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+                            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+                        End If
+                    Next ' layer included (t)
+
+                    If bColorSwitcher = True Then
+                        bColorSwitcher = False
+                    Else
+                        bColorSwitcher = True
+                    End If
+                Next ' barrier for this sink (k)
+            Next ' sink 
+
+            'MsgBox("Debug:68")
+            pResultsForm3.DataGridView1.AutoResizeColumns()
+            EndTime = DateTime.Now
+            pResultsForm3.lblBeginTime.Text = "Begin Time: " & BeginTime
+            pResultsForm3.lblEndtime.Text = "End Time: " & EndTime
+
+            TotalTime = EndTime - BeginTime
+            pResultsForm3.lblTotalTime.Text = "Total Time: " & TotalTime.Hours & "hrs " & TotalTime.Minutes & "minutes " & TotalTime.Seconds & "seconds"
+            pResultsForm3.lblDirection.Text = "Analysis Direction: " + sDirection
+            If iOrderNum <> 999 Then
+                'MsgBox("Debug:69")
+                pResultsForm3.lblOrder.Text = "Order of Analysis: " & CStr(iOrderNum)
+                'MsgBox("Debug:70")
             Else
-                pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: 1"
+                pResultsForm3.lblOrder.Text = "Order of Analysis: Max"
             End If
-        End If
+
+            If Not pAllFlowEndBarriers Is Nothing Then
+                If pAllFlowEndBarriers.Count <> 0 Then
+                    'MsgBox("Debug:71")
+                    pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: " & CStr(pAllFlowEndBarriers.Count + pOriginaljuncFlagsList.Count)
+                    'MsgBox("Debug:72")
+                Else
+                    pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: 1"
+                End If
+            End If
+
+            ' refresh the view
+            pActiveView.Refresh()
+            pResultsForm3.BringToFront()
+            pResultsForm3.Activate()
+
+        End If ' bPrintToResultsForm = True
 
         ' ============== END WRITE TO OUTPUT SUMMARY TABLE =================
 
-
-
+        ' review of objects used in output:
         'lHabStatsList
 
         ' = lHabStatsList(j).Sink
@@ -4577,10 +4453,6 @@ Public Class Analysis
         backgroundworker1.Dispose()
         backgroundworker1.CancelAsync()
 
-        ' refresh the view
-        pActiveView.Refresh()
-        pResultsForm3.BringToFront()
-        pResultsForm3.Activate()
 
     End Sub
     Private Sub PrepareZeroBudgetOptionsTable(ByVal sGLPKOptionsTableName As String, _
@@ -9793,6 +9665,7 @@ Public Class Analysis
         ' ##############################################################
         ' 2020 Write FIPEX FIPEX_Advanced_DD_2020
         ' objectID
+        ' Node Type
         ' BarrierID
         ' BarirerUserLabel
         ' Habt Quan
@@ -9817,19 +9690,20 @@ Public Class Analysis
         Dim sw1 As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_Advanced_DD_2020.csv")
 
         Try
-            sw1.Write("NodeEID,NodeLabel,HabQuantity,HabUnits,BarrierPerm,NaturalTF,DownstreamEID,DownstreamNodeLabel,DownstreamNeighDistance,DistanceUnits")
+            sw1.Write("NodeType,NodeEID,NodeLabel,HabQuantity,HabUnits,BarrierPerm,NaturalTF,DownstreamEID,DownstreamNodeLabel,DownstreamNeighDistance,DistanceUnits")
             sw1.Write(Environment.NewLine)
         Catch ex As Exception
             MsgBox("Issue  writing to FIPEX_Advanced_DD_2020 file. Error code: d102 " & ex.Message)
         End Try
 
 
-        Dim sNodeEID, sNodeLabel, sHabQuantity, sHabQuanUnits, sBarrierPerm, sNaturalTF As String
+        Dim sNodeType, sNodeEID, sNodeLabel, sHabQuantity, sHabQuanUnits, sBarrierPerm, sNaturalTF As String
         Dim sDownstreamEID, sDownstreamNodeLabel, sDownstreamNeighDistance, sDistanceUnits As String
 
         Try
             For i = 0 To lAdv_DCI_Data_Object.Count - 1
-                MsgBox(lAdv_DCI_Data_Object(i).NodeEID)
+                'MsgBox(lAdv_DCI_Data_Object(i).NodeEID)
+                sNodeType = Convert.ToString(lAdv_DCI_Data_Object(i).NodeType)
 
                 sNodeEID = Convert.ToString(lAdv_DCI_Data_Object(i).NodeEID)
 
@@ -9861,7 +9735,7 @@ Public Class Analysis
                 sDistanceUnits = Convert.ToString(lAdv_DCI_Data_Object(i).DistanceUnits)
                 'End If
 
-                sw1.Write(sNodeEID & "," & sNodeLabel & "," & _
+                sw1.Write(sNodeType & "," & sNodeEID & "," & sNodeLabel & "," & _
                           sHabQuantity & "," & sHabQuanUnits & "," & _
                           sBarrierPerm & "," & sNaturalTF & "," & _
                           sDownstreamEID & "," & sDownstreamNodeLabel & "," & _
@@ -9921,13 +9795,13 @@ Public Class Analysis
 
 
     End Sub
-    Private Sub UpdateResultsDCI(ByRef iBarrierCount As Integer, ByRef dDCIp As Double, ByRef dDCId As Double, ByRef bNaturalY As Boolean)
+    Private Sub UpdateResultsDCI(ByRef iBarrierCount As Integer, ByRef dDCIp As Double, _
+                                 ByRef dDCId As Double, ByRef bNaturalY As Boolean, _
+                                 ByVal sOutFileName As String)
 
         ' ====================================================================
         ' SubRoutine:    Update Results Form With DCI
-        ' Author:        Greig Oldford
-        ' Description:   read the output file in the DCI Model
-        '                directory, created during the DCIShellCall sub
+        ' Description:   read the output file from DCI Model
         ' ====================================================================
 
         ' Read the DCI Model Directory from the document properties
@@ -9950,7 +9824,7 @@ Public Class Analysis
 
         Try
             If iBarrierCount > 1 Then ' TEMP 'if' here in case no barriers - otherwise model fails (always one barrier - the flag)
-                objReader = New StreamReader(sDCIModelDir + "/out.txt")
+                objReader = New StreamReader(sDCIModelDir + "/" + sOutFileName)
                 Do Until objReader.EndOfStream = True
                     iLoopCount = iLoopCount + 1
                     sLine = objReader.ReadLine()
