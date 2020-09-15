@@ -33,6 +33,9 @@ Public Class frmRunAdvancedAnalysis
     ' global variable for feature class selected (used in exclusions)
     Private m_pFeatureClass As IFeatureClass
 
+    ' used to show / hide run button ('advancedanalysis' or 'optionsmenu')
+    Public m_FIPEXOptionsContext = "advancedanalysis"
+
     ' ALL THESE GLOBAL VARIABLES SHOULD BE ELIMINATED
     ' AND MOVED TO LOCAL VARIABLES
     Private m_iPolysCount As Integer = 0      ' number of polygon layers currently using
@@ -550,7 +553,12 @@ Public Class frmRunAdvancedAnalysis
         End If
 
         m_FiPEx.m_bLoaded = True ' Set the bLoaded variable true so next open of form will load the saved values
-        ' Me.Close()
+
+        ' save settings closes form if user opens from options menu
+        If m_FIPEXOptionsContext = "optionsmenu" Then
+            Me.Close()
+        End If
+
 
     End Sub
     Private Sub cmdSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSave.Click
@@ -566,6 +574,12 @@ Public Class frmRunAdvancedAnalysis
         ' NOTE: YOU MUST HAVE TAB SELECTED TO SET AN ITEM 
         ' IN A LISTBOX AS SELECTED (PROPERLY)
         '
+
+        ' 2020 if user opens from Options Menu then hide the 'run' button
+        If m_FIPEXOptionsContext = "optionsmenu" Then
+            cmdRun.Enabled = False
+            cmdRun.Visible = False
+        End If
 
         Dim k As Integer = 0                ' loop counter
         Dim j As Integer = 0                ' loop counter
@@ -603,7 +617,6 @@ Public Class frmRunAdvancedAnalysis
         Dim bGLPKTables As Boolean
         Dim sGLPKModelDir As String
         Dim sGnuWinDir As String
-
 
         Dim pMxDoc As IMxDocument
         Dim pMap As IMap
@@ -2946,6 +2959,22 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             txtRInstallDir.Enabled = True
             chkDCISectional.Enabled = True
             chkDistanceLimit.Enabled = True
+            rdoLinear.Enabled = True
+            rdoNatExp1.Enabled = True
+            rdoCircle.Enabled = True
+            rdoSigmoid.Enabled = True
+            If rdoNatExp1.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+            End If
+            If rdoCircle.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+            End If
+            If rdoSigmoid.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+            End If
+            If rdoLinear.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+            End If
         Else
             cmdDCIModelDir.Enabled = False
             txtDCIModelDir.Enabled = False
@@ -2953,6 +2982,11 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             txtRInstallDir.Enabled = False
             chkDCISectional.Enabled = False
             chkDistanceLimit.Enabled = False
+            rdoLinear.Enabled = False
+            rdoNatExp1.Enabled = False
+            rdoCircle.Enabled = False
+            rdoSigmoid.Enabled = False
+            PictureBox7.Image = Nothing
         End If
     End Sub
 
@@ -3067,9 +3101,31 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         If chkDistanceLimit.CheckState = CheckState.Checked Then
             txtMaxDistance.Enabled = True
             chkDistanceDecay.Enabled = True
+            rdoLinear.Enabled = True
+            rdoNatExp1.Enabled = True
+            rdoCircle.Enabled = True
+            rdoSigmoid.Enabled = True
+            If rdoNatExp1.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+            End If
+            If rdoCircle.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+            End If
+            If rdoSigmoid.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+            End If
+            If rdoLinear.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+            End If
         Else
             txtMaxDistance.Enabled = False
             chkDistanceDecay.Enabled = False
+            rdoLinear.Enabled = False
+            rdoNatExp1.Enabled = False
+            rdoCircle.Enabled = False
+            rdoSigmoid.Enabled = False
+            PictureBox7.Image = Nothing
+
         End If
     End Sub
 
@@ -3086,7 +3142,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     Private Sub RadioButton1_CheckedChanged(sender As Object, e As EventArgs) Handles rdoLinear.CheckedChanged
         If rdoLinear.Checked = True Then
-            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
         End If
     End Sub
 
@@ -3096,11 +3152,44 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             rdoLinear.Enabled = True
             rdoSigmoid.Enabled = True
             rdoNatExp1.Enabled = True
+            If rdoNatExp1.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+            End If
+            If rdoCircle.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+            End If
+            If rdoSigmoid.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+            End If
+            If rdoLinear.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+            End If
         Else
             rdoCircle.Enabled = False
             rdoLinear.Enabled = False
             rdoSigmoid.Enabled = False
             rdoNatExp1.Enabled = False
+            PictureBox7.Image = Nothing
+        End If
+    End Sub
+
+  
+   
+    Private Sub rdoNatExp1_CheckedChanged(sender As Object, e As EventArgs) Handles rdoNatExp1.CheckedChanged
+        If rdoNatExp1.Checked = True Then
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+        End If
+    End Sub
+
+    Private Sub rdoCircle_CheckedChanged(sender As Object, e As EventArgs) Handles rdoCircle.CheckedChanged
+        If rdoCircle.Checked = True Then
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+        End If
+    End Sub
+
+    Private Sub rdoSigmoid_CheckedChanged(sender As Object, e As EventArgs) Handles rdoSigmoid.CheckedChanged
+        If rdoSigmoid.Checked = True Then
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
         End If
     End Sub
 End Class

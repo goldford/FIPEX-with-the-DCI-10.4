@@ -14,8 +14,17 @@
     '
         My.ArcMap.Application.CurrentTool = Nothing
         Dim FiPEx__1 As FishPassageExtension = FishPassageExtension.GetExtension
-        Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.Options
+        '2020 - switching out forms, passing info about how the user accessed form
+        '     so that the 'run button' etc associated with 'advanced analysis' can be
+        '     hidden
+        'Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.Options
+        'If MyForm.Form_Initialize(My.ArcMap.Application) Then
+        'MyForm.ShowDialog()
+        'End If
+        'End Using
+        Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmRunAdvancedAnalysis
             If MyForm.Form_Initialize(My.ArcMap.Application) Then
+                MyForm.m_FIPEXOptionsContext = "optionsmenu"
                 MyForm.ShowDialog()
             End If
         End Using
@@ -25,7 +34,6 @@
         If My.ArcMap.Application IsNot Nothing Then
 
             Dim FiPEx__1 As FishPassageExtension = FishPassageExtension.GetExtension
-
 
             If m_FiPEx__1 Is Nothing Then
                 m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()

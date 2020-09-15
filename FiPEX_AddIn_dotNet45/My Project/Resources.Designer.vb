@@ -63,6 +63,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
+        Friend ReadOnly Property CircleDD() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("CircleDD", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
         Friend ReadOnly Property FIPEX_DCI_Logo_2020_90x90a() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("FIPEX_DCI_Logo_2020_90x90a", resourceCulture)
@@ -96,6 +106,36 @@ Namespace My.Resources
         Friend ReadOnly Property FiPEx_LOGOv3b_90x90() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("FiPEx_LOGOv3b_90x90", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property LinearDD() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("LinearDD", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property NatExp1DD() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("NatExp1DD", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized resource of type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property SigmoidDD() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("SigmoidDD", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property

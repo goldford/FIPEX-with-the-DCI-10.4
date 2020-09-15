@@ -446,7 +446,11 @@
     </AddInContent>
     <AddInContent Include="Images\VisualizeDecisions.png" />
     <AddInContent Include="Images\VisualizeDecisionsAndNet.png" />
+    <Content Include="Resources\CircleDD.jpg" />
     <Content Include="Resources\FIPEX_DCI_Logo_2020_90x90a.JPG" />
+    <Content Include="Resources\LinearDD.jpg" />
+    <Content Include="Resources\NatExp1DD.jpg" />
+    <None Include="Resources\SigmoidDD.jpg" />
     <None Include="Resources\FiPex_LOGOv3b_90x90.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

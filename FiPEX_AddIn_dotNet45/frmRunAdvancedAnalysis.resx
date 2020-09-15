@@ -117,4 +117,47 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Label32.Text" xml:space="preserve">
+    <value>The DCI Options apply to 'Advanced Analysis' which can call the DCI 
+Model in R.  Several settings must first be set in other Options tabs
+ before all DCI Options are enabled. The Dendritic Connectivity Index 
+(DCI) assesses the expected longitudincal connectivity of a river system 
+(0 &gt;= DCI &lt;= 100). DCId asseses 'diadromous' connectivity from the 
+'sink' to all other segments. Note 'sink(s)' are defined by where flag(s) 
+are placed. DCIp is a potamodromous index that assesses connectivity 
+between every segment pair. 
+See documentation for further details. </value>
+  </data>
+  <data name="Label28.Text" xml:space="preserve">
+    <value>Exclusion options determine which features are included in the 
+calculations of segment length, habitat quantity, or habitat quality.
+Features with listed attribute values will be de-selected during 
+network tracing.</value>
+  </data>
+  <data name="Label29.Text" xml:space="preserve">
+    <value>Barrier options are used to set the label that appears when the 'add / 
+remove barrier' and 'add remove / flag' tools are used. The labels are 
+also associated with results of the 'one-click' and 'advanced analysis'.
+The permeability (i.e., 'passability') field is used to set the degree to 
+which barriers impede connectivity (currently the DCI calculations assume
+this to be bi-directional connectivity - probability of moving back-and-forth). 
+The Natural T/F field is used to indicate whether a barrier is natural or 
+not (field values must be 'T' or 'F')</value>
+  </data>
+  <data name="Label30.Text" xml:space="preserve">
+    <value>Output options allow optionally writing to tables (in addition to writing 
+to screen) during 'advanced' analysis. DBF files are a format written by 
+ArcMap and are stored in a Geodatabase. They may be exported as-is 
+and read by Microsoft Excel or exported as CSV / TXT. Outputting to 
+tables is required for DCI calculations. The 'tables prefix' is used as a prefix 
+in output file names. Users may also choose to exporta connectivity table 
+(required for DCI).   </value>
+  </data>
+  <data name="Label31.Text" xml:space="preserve">
+    <value>Advanced options apply to iterative network traces used during the 
+'Advanced' analysis. The algortihm is a Breadth First Search (BFS) that 
+iterates in a direction (the 'Analysis Direction'). The 'order' refers to 
+traversal depth; if barrier a connects to b and c as a-&gt;b-&gt;c, then 'c' is
+order 3. </value>
+  </data>
 </root>

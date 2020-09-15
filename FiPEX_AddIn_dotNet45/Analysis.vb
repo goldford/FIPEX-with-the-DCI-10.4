@@ -1365,7 +1365,12 @@ Public Class Analysis
                                         'MsgBox("Debug2020: Edge " & Str(iEdgeEID) & " is upstream of node " & Str(iThisEID))
                                         bUpstream = True
                                     Else
-                                        MsgBox("Debug2020: Edge flow direction is unitialized or indeterminate")
+                                        MsgBox("Debug2020: Edge flow direction is unitialized or indeterminate. For Distance-limited analysis all edges must have determinate flow direction. ")
+                                        MsgBox("Debug2020: # The esriflowdirection for edge EID " & Str(iEdgeEID) & " :" & Str(iFlowDir))
+                                        'pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, _
+                                        '  iFCID, _
+                                        '  iFID, _
+                                        '  iSubID)
                                         bUpstream = False
                                     End If
 
@@ -9783,15 +9788,8 @@ Public Class Analysis
             MsgBox("Issue writing to FIPEX param file. Error code: d101 " & ex.Message)
         End Try
 
-
-        'Else ' if this is the second loop just ADD data from the input table to output table
-        ' navigate to the model directory and run the R program.  Pause until completed.
         'ChDir(sDCIModelDir)
-        'If bDCISectional = True Then
-        'Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI_Sectional.r", AppWinStyle.NormalFocus, True)
-        'Else
-        'Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI.r", AppWinStyle.NormalFocus, True)
-        'End If
+        'Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI_DD_2020.r", AppWinStyle.Hide, True)
 
 
     End Sub
