@@ -1077,125 +1077,169 @@ Public Class FishPassageExtension
 
         End With
 
+
+
         ' ========== BEGIN ADD PROPERTIES TO DICTIONARY OBJECT =============
         'If there are any properties to write then save them to the stream
         If m_bLoaded = True Then
+            Try
 
-            ' load the properties into a data dictionary for serialization to the stream
-            ' (there may be a better way to do this, but for add-ins the system.io.stream
-            ' seems to limit us to a binary format for write/reads
-            ' all of these are converted to string format to keep it simple
-            ' some of them will be strings already but ohhh wellll
+                ' load the properties into a data dictionary for serialization to the stream
+                ' (there may be a better way to do this, but for add-ins the system.io.stream
+                ' seems to limit us to a binary format for write/reads
+                ' all of these are converted to string format to keep it simple
+                ' some of them will be strings already but ohhh wellll
 
-            sDictionary.Add("check", "check")
-            sDictionary.Add("direction", Convert.ToString(pPropset.GetProperty("direction")))
-            sDictionary.Add("ordernum", Convert.ToString(pPropset.GetProperty("ordernum")))
-            sDictionary.Add("maximum", Convert.ToString(pPropset.GetProperty("maximum")))
-            sDictionary.Add("connecttab", Convert.ToString(pPropset.GetProperty("connecttab")))
-            sDictionary.Add("barrierperm", Convert.ToString(pPropset.GetProperty("barrierperm")))
-            sDictionary.Add("naturalyn", Convert.ToString(pPropset.GetProperty("naturalyn")))
-            sDictionary.Add("dciyn", Convert.ToString(pPropset.GetProperty("dciyn")))
-            sDictionary.Add("dcisectionalyn", Convert.ToString(pPropset.GetProperty("dcisectionalyn")))
-            sDictionary.Add("sDCIModelDir", Convert.ToString(pPropset.GetProperty("sDCIModelDir")))
+                sDictionary.Add("check", "check")
+                sDictionary.Add("direction", Convert.ToString(pPropset.GetProperty("direction")))
+                sDictionary.Add("ordernum", Convert.ToString(pPropset.GetProperty("ordernum")))
+                sDictionary.Add("maximum", Convert.ToString(pPropset.GetProperty("maximum")))
+                sDictionary.Add("connecttab", Convert.ToString(pPropset.GetProperty("connecttab")))
+                sDictionary.Add("barrierperm", Convert.ToString(pPropset.GetProperty("barrierperm")))
+                sDictionary.Add("naturalyn", Convert.ToString(pPropset.GetProperty("naturalyn")))
+                sDictionary.Add("dciyn", Convert.ToString(pPropset.GetProperty("dciyn")))
+                sDictionary.Add("dcisectionalyn", Convert.ToString(pPropset.GetProperty("dcisectionalyn")))
+                sDictionary.Add("sDCIModelDir", Convert.ToString(pPropset.GetProperty("sDCIModelDir")))
 
-            '2020
-            sDictionary.Add("advconnecttab", Convert.ToString(pPropset.GetProperty("advconnecttab")))
-            sDictionary.Add("bDistanceDecay", Convert.ToString(pPropset.GetProperty("bDistanceDecay")))
-            sDictionary.Add("bDistanceLim", Convert.ToString(pPropset.GetProperty("bDistanceLim")))
-            sDictionary.Add("dMaxDist", Convert.ToString(pPropset.GetProperty("dMaxDist")))
-            sDictionary.Add("sDDFunction", Convert.ToString(pPropset.GetProperty("sDDFunction")))
+                '2020
+                sDictionary.Add("advconnecttab", Convert.ToString(pPropset.GetProperty("advconnecttab")))
+                sDictionary.Add("bDistanceDecay", Convert.ToString(pPropset.GetProperty("bDistanceDecay")))
+                sDictionary.Add("bDistanceLim", Convert.ToString(pPropset.GetProperty("bDistanceLim")))
+                sDictionary.Add("dMaxDist", Convert.ToString(pPropset.GetProperty("dMaxDist")))
+                sDictionary.Add("sDDFunction", Convert.ToString(pPropset.GetProperty("sDDFunction")))
 
-            sDictionary.Add("sRInstallDir", Convert.ToString(pPropset.GetProperty("sRInstallDir")))
-            sDictionary.Add("bDBF", Convert.ToString(pPropset.GetProperty("bDBF")))
-            sDictionary.Add("sGDB", Convert.ToString(pPropset.GetProperty("sGDB")))
-            sDictionary.Add("TabPrefix", Convert.ToString(pPropset.GetProperty("TabPrefix")))
-            sDictionary.Add("UpHab", Convert.ToString(pPropset.GetProperty("UpHab")))
-            sDictionary.Add("TotalUpHab", Convert.ToString(pPropset.GetProperty("TotalUpHab")))
-            sDictionary.Add("DownHab", Convert.ToString(pPropset.GetProperty("DownHab")))
-            sDictionary.Add("TotalDownHab", Convert.ToString(pPropset.GetProperty("TotalDownHab")))
-            sDictionary.Add("PathDownHab", Convert.ToString(pPropset.GetProperty("PathDownHab")))
-            sDictionary.Add("TotalPathDownHab", Convert.ToString(pPropset.GetProperty("TotalPathDownHab")))
-            sDictionary.Add("numPolys", Convert.ToString(pPropset.GetProperty("numPolys")))
+                sDictionary.Add("sRInstallDir", Convert.ToString(pPropset.GetProperty("sRInstallDir")))
+                sDictionary.Add("bDBF", Convert.ToString(pPropset.GetProperty("bDBF")))
+                sDictionary.Add("sGDB", Convert.ToString(pPropset.GetProperty("sGDB")))
+                sDictionary.Add("TabPrefix", Convert.ToString(pPropset.GetProperty("TabPrefix")))
+                sDictionary.Add("UpHab", Convert.ToString(pPropset.GetProperty("UpHab")))
+                sDictionary.Add("TotalUpHab", Convert.ToString(pPropset.GetProperty("TotalUpHab")))
+                sDictionary.Add("DownHab", Convert.ToString(pPropset.GetProperty("DownHab")))
+                sDictionary.Add("TotalDownHab", Convert.ToString(pPropset.GetProperty("TotalDownHab")))
+                sDictionary.Add("PathDownHab", Convert.ToString(pPropset.GetProperty("PathDownHab")))
+                sDictionary.Add("TotalPathDownHab", Convert.ToString(pPropset.GetProperty("TotalPathDownHab")))
+                sDictionary.Add("numPolys", Convert.ToString(pPropset.GetProperty("numPolys")))
 
-            iPolysCount = Convert.ToInt32(pPropset.GetProperty("numPolys"))
-            If iPolysCount > 0 Then
-                i = 0
-                For i = 0 To iPolysCount - 1
-                    sDictionary.Add("IncPoly" + i.ToString, Convert.ToString(pPropset.GetProperty("IncPoly" + i.ToString)))
-                    sDictionary.Add("PolyClassField" + i.ToString, Convert.ToString(pPropset.GetProperty("PolyClassField" + i.ToString)))
-                    sDictionary.Add("PolyQuanField" + i.ToString, Convert.ToString(pPropset.GetProperty("PolyQuanField" + i.ToString)))
-                    sDictionary.Add("PolyUnitField" + i.ToString, Convert.ToString(pPropset.GetProperty("PolyUnitField" + i.ToString)))
-                Next
-            End If
+                iPolysCount = Convert.ToInt32(pPropset.GetProperty("numPolys"))
+                If iPolysCount > 0 Then
+                    i = 0
+                    For i = 0 To iPolysCount - 1
+                        sDictionary.Add("IncPoly" + i.ToString, Convert.ToString(pPropset.GetProperty("IncPoly" + i.ToString)))
+                        sDictionary.Add("PolyClassField" + i.ToString, Convert.ToString(pPropset.GetProperty("PolyClassField" + i.ToString)))
+                        sDictionary.Add("PolyQuanField" + i.ToString, Convert.ToString(pPropset.GetProperty("PolyQuanField" + i.ToString)))
+                        sDictionary.Add("PolyUnitField" + i.ToString, Convert.ToString(pPropset.GetProperty("PolyUnitField" + i.ToString)))
+                    Next
+                End If
 
-            sDictionary.Add("numLines", Convert.ToString(pPropset.GetProperty("numLines")))
+                sDictionary.Add("numLines", Convert.ToString(pPropset.GetProperty("numLines")))
 
-            iLinesCount = Convert.ToInt32(pPropset.GetProperty("numLines"))
-            If iLinesCount > 0 Then
-                j = 0
-                For j = 0 To iLinesCount - 1
-                    sDictionary.Add("IncLine" + j.ToString, Convert.ToString(pPropset.GetProperty("IncLine" + j.ToString)))
-                    sDictionary.Add("LineClassField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineClassField" + j.ToString)))
-                    sDictionary.Add("LineQuanField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineQuanField" + j.ToString)))
-                    sDictionary.Add("LineUnitField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineUnitField" + j.ToString)))
-                Next
-            End If
+                iLinesCount = Convert.ToInt32(pPropset.GetProperty("numLines"))
+                If iLinesCount > 0 Then
+                    j = 0
+                    For j = 0 To iLinesCount - 1
+                        sDictionary.Add("IncLine" + j.ToString, Convert.ToString(pPropset.GetProperty("IncLine" + j.ToString)))
+                        sDictionary.Add("LineClassField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineClassField" + j.ToString)))
+                        sDictionary.Add("LineQuanField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineQuanField" + j.ToString)))
+                        sDictionary.Add("LineUnitField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineUnitField" + j.ToString)))
+                    Next
+                End If
 
-            sDictionary.Add("numExclusions", Convert.ToString(pPropset.GetProperty("numExclusions")))
+                sDictionary.Add("numExclusions", Convert.ToString(pPropset.GetProperty("numExclusions")))
 
-            iExclusions = Convert.ToInt32(pPropset.GetProperty("numExclusions"))
-            If iExclusions > 0 Then
-                i = 0
-                For i = 0 To iExclusions - 1
+                iExclusions = Convert.ToInt32(pPropset.GetProperty("numExclusions"))
+                If iExclusions > 0 Then
+                    i = 0
+                    For i = 0 To iExclusions - 1
 
-                    sDictionary.Add("ExcldLayer" + i.ToString, Convert.ToString(pPropset.GetProperty("ExcldLayer" + i.ToString)))
-                    sDictionary.Add("ExcldFeature" + i.ToString, Convert.ToString(pPropset.GetProperty("ExcldFeature" + i.ToString)))
-                    sDictionary.Add("ExcldValue" + i.ToString, Convert.ToString(pPropset.GetProperty("ExcldValue" + i.ToString)))
-                Next
-            End If
+                        sDictionary.Add("ExcldLayer" + i.ToString, Convert.ToString(pPropset.GetProperty("ExcldLayer" + i.ToString)))
+                        sDictionary.Add("ExcldFeature" + i.ToString, Convert.ToString(pPropset.GetProperty("ExcldFeature" + i.ToString)))
+                        sDictionary.Add("ExcldValue" + i.ToString, Convert.ToString(pPropset.GetProperty("ExcldValue" + i.ToString)))
+                    Next
+                End If
 
-            sDictionary.Add("numBarrierIDs", Convert.ToString(pPropset.GetProperty("numBarrierIDs")))
-            iBarrierIDs = Convert.ToInt32(pPropset.GetProperty("numBarrierIDs"))
-            If iBarrierIDs > 0 Then
-                i = 0
-                For i = 0 To iBarrierIDs - 1
+                sDictionary.Add("numBarrierIDs", Convert.ToString(pPropset.GetProperty("numBarrierIDs")))
+                iBarrierIDs = Convert.ToInt32(pPropset.GetProperty("numBarrierIDs"))
+                If iBarrierIDs > 0 Then
+                    i = 0
+                    For i = 0 To iBarrierIDs - 1
 
-                    sDictionary.Add("BarrierIDLayer" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierIDLayer" + i.ToString)))
-                    sDictionary.Add("BarrierIDField" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierIDField" + i.ToString)))
-                    sDictionary.Add("BarrierPermField" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierPermField" + i.ToString)))
-                    sDictionary.Add("BarrierNaturalYNField" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierNaturalYNField" + i.ToString)))
-                Next
-            End If
+                        sDictionary.Add("BarrierIDLayer" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierIDLayer" + i.ToString)))
+                        sDictionary.Add("BarrierIDField" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierIDField" + i.ToString)))
+                        sDictionary.Add("BarrierPermField" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierPermField" + i.ToString)))
+                        sDictionary.Add("BarrierNaturalYNField" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierNaturalYNField" + i.ToString)))
+                    Next
+                End If
 
-            sDictionary.Add("barrierEIDsLoadedyn", "false")
-            sDictionary.Add("numBarrierEIDs", Convert.ToString(pPropset.GetProperty("numBarrierEIDs")))
+                sDictionary.Add("barrierEIDsLoadedyn", "false")
+                sDictionary.Add("numBarrierEIDs", Convert.ToString(pPropset.GetProperty("numBarrierEIDs")))
 
-            iBarrierEIDCount = Convert.ToInt32(pPropset.GetProperty("numBarrierEIDs"))
+                iBarrierEIDCount = Convert.ToInt32(pPropset.GetProperty("numBarrierEIDs"))
 
-            If iBarrierEIDCount > 0 Then
-                i = 0
-                For i = 0 To iBarrierEIDCount - 1
-                    sDictionary.Add("BarrierEID" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierEID" + i.ToString)))
-                Next
-            End If
+                If iBarrierEIDCount > 0 Then
+                    i = 0
+                    For i = 0 To iBarrierEIDCount - 1
+                        sDictionary.Add("BarrierEID" + i.ToString, Convert.ToString(pPropset.GetProperty("BarrierEID" + i.ToString)))
+                    Next
+                End If
 
-            sDictionary.Add("flagEIDsLoadedyn", "false")
-            sDictionary.Add("numFlagEIDs", Convert.ToString(pPropset.GetProperty("numFlagEIDs")))
+                sDictionary.Add("flagEIDsLoadedyn", "false")
+                sDictionary.Add("numFlagEIDs", Convert.ToString(pPropset.GetProperty("numFlagEIDs")))
 
-            iFlagEIDCount = Convert.ToInt32(pPropset.GetProperty("numFlagEIDs"))
+                iFlagEIDCount = Convert.ToInt32(pPropset.GetProperty("numFlagEIDs"))
 
-            If iFlagEIDCount > 0 Then
-                i = 0
-                For i = 0 To iFlagEIDCount - 1
-                    sDictionary.Add("FlagEID" + i.ToString, Convert.ToString(pPropset.GetProperty("FlagEID" + i.ToString)))
-                Next
-            End If
+                If iFlagEIDCount > 0 Then
+                    i = 0
+                    For i = 0 To iFlagEIDCount - 1
+                        sDictionary.Add("FlagEID" + i.ToString, Convert.ToString(pPropset.GetProperty("FlagEID" + i.ToString)))
+                    Next
+                End If
 
-            sDictionary.Add("bGLPKTables", Convert.ToString(pPropset.GetProperty("bGLPKTables")))
-            sDictionary.Add("sGLPKModelDir", Convert.ToString(pPropset.GetProperty("sGLPKModelDir")))
-            sDictionary.Add("sGnuWinDir", Convert.ToString(pPropset.GetProperty("sGnuWinDir")))
+                sDictionary.Add("bGLPKTables", Convert.ToString(pPropset.GetProperty("bGLPKTables")))
+                sDictionary.Add("sGLPKModelDir", Convert.ToString(pPropset.GetProperty("sGLPKModelDir")))
+                sDictionary.Add("sGnuWinDir", Convert.ToString(pPropset.GetProperty("sGnuWinDir")))
 
+            Catch ex As Exception
+                sDictionary.Add("check", "check")
+                sDictionary.Add("direction", "up")
+                sDictionary.Add("ordernum", Convert.ToString(999))
+                sDictionary.Add("maximum", Convert.ToString("True"))
+                sDictionary.Add("connecttab", Convert.ToString(False))
+                sDictionary.Add("advconnecttab", Convert.ToString(False))
+                sDictionary.Add("barrierperm", Convert.ToString(False))
+                sDictionary.Add("naturalyn", Convert.ToString(False))
+                sDictionary.Add("dciyn", Convert.ToString(False))
+                sDictionary.Add("dcisectionalyn", Convert.ToString(False))
+                sDictionary.Add("sDCIModelDir", "not set")
+                sDictionary.Add("sRInstallDir", "not set")
 
+                '2020
+                sDictionary.Add("bDistanceDecay", Convert.ToString(False))
+                sDictionary.Add("bDistanceLim", Convert.ToString(False))
+                sDictionary.Add("dMaxDist", Convert.ToString(0))
+                sDictionary.Add("sDDFunction", "none")
+
+                sDictionary.Add("bDBF", Convert.ToString(False))
+                sDictionary.Add("sGDB", "not set")
+                sDictionary.Add("TabPrefix", "not set")
+                sDictionary.Add("UpHab", Convert.ToString(True))
+                sDictionary.Add("TotalUpHab", Convert.ToString(True))
+                sDictionary.Add("DownHab", Convert.ToString(False))
+                sDictionary.Add("TotalDownHab", Convert.ToString(False))
+                sDictionary.Add("PathDownHab", Convert.ToString(False))
+                sDictionary.Add("TotalPathDownHab", Convert.ToString(False))
+                sDictionary.Add("numPolys", Convert.ToString(0))
+                sDictionary.Add("numLines", Convert.ToString(0))
+                sDictionary.Add("numExclusions", Convert.ToString(0))
+                sDictionary.Add("numBarrierIDs", Convert.ToString(0))
+                sDictionary.Add("barrierEIDsLoadedyn", "false")
+                sDictionary.Add("numBarrierEIDs", Convert.ToString(0))
+                sDictionary.Add("flagEIDsLoadedyn", "false")
+                sDictionary.Add("numFlagEIDs", Convert.ToString(0))
+
+                sDictionary.Add("bGLPKTables", Convert.ToString(False))
+                sDictionary.Add("sGLPKModelDir", Convert.ToString("not set"))
+                sDictionary.Add("sGnuWinDir", Convert.ToString("not set"))
+            End Try
         Else ' if (for some weird reason) the extension hasn't been loaded
             '  (the bloaded var is set as false) then save defaults to stream
 
