@@ -30,6 +30,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.lblGeneralDesc = New System.Windows.Forms.Label()
         Me.Label23 = New System.Windows.Forms.Label()
+        Me.PictureBox4 = New System.Windows.Forms.PictureBox()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.chkTotalPathDownHab = New System.Windows.Forms.CheckBox()
         Me.chkTotalDownHab = New System.Windows.Forms.CheckBox()
@@ -76,6 +77,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.Label12 = New System.Windows.Forms.Label()
         Me.lstValues = New System.Windows.Forms.ListBox()
         Me.lstLayers = New System.Windows.Forms.ListBox()
+        Me.PictureBox3 = New System.Windows.Forms.PictureBox()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
         Me.Label29 = New System.Windows.Forms.Label()
         Me.Label5 = New System.Windows.Forms.Label()
@@ -92,6 +94,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.cmdSelectBarrierPerm = New System.Windows.Forms.Button()
         Me.Label8 = New System.Windows.Forms.Label()
         Me.chkLstBarriersLayers = New System.Windows.Forms.CheckedListBox()
+        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
         Me.Label30 = New System.Windows.Forms.Label()
         Me.Label22 = New System.Windows.Forms.Label()
@@ -108,6 +111,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.ChkDBFOutput = New System.Windows.Forms.CheckBox()
         Me.txtTablesPrefix = New System.Windows.Forms.TextBox()
         Me.txtGDB = New System.Windows.Forms.TextBox()
+        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
         Me.Label31 = New System.Windows.Forms.Label()
         Me.Label24 = New System.Windows.Forms.Label()
@@ -118,11 +122,13 @@ Partial Class frmRunAdvancedAnalysis
         Me.Label6 = New System.Windows.Forms.Label()
         Me.TxtOrder = New System.Windows.Forms.TextBox()
         Me.ChkMaxOrd = New System.Windows.Forms.CheckBox()
+        Me.PictureBox5 = New System.Windows.Forms.PictureBox()
         Me.TabPage5 = New System.Windows.Forms.TabPage()
         Me.Label32 = New System.Windows.Forms.Label()
         Me.Label25 = New System.Windows.Forms.Label()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
         Me.GroupBox11 = New System.Windows.Forms.GroupBox()
+        Me.PictureBox7 = New System.Windows.Forms.PictureBox()
         Me.GroupBox12 = New System.Windows.Forms.GroupBox()
         Me.rdoCircle = New System.Windows.Forms.RadioButton()
         Me.chkDistanceDecay = New System.Windows.Forms.CheckBox()
@@ -139,15 +145,10 @@ Partial Class frmRunAdvancedAnalysis
         Me.txtRInstallDir = New System.Windows.Forms.TextBox()
         Me.cmdRInstallDir = New System.Windows.Forms.Button()
         Me.chkDCI = New System.Windows.Forms.CheckBox()
-        Me.PictureBox4 = New System.Windows.Forms.PictureBox()
-        Me.PictureBox3 = New System.Windows.Forms.PictureBox()
-        Me.PictureBox2 = New System.Windows.Forms.PictureBox()
-        Me.PictureBox1 = New System.Windows.Forms.PictureBox()
-        Me.PictureBox5 = New System.Windows.Forms.PictureBox()
-        Me.PictureBox7 = New System.Windows.Forms.PictureBox()
         Me.PictureBox6 = New System.Windows.Forms.PictureBox()
         Me.TabBarriers.SuspendLayout()
         Me.TabPage1.SuspendLayout()
+        CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox3.SuspendLayout()
         Me.frmLayersInclude.SuspendLayout()
         Me.GroupBox8.SuspendLayout()
@@ -155,25 +156,24 @@ Partial Class frmRunAdvancedAnalysis
         Me.TabPage2.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
         Me.Farme3.SuspendLayout()
+        CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage3.SuspendLayout()
         Me.GroupBox6.SuspendLayout()
         Me.GroupBox9.SuspendLayout()
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage4.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
         Me.GroupBox10.SuspendLayout()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage6.SuspendLayout()
         Me.frmDirection.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
+        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage5.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox11.SuspendLayout()
-        Me.GroupBox12.SuspendLayout()
-        CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox12.SuspendLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -262,6 +262,16 @@ Partial Class frmRunAdvancedAnalysis
         Me.Label23.Size = New System.Drawing.Size(203, 35)
         Me.Label23.TabIndex = 30
         Me.Label23.Text = "General Options"
+        '
+        'PictureBox4
+        '
+        Me.PictureBox4.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox4.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.PictureBox4.Name = "PictureBox4"
+        Me.PictureBox4.Size = New System.Drawing.Size(135, 138)
+        Me.PictureBox4.TabIndex = 11
+        Me.PictureBox4.TabStop = False
         '
         'GroupBox3
         '
@@ -620,7 +630,7 @@ Partial Class frmRunAdvancedAnalysis
         'Label28
         '
         Me.Label28.AutoSize = True
-        Me.Label28.Location = New System.Drawing.Point(448, 53)
+        Me.Label28.Location = New System.Drawing.Point(322, 35)
         Me.Label28.Name = "Label28"
         Me.Label28.Size = New System.Drawing.Size(469, 80)
         Me.Label28.TabIndex = 30
@@ -630,12 +640,12 @@ Partial Class frmRunAdvancedAnalysis
         '
         Me.Label4.AutoSize = True
         Me.Label4.Font = New System.Drawing.Font("Calibri", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label4.Location = New System.Drawing.Point(193, 35)
+        Me.Label4.Location = New System.Drawing.Point(176, 35)
         Me.Label4.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(220, 35)
+        Me.Label4.Size = New System.Drawing.Size(129, 70)
         Me.Label4.TabIndex = 29
-        Me.Label4.Text = "Exclusion Options"
+        Me.Label4.Text = "Exclusion " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Options"
         '
         'GroupBox5
         '
@@ -815,6 +825,16 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstLayers.Size = New System.Drawing.Size(364, 104)
         Me.lstLayers.TabIndex = 0
         '
+        'PictureBox3
+        '
+        Me.PictureBox3.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox3.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.PictureBox3.Name = "PictureBox3"
+        Me.PictureBox3.Size = New System.Drawing.Size(135, 138)
+        Me.PictureBox3.TabIndex = 11
+        Me.PictureBox3.TabStop = False
+        '
         'TabPage3
         '
         Me.TabPage3.Controls.Add(Me.Label29)
@@ -833,7 +853,7 @@ Partial Class frmRunAdvancedAnalysis
         'Label29
         '
         Me.Label29.AutoSize = True
-        Me.Label29.Location = New System.Drawing.Point(395, 38)
+        Me.Label29.Location = New System.Drawing.Point(328, 38)
         Me.Label29.Name = "Label29"
         Me.Label29.Size = New System.Drawing.Size(530, 160)
         Me.Label29.TabIndex = 29
@@ -843,12 +863,12 @@ Partial Class frmRunAdvancedAnalysis
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Calibri", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(195, 35)
+        Me.Label5.Location = New System.Drawing.Point(192, 35)
         Me.Label5.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(193, 35)
+        Me.Label5.Size = New System.Drawing.Size(106, 70)
         Me.Label5.TabIndex = 28
-        Me.Label5.Text = "Barrier Options"
+        Me.Label5.Text = "Barrier " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Options"
         '
         'GroupBox6
         '
@@ -1007,6 +1027,16 @@ Partial Class frmRunAdvancedAnalysis
         Me.chkLstBarriersLayers.Size = New System.Drawing.Size(408, 340)
         Me.chkLstBarriersLayers.TabIndex = 2
         '
+        'PictureBox2
+        '
+        Me.PictureBox2.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox2.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox2.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.PictureBox2.Name = "PictureBox2"
+        Me.PictureBox2.Size = New System.Drawing.Size(135, 138)
+        Me.PictureBox2.TabIndex = 23
+        Me.PictureBox2.TabStop = False
+        '
         'TabPage4
         '
         Me.TabPage4.Controls.Add(Me.Label30)
@@ -1025,7 +1055,7 @@ Partial Class frmRunAdvancedAnalysis
         'Label30
         '
         Me.Label30.AutoSize = True
-        Me.Label30.Location = New System.Drawing.Point(398, 47)
+        Me.Label30.Location = New System.Drawing.Point(336, 35)
         Me.Label30.Name = "Label30"
         Me.Label30.Size = New System.Drawing.Size(535, 140)
         Me.Label30.TabIndex = 28
@@ -1038,9 +1068,9 @@ Partial Class frmRunAdvancedAnalysis
         Me.Label22.Location = New System.Drawing.Point(195, 35)
         Me.Label22.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label22.Name = "Label22"
-        Me.Label22.Size = New System.Drawing.Size(196, 35)
+        Me.Label22.Size = New System.Drawing.Size(106, 70)
         Me.Label22.TabIndex = 27
-        Me.Label22.Text = "Output Options"
+        Me.Label22.Text = "Output " & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Options"
         '
         'GroupBox4
         '
@@ -1139,9 +1169,9 @@ Partial Class frmRunAdvancedAnalysis
         Me.chkConnect.Location = New System.Drawing.Point(37, 276)
         Me.chkConnect.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkConnect.Name = "chkConnect"
-        Me.chkConnect.Size = New System.Drawing.Size(278, 24)
+        Me.chkConnect.Size = New System.Drawing.Size(213, 24)
         Me.chkConnect.TabIndex = 6
-        Me.chkConnect.Text = "Generate Basic Connectivity Table"
+        Me.chkConnect.Text = "Export Connectivity Table"
         Me.chkConnect.UseVisualStyleBackColor = True
         '
         'cmdAddGDB
@@ -1192,6 +1222,16 @@ Partial Class frmRunAdvancedAnalysis
         Me.txtGDB.Size = New System.Drawing.Size(373, 26)
         Me.txtGDB.TabIndex = 1
         '
+        'PictureBox1
+        '
+        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox1.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.PictureBox1.Name = "PictureBox1"
+        Me.PictureBox1.Size = New System.Drawing.Size(135, 138)
+        Me.PictureBox1.TabIndex = 10
+        Me.PictureBox1.TabStop = False
+        '
         'TabPage6
         '
         Me.TabPage6.Controls.Add(Me.Label31)
@@ -1210,7 +1250,7 @@ Partial Class frmRunAdvancedAnalysis
         'Label31
         '
         Me.Label31.AutoSize = True
-        Me.Label31.Location = New System.Drawing.Point(417, 46)
+        Me.Label31.Location = New System.Drawing.Point(331, 35)
         Me.Label31.Name = "Label31"
         Me.Label31.Size = New System.Drawing.Size(511, 100)
         Me.Label31.TabIndex = 27
@@ -1223,9 +1263,9 @@ Partial Class frmRunAdvancedAnalysis
         Me.Label24.Location = New System.Drawing.Point(176, 35)
         Me.Label24.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label24.Name = "Label24"
-        Me.Label24.Size = New System.Drawing.Size(227, 35)
+        Me.Label24.Size = New System.Drawing.Size(130, 70)
         Me.Label24.TabIndex = 26
-        Me.Label24.Text = "Advanced Options"
+        Me.Label24.Text = "Advanced" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Options"
         '
         'frmDirection
         '
@@ -1307,6 +1347,16 @@ Partial Class frmRunAdvancedAnalysis
         Me.ChkMaxOrd.Text = "Complete Network"
         Me.ChkMaxOrd.UseVisualStyleBackColor = True
         '
+        'PictureBox5
+        '
+        Me.PictureBox5.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox5.Location = New System.Drawing.Point(33, 35)
+        Me.PictureBox5.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.PictureBox5.Name = "PictureBox5"
+        Me.PictureBox5.Size = New System.Drawing.Size(135, 138)
+        Me.PictureBox5.TabIndex = 12
+        Me.PictureBox5.TabStop = False
+        '
         'TabPage5
         '
         Me.TabPage5.Controls.Add(Me.Label32)
@@ -1324,7 +1374,7 @@ Partial Class frmRunAdvancedAnalysis
         'Label32
         '
         Me.Label32.AutoSize = True
-        Me.Label32.Location = New System.Drawing.Point(394, 14)
+        Me.Label32.Location = New System.Drawing.Point(345, 14)
         Me.Label32.Name = "Label32"
         Me.Label32.Size = New System.Drawing.Size(514, 180)
         Me.Label32.TabIndex = 28
@@ -1334,7 +1384,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         Me.Label25.AutoSize = True
         Me.Label25.Font = New System.Drawing.Font("Calibri", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label25.Location = New System.Drawing.Point(208, 35)
+        Me.Label25.Location = New System.Drawing.Point(176, 35)
         Me.Label25.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label25.Name = "Label25"
         Me.Label25.Size = New System.Drawing.Size(152, 35)
@@ -1375,6 +1425,15 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox11.TabStop = False
         Me.GroupBox11.Text = "Distance Limits"
         '
+        'PictureBox7
+        '
+        Me.PictureBox7.Location = New System.Drawing.Point(426, 18)
+        Me.PictureBox7.Name = "PictureBox7"
+        Me.PictureBox7.Size = New System.Drawing.Size(300, 300)
+        Me.PictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
+        Me.PictureBox7.TabIndex = 15
+        Me.PictureBox7.TabStop = False
+        '
         'GroupBox12
         '
         Me.GroupBox12.Controls.Add(Me.rdoCircle)
@@ -1391,7 +1450,7 @@ Partial Class frmRunAdvancedAnalysis
         'rdoCircle
         '
         Me.rdoCircle.AutoSize = True
-        Me.rdoCircle.Location = New System.Drawing.Point(89, 116)
+        Me.rdoCircle.Location = New System.Drawing.Point(91, 116)
         Me.rdoCircle.Name = "rdoCircle"
         Me.rdoCircle.Size = New System.Drawing.Size(167, 24)
         Me.rdoCircle.TabIndex = 11
@@ -1537,65 +1596,6 @@ Partial Class frmRunAdvancedAnalysis
         Me.chkDCI.Text = "Calculate DCId and DCIp"
         Me.chkDCI.UseVisualStyleBackColor = True
         '
-        'PictureBox4
-        '
-        Me.PictureBox4.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
-        Me.PictureBox4.Location = New System.Drawing.Point(33, 35)
-        Me.PictureBox4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.PictureBox4.Name = "PictureBox4"
-        Me.PictureBox4.Size = New System.Drawing.Size(135, 138)
-        Me.PictureBox4.TabIndex = 11
-        Me.PictureBox4.TabStop = False
-        '
-        'PictureBox3
-        '
-        Me.PictureBox3.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
-        Me.PictureBox3.Location = New System.Drawing.Point(33, 35)
-        Me.PictureBox3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.PictureBox3.Name = "PictureBox3"
-        Me.PictureBox3.Size = New System.Drawing.Size(135, 138)
-        Me.PictureBox3.TabIndex = 11
-        Me.PictureBox3.TabStop = False
-        '
-        'PictureBox2
-        '
-        Me.PictureBox2.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
-        Me.PictureBox2.Location = New System.Drawing.Point(33, 35)
-        Me.PictureBox2.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.PictureBox2.Name = "PictureBox2"
-        Me.PictureBox2.Size = New System.Drawing.Size(135, 138)
-        Me.PictureBox2.TabIndex = 23
-        Me.PictureBox2.TabStop = False
-        '
-        'PictureBox1
-        '
-        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
-        Me.PictureBox1.Location = New System.Drawing.Point(33, 35)
-        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(135, 138)
-        Me.PictureBox1.TabIndex = 10
-        Me.PictureBox1.TabStop = False
-        '
-        'PictureBox5
-        '
-        Me.PictureBox5.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
-        Me.PictureBox5.Location = New System.Drawing.Point(33, 35)
-        Me.PictureBox5.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.PictureBox5.Name = "PictureBox5"
-        Me.PictureBox5.Size = New System.Drawing.Size(135, 138)
-        Me.PictureBox5.TabIndex = 12
-        Me.PictureBox5.TabStop = False
-        '
-        'PictureBox7
-        '
-        Me.PictureBox7.Location = New System.Drawing.Point(426, 18)
-        Me.PictureBox7.Name = "PictureBox7"
-        Me.PictureBox7.Size = New System.Drawing.Size(300, 300)
-        Me.PictureBox7.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
-        Me.PictureBox7.TabIndex = 15
-        Me.PictureBox7.TabStop = False
-        '
         'PictureBox6
         '
         Me.PictureBox6.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
@@ -1610,6 +1610,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AutoSize = True
         Me.ClientSize = New System.Drawing.Size(1012, 903)
         Me.Controls.Add(Me.TabBarriers)
         Me.Controls.Add(Me.cmdSave)
@@ -1621,6 +1622,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.TabBarriers.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.TabPage1.PerformLayout()
+        CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
         Me.frmLayersInclude.ResumeLayout(False)
@@ -1635,38 +1637,37 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox5.PerformLayout()
         Me.Farme3.ResumeLayout(False)
         Me.Farme3.PerformLayout()
+        CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage3.ResumeLayout(False)
         Me.TabPage3.PerformLayout()
         Me.GroupBox6.ResumeLayout(False)
         Me.GroupBox6.PerformLayout()
         Me.GroupBox9.ResumeLayout(False)
         Me.GroupBox9.PerformLayout()
+        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage4.ResumeLayout(False)
         Me.TabPage4.PerformLayout()
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
         Me.GroupBox10.ResumeLayout(False)
         Me.GroupBox10.PerformLayout()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage6.ResumeLayout(False)
         Me.TabPage6.PerformLayout()
         Me.frmDirection.ResumeLayout(False)
         Me.frmDirection.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
+        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage5.ResumeLayout(False)
         Me.TabPage5.PerformLayout()
         Me.GroupBox7.ResumeLayout(False)
         Me.GroupBox7.PerformLayout()
         Me.GroupBox11.ResumeLayout(False)
         Me.GroupBox11.PerformLayout()
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox12.ResumeLayout(False)
         Me.GroupBox12.PerformLayout()
-        CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 

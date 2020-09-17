@@ -437,6 +437,7 @@
     <AddInContent Include="Images\DistanceToMouth.png" />
     <AddInContent Include="Images\DistanceToSource.png" />
     <AddInContent Include="Images\CalculateOverlap.png" />
+    <Content Include="Images\FIPEX_DCI_Logo_2020_90x90a.JPG" />
     <Content Include="Images\FiPex_LOGOv2_90.jpg" />
     <AddInContent Include="Images\PlaceFlagAndRunTool.cur" />
     <Content Include="Images\FiPex_LOGOv3b_180x180.jpg" />

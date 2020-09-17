@@ -100,7 +100,7 @@ Public Class frmRunAdvancedAnalysis
             Return False
         End Try
     End Function
-    Private Sub saveoptions()
+    Private Sub saveoptions(ByVal canceleverything As Boolean)
         Dim sGDB As String
         Dim bDBF As Boolean
         Dim bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab As Boolean
@@ -290,6 +290,14 @@ Public Class frmRunAdvancedAnalysis
         Dim sMaxDist = txtMaxDistance.Text
         If Double.TryParse(sMaxDist, dMaxDist) = True Then
             dMaxDist = Convert.ToDouble(sMaxDist)
+        Else
+            dMaxDist = 0.0
+        End If
+
+        If bDistanceLim = True And dMaxDist = 0 Then
+            MsgBox("The maximum / cut-off distance must be set > 0 to continue if the distance limit is on. Please check and re-save / re-run.")
+            canceleverything = True
+            Exit Sub
         End If
         'MsgBox("dMaxDist after conversionto double: " & dMaxDist)
 
@@ -562,8 +570,8 @@ Public Class frmRunAdvancedAnalysis
 
     End Sub
     Private Sub cmdSave_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSave.Click
-
-        saveoptions()
+        Dim canceleverything As Boolean = False
+        saveoptions(canceleverything)
 
     End Sub
     Private Sub Options_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -748,28 +756,28 @@ Public Class frmRunAdvancedAnalysis
                 Try
                     bDistanceDecay = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bDistanceDecay"))
                 Catch ex As Exception
-                    MessageBox.Show("Trouble loading FIPEX property bDistanceDecay. Setting it to False.")
+                    'MessageBox.Show("Trouble loading FIPEX property bDistanceDecay. Setting it to False.")
                     bDistanceDecay = False
                 End Try
 
                 Try
                     bDistanceLim = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bDistanceLim"))
                 Catch ex As Exception
-                    MessageBox.Show("Trouble loading FIPEX property bDistanceLim. Setting it to False.")
+                    'MessageBox.Show("Trouble loading FIPEX property bDistanceLim. Setting it to False.")
                     bDistanceLim = False
                 End Try
 
                 Try
                     dMaxDist = Convert.ToDouble(m_FiPEx.pPropset.GetProperty("dMaxDist"))
                 Catch ex As Exception
-                    MessageBox.Show("Trouble loading FIPEX property dMaxDist. Setting it to 0.")
+                    'MessageBox.Show("Trouble loading FIPEX property dMaxDist. Setting it to 0.")
                     dMaxDist = 0.0
                 End Try
 
                 Try
                     sDDFunction = Convert.ToString(m_FiPEx.pPropset.GetProperty("sDDFunction"))
                 Catch ex As Exception
-                    MessageBox.Show("Trouble loading FIPEX property sDDFunction. Setting it to 'none'.")
+                    'MessageBox.Show("Trouble loading FIPEX property sDDFunction. Setting it to 'none'.")
                     sDDFunction = "none"
                 End Try
 
@@ -1020,18 +1028,20 @@ Public Class frmRunAdvancedAnalysis
         ' Set the Order
         TxtOrder.Text = Convert.ToString(iOrderNum)
 
-        ' Set Connectivity Table on/off
         If bConnectTab = True Then
             chkConnect.Checked = True
         Else
             chkConnect.Checked = False
         End If
 
+        ' 2020
         If bAdvConnectTab = True Then
             chkAdvConnect.Checked = True
         Else
             chkAdvConnect.Checked = False
         End If
+
+       
 
 
         ' default the things below dbf checkbox to disabled...
@@ -1136,7 +1146,9 @@ Public Class frmRunAdvancedAnalysis
             txtRInstallDir.Text = sRInstallDir
 
             '2020
+            chkDistanceLimit.Enabled = True
             chkDistanceLimit.Checked = bDistanceLim
+           
             txtMaxDistance.Text = dMaxDist
             chkDistanceDecay.Checked = bDistanceDecay
             If sDDFunction = "linear" Then
@@ -1947,6 +1959,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             chkBarrierPerm.Enabled = True
             chkNaturalTF.Enabled = True
 
+
             ' enable DCI controls only if perm and natural yn are checked
             If chkBarrierPerm.Checked = True And chkNaturalTF.Checked = True And chkConnect.Checked = True Then
                 chkDCI.Enabled = True
@@ -1961,6 +1974,11 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             chkBarrierPerm.Enabled = False
             chkNaturalTF.Enabled = False
             chkDCI.Enabled = False
+            chkDistanceLimit.Enabled = False
+            rdoCircle.Enabled = False
+            rdoLinear.Enabled = False
+            rdoSigmoid.Enabled = False
+            rdoNatExp1.Enabled = False
         End If
     End Sub
 
@@ -2925,9 +2943,16 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     End Function
     Private Sub cmdRun_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdRun.Click
-        saveoptions()
-        m_bRun = True
-        Me.Close()
+        Dim canceleverything As Boolean = False
+        saveoptions(canceleverything)
+        If canceleverything = False Then
+            m_bRun = True
+            Me.Close()
+        Else
+            Exit Sub
+        End If
+        
+
     End Sub
 
     Private Sub chkAdvConnect_CheckedChanged(sender As Object, e As EventArgs) Handles chkAdvConnect.CheckedChanged
@@ -2946,9 +2971,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End If
     End Sub
 
-    Private Sub chkDistanceDecay_CheckedChanged(sender As Object, e As EventArgs)
-
-    End Sub
+    
 
     Private Sub chkDCI_CheckedChanged_1(sender As Object, e As EventArgs) Handles chkDCI.CheckedChanged
         'MsgBox("chkDCI checked changed 1 triggered")
@@ -2959,10 +2982,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             txtRInstallDir.Enabled = True
             chkDCISectional.Enabled = True
             chkDistanceLimit.Enabled = True
-            rdoLinear.Enabled = True
-            rdoNatExp1.Enabled = True
-            rdoCircle.Enabled = True
-            rdoSigmoid.Enabled = True
+            
             If rdoNatExp1.Checked = True Then
                 PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
             End If
@@ -2982,6 +3002,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             txtRInstallDir.Enabled = False
             chkDCISectional.Enabled = False
             chkDistanceLimit.Enabled = False
+            chkDistanceDecay.Enabled = False
             rdoLinear.Enabled = False
             rdoNatExp1.Enabled = False
             rdoCircle.Enabled = False
@@ -2998,12 +3019,20 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             cmdRInstallDir.Enabled = True
             txtRInstallDir.Enabled = True
             chkDCISectional.Enabled = True
+            chkDistanceLimit.Enabled = True
         Else
             cmdDCIModelDir.Enabled = False
             txtDCIModelDir.Enabled = False
             cmdRInstallDir.Enabled = False
             txtRInstallDir.Enabled = False
             chkDCISectional.Enabled = False
+            chkDistanceLimit.Enabled = False
+            chkDistanceDecay.Enabled = False
+            rdoLinear.Enabled = False
+            rdoCircle.Enabled = False
+            rdoSigmoid.Enabled = False
+            rdoNatExp1.Enabled = False
+
         End If
     End Sub
 
@@ -3101,22 +3130,35 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         If chkDistanceLimit.CheckState = CheckState.Checked Then
             txtMaxDistance.Enabled = True
             chkDistanceDecay.Enabled = True
-            rdoLinear.Enabled = True
-            rdoNatExp1.Enabled = True
-            rdoCircle.Enabled = True
-            rdoSigmoid.Enabled = True
-            If rdoNatExp1.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+
+            Dim dMaxdistance As Double = 0.0
+            Try
+                dMaxdistance = Convert.ToDouble(txtMaxDistance.Text)
+            Catch ex As Exception
+                dMaxdistance = 0.0
+            End Try
+
+            If dMaxdistance > 0 Then
+
+                rdoLinear.Enabled = True
+                rdoNatExp1.Enabled = True
+                rdoCircle.Enabled = True
+                rdoSigmoid.Enabled = True
+                If rdoNatExp1.Checked = True Then
+                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+                End If
+                If rdoCircle.Checked = True Then
+                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+                End If
+                If rdoSigmoid.Checked = True Then
+                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+                End If
+                If rdoLinear.Checked = True Then
+                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+                End If
             End If
-            If rdoCircle.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
-            End If
-            If rdoSigmoid.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
-            End If
-            If rdoLinear.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
-            End If
+
+            
         Else
             txtMaxDistance.Enabled = False
             chkDistanceDecay.Enabled = False
@@ -3134,9 +3176,14 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         If chkDistanceLimit.Enabled = True And chkDistanceLimit.Checked = True Then
             txtMaxDistance.Enabled = True
             chkDistanceDecay.Enabled = True
+
         Else
             txtMaxDistance.Enabled = False
             chkDistanceDecay.Enabled = False
+            rdoLinear.Enabled = False
+            rdoCircle.Enabled = False
+            rdoNatExp1.Enabled = False
+            rdoSigmoid.Enabled = False
         End If
     End Sub
 
@@ -3152,6 +3199,15 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             rdoLinear.Enabled = True
             rdoSigmoid.Enabled = True
             rdoNatExp1.Enabled = True
+
+            ' ensure at least one radio button is checked (default to linear)
+            If rdoLinear.Checked = False And
+               rdoCircle.Checked = False And
+               rdoNatExp1.Checked = False And
+               rdoSigmoid.Checked = False Then
+                rdoLinear.Checked = True
+            End If
+
             If rdoNatExp1.Checked = True Then
                 PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
             End If
@@ -3173,8 +3229,18 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End If
     End Sub
 
-  
-   
+    Private Sub chkDistanceDecay_EnabledChanged(sender As Object, e As EventArgs) Handles chkDistanceDecay.EnabledChanged
+        ' max sure at least one radio box is checked by default if the distance decay function is enabled
+        If chkDistanceDecay.Enabled = True Then
+            If rdoLinear.Checked = False And
+                rdoCircle.Checked = False And
+                rdoNatExp1.Checked = False And
+                rdoSigmoid.Checked = False Then
+                rdoLinear.Checked = True
+            End If
+        End If
+    End Sub
+
     Private Sub rdoNatExp1_CheckedChanged(sender As Object, e As EventArgs) Handles rdoNatExp1.CheckedChanged
         If rdoNatExp1.Checked = True Then
             PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
@@ -3191,5 +3257,9 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         If rdoSigmoid.Checked = True Then
             PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
         End If
+    End Sub
+
+    Private Sub Label31_Click(sender As Object, e As EventArgs) Handles Label31.Click
+
     End Sub
 End Class

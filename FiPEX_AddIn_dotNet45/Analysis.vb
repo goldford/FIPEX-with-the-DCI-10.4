@@ -396,14 +396,13 @@ Public Class Analysis
             backgroundworker1.CancelAsync()
             Exit Sub
         End If
-        backgroundworker1.ReportProgress(5, "Getting FiPEx Option Settings")
+        backgroundworker1.ReportProgress(5, "Getting FIPEX Option Settings")
 
         ' Declare settings variables and set defaults
         Dim sDirection As String = "up"     ' Analysis direction default to 'upstream'
         Dim iOrderNum As Integer = 1        ' the ordernum retrieved default to 1
         Dim bMaximum As Boolean = False     ' set maximum order yes/no default to no
         Dim bConnectTab As Boolean = False  ' Connectivity table default to none
-        Dim bAdvConnectTab As Boolean = False
         Dim bBarrierPerm As Boolean = False ' Barrier perm field? 
         Dim bNaturalYN As Boolean = False   ' Natural Barrier y/n field?
         Dim bDCI As Boolean = False         ' Calculate DCI?
@@ -414,6 +413,7 @@ Public Class Analysis
         Dim bDistanceDecay As Boolean = False
         Dim dMaxDist As Double = 0.0
         Dim sDDFunction As String = "none"
+        Dim bAdvConnectTab As Boolean = False
 
         Dim bDBF As Boolean = False         ' Include DBF output default none
         Dim sGDB As String = ""             ' Output GDB for DBF output
@@ -463,7 +463,6 @@ Public Class Analysis
                     iOrderNum = 999
                 End If
                 bConnectTab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("connecttab"))
-                bAdvConnectTab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("advconnecttab"))
                 bBarrierPerm = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("barrierperm"))
                 bNaturalYN = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("NaturalYN"))
                 bDCI = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("dciyn"))
@@ -477,21 +476,21 @@ Public Class Analysis
                 Try
                     bDistanceDecay = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDistanceDecay"))
                 Catch ex As Exception
-                    MsgBox("Trouble loading FIPEX property bDistanceDecay. Setting it to False.")
+                    'MsgBox("Trouble loading FIPEX property bDistanceDecay. Setting it to False.")
                     bDistanceDecay = False
                 End Try
 
                 Try
                     bDistanceLim = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDistanceLim"))
                 Catch ex As Exception
-                    MsgBox("Trouble loading FIPEX property bDistanceLim. Setting it to False.")
+                    'MsgBox("Trouble loading FIPEX property bDistanceLim. Setting it to False.")
                     bDistanceDecay = False
                 End Try
 
                 Try
                     sDDFunction = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDDFunction"))
                 Catch ex As Exception
-                    MsgBox("Trouble loading FIPEX property sDDFunction. Setting it to 'none'")
+                    'MsgBox("Trouble loading FIPEX property sDDFunction. Setting it to 'none'")
                     sDDFunction = "none"
                 End Try
 
@@ -499,9 +498,11 @@ Public Class Analysis
                 Try
                     dMaxDist = Convert.ToDouble(m_FiPEx__1.pPropset.GetProperty("dMaxDist"))
                 Catch ex As Exception
-                    MsgBox("Trouble loading FIPEX property dMaxDist. Setting it to 0.")
+                    'MsgBox("Trouble loading FIPEX property dMaxDist. Setting it to 0.")
                     dMaxDist = 0.0
                 End Try
+
+                bAdvConnectTab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("advconnecttab"))
 
                 bUpHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("UpHab"))
                 bTotalUpHab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("TotalUpHab"))
@@ -2814,7 +2815,7 @@ Public Class Analysis
                         MsgBox("Debug2020 - issue encountered naming output advanced connect table")
                         Exit Sub
                     End If
-                    PrepAdvanced2020DCIOutTable(sAdvConnectTabName, pFWorkspace)
+                    'PrepAdvanced2020DCIOutTable(sAdvConnectTabName, pFWorkspace)
                 End If
 
                 If bGLPKTables = True Then
@@ -2958,11 +2959,11 @@ Public Class Analysis
                                                              "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count & ControlChars.NewLine & _
                                                                                                                          "Table: Connectivity"))
                     'MsgBox("Debug:53")
-                    pTable = pFWorkspace.OpenTable(sAdvConnectTabName)
+                    'pTable = pFWorkspace.OpenTable(sAdvConnectTabName)
                     j = 0
                     For j = 0 To lConnectivity.Count - 1
 
-                        pRowBuffer = pTable.CreateRowBuffer
+                        'pRowBuffer = pTable.CreateRowBuffer
 
                         pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, _
                                                                  Nothing, Nothing, Nothing, Nothing, Nothing)
@@ -2979,8 +2980,8 @@ Public Class Analysis
                         ' DownstreamNeighbDistance
                         ' DownstreamNeighbUnits
 
-                        pRowBuffer.Value(1) = lConnectivity(j).BarrID
-                        pRowBuffer.Value(2) = lConnectivity(j).BarrLabel
+                        'pRowBuffer.Value(1) = lConnectivity(j).BarrID
+                        'pRowBuffer.Value(2) = lConnectivity(j).BarrLabel
 
                         pAdvDCIDataObj.NodeEID = lConnectivity(j).BarrID
                         pAdvDCIDataObj.NodeLabel = lConnectivity(j).BarrLabel
@@ -2992,8 +2993,8 @@ Public Class Analysis
                                 '              room for all params required for DCI
                                 '              downstream habitat length, hab area, and distance to next barrier 
                                 '              (distance often = length, but not always) 
-                                pRowBuffer.Value(5) = lDCIStatsList(k).BarrierPerm
-                                pRowBuffer.Value(6) = lDCIStatsList(k).BarrierYN
+                                'pRowBuffer.Value(5) = lDCIStatsList(k).BarrierPerm
+                                'pRowBuffer.Value(6) = lDCIStatsList(k).BarrierYN
 
                                 pAdvDCIDataObj.BarrierPerm = lDCIStatsList(k).BarrierPerm
                                 pAdvDCIDataObj.NaturalTF = lDCIStatsList(k).BarrierYN
@@ -3001,8 +3002,8 @@ Public Class Analysis
                             End If
                         Next
 
-                        pRowBuffer.Value(7) = lConnectivity(j).DownstreamBarrierID
-                        pRowBuffer.Value(8) = lConnectivity(j).DownstreamBarrLabel
+                        'pRowBuffer.Value(7) = lConnectivity(j).DownstreamBarrierID
+                        'pRowBuffer.Value(8) = lConnectivity(j).DownstreamBarrLabel
 
                         pAdvDCIDataObj.DownstreamEID = lConnectivity(j).DownstreamBarrierID
                         pAdvDCIDataObj.DownstreamNodeLabel = lConnectivity(j).DownstreamBarrLabel
@@ -3014,10 +3015,10 @@ Public Class Analysis
                                     ' 2020 to do: currently this restricts habitat to length  - should fix
                                     '             and add user-options 
 
-                                    pRowBuffer.Value(3) = Math.Round(lHabStatsList(k).Quantity, 2)
-                                    pRowBuffer.Value(4) = lHabStatsList(k).Unit
-                                    pRowBuffer.Value(9) = Math.Round(lHabStatsList(k).Quantity, 2)
-                                    pRowBuffer.Value(10) = lHabStatsList(k).Unit
+                                    'pRowBuffer.Value(3) = Math.Round(lHabStatsList(k).Quantity, 2)
+                                    'pRowBuffer.Value(4) = lHabStatsList(k).Unit
+                                    'pRowBuffer.Value(9) = Math.Round(lHabStatsList(k).Quantity, 2)
+                                    'pRowBuffer.Value(10) = lHabStatsList(k).Unit
 
                                     pAdvDCIDataObj.NodeType = lHabStatsList(k).bType
                                     pAdvDCIDataObj.HabQuantity = Math.Round(lHabStatsList(k).Quantity, 2)
@@ -3029,9 +3030,9 @@ Public Class Analysis
                             End If
                         Next
 
-                        pCursor = pTable.Insert(True)
-                        pCursor.InsertRow(pRowBuffer)
-                        pCursor.Flush()
+                        'pCursor = pTable.Insert(True)
+                        'pCursor.InsertRow(pRowBuffer)
+                        'pCursor.Flush()
 
                         '2020
                         lAdv_DCI_Data_Object.Add(pAdvDCIDataObj)
@@ -3126,9 +3127,8 @@ Public Class Analysis
                         End If
                     ElseIf bAdvConnectTab = True And bDistanceLim = True Then
                         If lAdv_DCI_Data_Object.Count > 1 Then
-                            DCI_ADV2020_ShellCall(sAdvConnectTabName, _
-                                      pFWorkspace,
-                                      lAdv_DCI_Data_Object,
+                            DCI_ADV2020_ShellCall(pFWorkspace, _
+                                      lAdv_DCI_Data_Object, _
                                       bDCISectional, _
                                       bDistanceLim, _
                                       dMaxDist, _
@@ -4247,7 +4247,7 @@ Public Class Analysis
                     End If
                     If iProgress < 90 Then
                         backgroundworker1.ReportProgress(iProgress + 1, "Writing to Output Form" & ControlChars.NewLine & _
-                                                         " Barrier #: " & k.ToString)
+                                                         " Barrier / Node #: " & k.ToString)
                     End If
                     ' attempt at a border
                     ' border control not available as of 2005 and .net 2.0
@@ -9639,8 +9639,7 @@ Public Class Analysis
 
 
     End Sub
-    Private Sub DCI_ADV2020_ShellCall(ByVal sAdvConnectTabName As String, _
-                                      ByRef pFWorkspace As IFeatureWorkspace, _
+    Private Sub DCI_ADV2020_ShellCall(ByRef pFWorkspace As IFeatureWorkspace, _
                                       ByRef lAdv_DCI_Data_Object As List(Of Adv_DCI_Data_Object), _
                                       ByVal bDCISectional As Boolean, _
                                       ByVal bDistanceLim As Boolean, _
@@ -9788,8 +9787,9 @@ Public Class Analysis
             MsgBox("Issue writing to FIPEX param file. Error code: d101 " & ex.Message)
         End Try
 
-        'ChDir(sDCIModelDir)
-        'Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI_DD_2020.r", AppWinStyle.Hide, True)
+
+        ChDir(sDCIModelDir)
+        Shell(sRInstallDir + "/bin/r" + " CMD BATCH FIPEX_run_DCI_DD_2020.r", AppWinStyle.Hide, True)
 
 
     End Sub
@@ -10993,6 +10993,8 @@ Public Class Analysis
     End Sub
     Private Sub PrepAdvanced2020DCIOutTable(ByVal sTable As String, ByVal pFWSpace As IFeatureWorkspace)
 
+        ' Note I eliminated this table, which becomes huge, from DBF, and just skipped
+        ' to printing this table as CSV only to R Model folder
         ' ==============================================
         ' 2020 - DCI Output Table that includes columns for downstream neighbour 
         ' and distance to downstream neighbout

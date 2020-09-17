@@ -106,12 +106,12 @@ Partial Class frmResults_3
         '
         Me.lblNumBarriers.AutoSize = True
         Me.lblNumBarriers.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblNumBarriers.Location = New System.Drawing.Point(730, 117)
+        Me.lblNumBarriers.Location = New System.Drawing.Point(659, 117)
         Me.lblNumBarriers.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblNumBarriers.Name = "lblNumBarriers"
-        Me.lblNumBarriers.Size = New System.Drawing.Size(185, 22)
+        Me.lblNumBarriers.Size = New System.Drawing.Size(260, 22)
         Me.lblNumBarriers.TabIndex = 7
-        Me.lblNumBarriers.Text = "Number of Barriers:"
+        Me.lblNumBarriers.Text = "Number of Barriers / Nodes:"
         '
         'PictureBox1
         '

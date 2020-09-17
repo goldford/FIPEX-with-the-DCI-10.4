@@ -117,17 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Label32.Text" xml:space="preserve">
-    <value>The DCI Options apply to 'Advanced Analysis' which can call the DCI 
-Model in R.  Several settings must first be set in other Options tabs
- before all DCI Options are enabled. The Dendritic Connectivity Index 
-(DCI) assesses the expected longitudincal connectivity of a river system 
-(0 &gt;= DCI &lt;= 100). DCId asseses 'diadromous' connectivity from the 
-'sink' to all other segments. Note 'sink(s)' are defined by where flag(s) 
-are placed. DCIp is a potamodromous index that assesses connectivity 
-between every segment pair. 
-See documentation for further details. </value>
-  </data>
   <data name="Label28.Text" xml:space="preserve">
     <value>Exclusion options determine which features are included in the 
 calculations of segment length, habitat quantity, or habitat quality.
@@ -159,5 +148,16 @@ in output file names. Users may also choose to exporta connectivity table
 iterates in a direction (the 'Analysis Direction'). The 'order' refers to 
 traversal depth; if barrier a connects to b and c as a-&gt;b-&gt;c, then 'c' is
 order 3. </value>
+  </data>
+  <data name="Label32.Text" xml:space="preserve">
+    <value>The DCI Options apply to 'Advanced Analysis' which can call the DCI 
+Model in R.  Several settings must first be set in other Options tabs
+ before all DCI Options are enabled. The Dendritic Connectivity Index 
+(DCI) assesses the expected longitudincal connectivity of a river system 
+(0 &gt;= DCI &lt;= 100). DCId asseses 'diadromous' connectivity from the 
+'sink' to all other segments. Note 'sink(s)' are defined by where flag(s) 
+are placed. DCIp is a potamodromous index that assesses connectivity 
+between every segment pair. 
+See documentation for further details. </value>
   </data>
 </root>
