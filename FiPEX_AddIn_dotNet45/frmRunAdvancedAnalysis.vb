@@ -46,16 +46,16 @@ Public Class frmRunAdvancedAnalysis
     Private m_sLayerType As String
 
     'Private _HabParam As String
-    Private m_LLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-    Private m_PLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
+    Private m_LLayersFields As List(Of LineLayerToAdd) = New List(Of LineLayerToAdd)
+    Private m_PLayersFields As List(Of PolyLayerToAdd) = New List(Of PolyLayerToAdd)
     Private m_lExclusions As List(Of LayerToExclude) = New List(Of LayerToExclude)
     ' variable to hold list of barrier layers and ID fields (if set)
     Private m_lBarrierIDs As List(Of BarrierIDObj) = New List(Of BarrierIDObj)
 
     ' These single object persistent (module level) variables are used
     ' to pass and retrieve data from the pop-out forms
-    Private m_LLayerToAdd As LayerToAdd
-    Private m_PLayerToAdd As LayerToAdd
+    Private m_LLayerToAdd As LineLayerToAdd
+    Private m_PLayerToAdd As PolyLayerToAdd
     Private m_BarrierIDObj As BarrierIDObj
 
     Public m_bRun As Boolean = False
@@ -638,8 +638,8 @@ Public Class frmRunAdvancedAnalysis
         Dim i As Integer
 
         ' Reset the global variables (they don't get cleared after form is closed)
-        m_LLayersFields = New List(Of LayerToAdd)
-        m_PLayersFields = New List(Of LayerToAdd)
+        m_LLayersFields = New List(Of LineLayerToAdd)
+        m_PLayersFields = New List(Of PolyLayerToAdd)
         m_lExclusions = New List(Of LayerToExclude)
         m_lBarrierIDs = New List(Of BarrierIDObj)
 
@@ -741,7 +741,7 @@ Public Class frmRunAdvancedAnalysis
             If m_FiPEx.m_bLoaded = True Then
 
                 sDirection = Convert.ToString(m_FiPEx.pPropset.GetProperty("direction"))
-                iOrderNum = Convert.ToInt32((m_FiPEx.pPropset.GetProperty("ordernum")))     'May have problems here - need to convert to integer
+                iOrderNum = Convert.ToInt32((m_FiPEx.pPropset.GetProperty("ordernum")))
                 bMaximum = Convert.ToBoolean((m_FiPEx.pPropset.GetProperty("maximum")))
                 bConnectTab = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("connecttab"))
                 bAdvConnectTab = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("advconnecttab"))
@@ -794,7 +794,7 @@ Public Class frmRunAdvancedAnalysis
                 bTotalPathDownHab = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("TotalPathDownHab"))
 
                 m_iPolysCount = Convert.ToInt32(m_FiPEx.pPropset.GetProperty("numPolys"))
-                Dim HabLayerObj As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+                Dim PolyHabLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
                 ' Note: never did start using the property - used the global list variable instead
 
                 ' match any of the polygon layers saved in stream to those in listboxes and select
@@ -802,16 +802,16 @@ Public Class frmRunAdvancedAnalysis
                     For k = 0 To m_iPolysCount - 1
                         sPolyLayer = Convert.ToString(m_FiPEx.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
 
-                        HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                        With HabLayerObj
+                        PolyHabLayerObj = New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing)
+                        With PolyHabLayerObj
                             .Layer = sPolyLayer
-                            .ClsField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyClassField" + k.ToString))
-                            .QuanField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyQuanField" + k.ToString))
-                            .UnitField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyUnitField" + k.ToString))
+                            .HabClsField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyClassField" + k.ToString))
+                            .HabQuanField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyQuanField" + k.ToString))
+                            .HabUnitField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyUnitField" + k.ToString))
                         End With
 
                         ' Load that object into the list
-                        m_PLayersFields.Add(HabLayerObj)
+                        m_PLayersFields.Add(PolyHabLayerObj)
                         m = 0 ' loop to set currently selected
                         For m = 0 To lstPolyLayers.Items.Count - 1                ' for each item in list
                             If sPolyLayer = lstPolyLayers.Items.Item(m).ToString Then      ' if the two match
@@ -824,21 +824,23 @@ Public Class frmRunAdvancedAnalysis
 
                 m_iLinesCount = Convert.ToInt32(m_FiPEx.pPropset.GetProperty("numLines"))
                 ' match any of the line layers saved in stream to those in listboxes and select
-                Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+                Dim LineHabLayerObj As New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
                 If m_iLinesCount > 0 Then
                     For j = 0 To m_iLinesCount - 1
                         sLineLayer = Convert.ToString(m_FiPEx.pPropset.GetProperty("IncLine" + j.ToString)) ' get line layer
-                        HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                        With HabLayerObj2
+                        LineHabLayerObj = New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                        With LineHabLayerObj
                             .Layer = sLineLayer
-                            .ClsField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineClassField" + j.ToString))
-                            .QuanField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineQuanField" + j.ToString))
-                            .UnitField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineUnitField" + j.ToString))
+                            .LengthField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineLengthField" + j.ToString))
+                            .LengthUnits = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineLengthUnits" + j.ToString))
+                            .HabClsField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabClassField" + j.ToString))
+                            .HabQuanField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabQuanField" + j.ToString))
+                            .HabUnits = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabUnits" + j.ToString))
                         End With
 
                         ' add to the module level list
-                        m_LLayersFields.Add(HabLayerObj2)
+                        m_LLayersFields.Add(LineHabLayerObj)
 
                         m = 0
                         For m = 0 To lstLineLayers.Items.Count - 1                ' for each item in list
@@ -1246,7 +1248,7 @@ Public Class frmRunAdvancedAnalysis
             cmdChngLineCls.Enabled = True
             lstLineHabCls.Items.Clear()
             lstLineHabQuan.Items.Clear()
-            lstLineUnit.Items.Clear()
+            lstLineHabUnits.Items.Clear()
             Dim bMatch As Boolean = False
             Dim sLineUnit As String
 
@@ -1281,7 +1283,7 @@ m_LLayersFields.Item(i).QuanField, m_LLayersFields.Item(i).ClsField, m_LLayersFi
                         lstLineHabQuan.Items.Add(m_LLayersFields.Item(i).QuanField) ' load quantity field to box
 
                         sLineUnit = m_LLayersFields.Item(i).UnitField
-                        lstLineUnit.Items.Add(sLineUnit)
+                        lstLineHabUnits.Items.Add(sLineUnit)
 
                         'If sLineUnit = "Metres" Then
                         '    lstLineUnit.Items.Add("m")
@@ -1313,7 +1315,7 @@ m_LLayersFields.Item(i).QuanField, m_LLayersFields.Item(i).ClsField, m_LLayersFi
             If bMatch = False Then
                 lstLineHabCls.Items.Add("Not set")
                 lstLineHabQuan.Items.Add("Not set")
-                lstLineUnit.Items.Add("n/a")
+                lstLineHabUnits.Items.Add("n/a")
                 pLayerToAdd.ClsField = "Not set"
                 pLayerToAdd.QuanField = "Not set"
                 pLayerToAdd.UnitField = "Not set"
@@ -1634,7 +1636,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         ' clear the listboxes
         lstLineHabCls.Items.Clear()
         lstLineHabQuan.Items.Clear()
-        lstLineUnit.Items.Clear()
+        lstLineHabUnits.Items.Clear()
 
         Dim indexes As ListBox.SelectedIndexCollection = Me.lstLineLayers.SelectedIndices
 
@@ -1679,7 +1681,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
                                 ' Add a abbreviated unit to the Lines Unit Listbox
                                 sLineUnit = m_LLayersFields.Item(i).UnitField
-                                lstLineUnit.Items.Add(sLineUnit)
+                                lstLineHabUnits.Items.Add(sLineUnit)
                                 'If sLineUnit = "Metres" Then
                                 '    lstLineUnit.Items.Add("m")
                                 'ElseIf sLineUnit = "Kilometres" Then
@@ -1724,7 +1726,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                 End If
                 lstLineHabCls.Items.Add("Not set")
                 lstLineHabQuan.Items.Add("Not set")
-                lstLineUnit.Items.Add("n/a")
+                lstLineHabUnits.Items.Add("n/a")
             End If
 
         End If
@@ -2020,7 +2022,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
     Private Sub cmdChngLineCls_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdChngLineCls.Click
 
         m_sLayerType = "line"
-        Dim lLayerToAdd As New List(Of LayerToAdd)
+        Dim lLayerToAdd As New List(Of LineLayerToAdd)
 
         If m_LLayerToAdd IsNot Nothing Then
             Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChooseHabParam(m_sLineLayer, m_LLayerToAdd)
@@ -2031,14 +2033,19 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             End Using
             ' update the lstboxes now
             'Me.LHabParamList = m_LLayerToAdd
+            lstLineLength.Items.Clear()
+            lstLineLengthUnits.Items.Clear()
             lstLineHabCls.Items.Clear()
             lstLineHabCls.Items.Add(m_LLayerToAdd.ClsField)
             lstLineHabQuan.Items.Clear()
             lstLineHabQuan.Items.Add(m_LLayerToAdd.QuanField)
-            lstLineUnit.Items.Clear()
+            lstLineHabUnits.Items.Clear()
 
-            Dim sLineUnit As String = m_LLayerToAdd.UnitField
-            lstLineUnit.Items.Add(sLineUnit)
+            Dim sLineHabUnits As String = m_LLayerToAdd.HabUnits
+            Dim sLineLengthUnits As String = m_LLayerToAdd.LengthUnits
+
+            lstLineHabUnits.Items.Add(sLineHabUnits)
+            lstLineLengthUnits.Items.Add(sLineLengthUnits)
             ''If sLineUnit = "Metres" Then
             ''    lstLineUnit.Items.Add("m")
             ''ElseIf sLineUnit = "Kilometres" Then
@@ -2068,7 +2075,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
     Private Sub cmdChngPolyCls_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdChngPolyCls.Click
         m_sLayerType = "poly"
-        Dim lLayerToAdd As New List(Of LayerToAdd)
+        Dim lLayerToAdd As New List(Of PolyLayerToAdd)
 
         If m_PLayerToAdd IsNot Nothing Then
             Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChooseHabParam(m_sPolyLayer, m_PLayerToAdd)
@@ -2080,12 +2087,12 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             ' update the lstboxes now
             'Me.PHabParamList = m_PLayerToAdd
             lstPolyHabCls.Items.Clear()
-            lstPolyHabCls.Items.Add(m_PLayerToAdd.ClsField)
+            lstPolyHabCls.Items.Add(m_PLayerToAdd.HabClsField)
             lstPolyHabQuan.Items.Clear()
-            lstPolyHabQuan.Items.Add(m_PLayerToAdd.QuanField)
+            lstPolyHabQuan.Items.Add(m_PLayerToAdd.HabQuanField)
 
             lstPolyUnit.Items.Clear()
-            Dim sPolyUnit As String = m_PLayerToAdd.UnitField
+            Dim sPolyUnit As String = m_PLayerToAdd.HabUnitField
             lstPolyUnit.Items.Add(sPolyUnit)
             'If sPolyUnit = "Metres" Then
             '    lstPolyUnit.Items.Add("m")
@@ -2158,19 +2165,19 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
         End Set
     End Property
-    Public Property PHabParamList() As List(Of LayerToAdd)
+    Public Property PHabParamList() As List(Of PolyLayerToAdd)
         Get
             Return m_PLayersFields
         End Get
-        Set(ByVal value As List(Of LayerToAdd))
-            Dim pLayerToAdd As LayerToAdd
+        Set(ByVal value As List(Of PolyLayerToAdd))
+            Dim pLayerToAdd As PolyLayerToAdd
 
             pLayerToAdd = value(0)
             Dim sLayer As String = pLayerToAdd.Layer
-            Dim comparer As New CompareLayerNamePred(sLayer)
+            Dim comparer As New ComparePolyLayerNamePred(sLayer)
 
             ' Need an object to hold returned object, if it exists...
-            Dim CheckedLayerToAddObj As LayerToAdd
+            Dim CheckedLayerToAddObj As PolyLayerToAdd
             Dim iIndex As Integer
 
             ' This find function will pass in the m_LLayersFields object to the comparerobject function
@@ -2183,14 +2190,14 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                 With CheckedLayerToAddObj
                     If .Layer IsNot Nothing Then
                         ' Change the fields to equal incoming object's
-                        .ClsField = pLayerToAdd.ClsField
-                        .QuanField = pLayerToAdd.QuanField
-                        .UnitField = pLayerToAdd.UnitField
+                        .HabClsField = pLayerToAdd.HabClsField
+                        .HabQuanField = pLayerToAdd.HabQuanField
+                        .HabUnitField = pLayerToAdd.HabUnitField
 
                         ' Now need to delete the old object and put it the modified one back into the list.
-                        m_PLayersFields.Item(iIndex).ClsField = pLayerToAdd.ClsField
-                        m_PLayersFields.Item(iIndex).QuanField = pLayerToAdd.QuanField
-                        m_PLayersFields.Item(iIndex).UnitField = pLayerToAdd.UnitField
+                        m_PLayersFields.Item(iIndex).HabClsField = pLayerToAdd.HabClsField
+                        m_PLayersFields.Item(iIndex).HabQuanField = pLayerToAdd.HabQuanField
+                        m_PLayersFields.Item(iIndex).HabUnitField = pLayerToAdd.HabUnitField
                     End If
                 End With
             Else 'Otherwise just add the object to the list
@@ -2199,20 +2206,20 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
         End Set
     End Property
-    Public Property LHabParamList() As List(Of LayerToAdd)
+    Public Property LHabParamList() As List(Of LineLayerToAdd)
         Get
             Return m_LLayersFields
         End Get
-        Set(ByVal value As List(Of LayerToAdd))
+        Set(ByVal value As List(Of LineLayerToAdd))
 
-            Dim pLayerToAdd As LayerToAdd
+            Dim pLayerToAdd As LineLayerToAdd
 
             pLayerToAdd = value(0)
             Dim sLayer As String = pLayerToAdd.Layer
-            Dim comparer As New CompareLayerNamePred(sLayer)
+            Dim comparer As New CompareLineLayerNamePred(sLayer)
 
             ' Need an object to hold returned object, if it exists...
-            Dim CheckedLayerToAddObj As LayerToAdd
+            Dim CheckedLayerToAddObj As LineLayerToAdd
             Dim iIndex As Integer
 
             ' This find function will pass in the m_LLayersFields object to the comparerobject function
@@ -2225,14 +2232,18 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                 With CheckedLayerToAddObj
                     If .Layer IsNot Nothing Then
                         ' Change the fields to equal incoming object's
-                        .ClsField = pLayerToAdd.ClsField
-                        .QuanField = pLayerToAdd.QuanField
-                        .UnitField = pLayerToAdd.UnitField
+                        .LengthField = pLayerToAdd.LengthField
+                        .LengthUnits = pLayerToAdd.LengthUnits
+                        .HabClsField = pLayerToAdd.HabClsField
+                        .HabQuanField = pLayerToAdd.HabQuanField
+                        .HabUnits = pLayerToAdd.HabUnits
 
                         ' Now need to delete the old object and put it the modified one back into the list.
-                        m_LLayersFields.Item(iIndex).ClsField = pLayerToAdd.ClsField
-                        m_LLayersFields.Item(iIndex).QuanField = pLayerToAdd.QuanField
-                        m_LLayersFields.Item(iIndex).UnitField = pLayerToAdd.UnitField
+                        m_LLayersFields.Item(iIndex).LengthField = pLayerToAdd.LengthField
+                        m_LLayersFields.Item(iIndex).LengthUnits = pLayerToAdd.LengthUnits
+                        m_LLayersFields.Item(iIndex).HabClsField = pLayerToAdd.HabClsField
+                        m_LLayersFields.Item(iIndex).HabQuanField = pLayerToAdd.HabQuanField
+                        m_LLayersFields.Item(iIndex).HabUnits = pLayerToAdd.HabUnits
 
                     End If
                 End With
@@ -2243,12 +2254,22 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
     End Property
 
     ' Use this Predicate object to define search terms and return comparison result
-    Private Class CompareLayerNamePred
+    Private Class CompareLineLayerNamePred
         Private _name As String
         Public Sub New(ByVal name As String)
             _name = name
         End Sub
-        Public Function CompareNames(ByVal obj As LayerToAdd) As Boolean
+        Public Function CompareNames(ByVal obj As PolyLayerToAdd) As Boolean
+            Return (_name = obj.Layer)
+        End Function
+    End Class
+
+    Private Class ComparePolyLayerNamePred
+        Private _name As String
+        Public Sub New(ByVal name As String)
+            _name = name
+        End Sub
+        Public Function CompareNames(ByVal obj As LineLayerToAdd) As Boolean
             Return (_name = obj.Layer)
         End Function
     End Class
@@ -2688,7 +2709,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
     Private Sub cmdSelectBarrierPerm_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
         m_sLayerType = "line"
-        Dim lLayerToAdd As New List(Of LayerToAdd)
+        Dim lLayerToAdd As New List(Of LineLayerToAdd)
 
         If m_LLayerToAdd IsNot Nothing Then
             Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChooseHabParam(m_sLineLayer, m_LLayerToAdd)
@@ -2699,14 +2720,26 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             End Using
             ' update the lstboxes now
             'Me.LHabParamList = m_LLayerToAdd
+            lstLineLength.Items.Clear()
+            lstLineLength.Items.Add(m_LLayerToAdd.LengthField)
+
+            lstLineLengthUnits.Items.Clear()
+            lstLineLengthUnits.Items.Add(m_LLayerToAdd.LengthUnits)
+
             lstLineHabCls.Items.Clear()
             lstLineHabCls.Items.Add(m_LLayerToAdd.ClsField)
+
             lstLineHabQuan.Items.Clear()
             lstLineHabQuan.Items.Add(m_LLayerToAdd.QuanField)
-            lstLineUnit.Items.Clear()
 
-            Dim sLineUnit As String = m_LLayerToAdd.UnitField
-            lstLineUnit.Items.Add(sLineUnit)
+            lstLineHabUnits.Items.Clear()
+
+            Dim sLineHabUnits As String = m_LLayerToAdd.HabUnits
+            lstLineHabUnits.Items.Add(sLineHabUnits)
+
+            Dim sLineLengthUnits As String = m_LLayerToAdd.LengthUnits
+            lstLineLengthUnits.Items.Add(sLineLengthUnits)
+
             ''If sLineUnit = "Metres" Then
             ''    lstLineUnit.Items.Add("m")
             ''ElseIf sLineUnit = "Kilometres" Then
@@ -3138,7 +3171,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                 dMaxdistance = 0.0
             End Try
 
-            If dMaxdistance > 0 Then
+            If dMaxdistance > 0 And chkDistanceDecay.Checked = True Then
 
                 rdoLinear.Enabled = True
                 rdoNatExp1.Enabled = True

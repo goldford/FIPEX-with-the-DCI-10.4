@@ -44,7 +44,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.Label18 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.lstLineHabCls = New System.Windows.Forms.ListBox()
-        Me.lstLineUnit = New System.Windows.Forms.ListBox()
+        Me.lstLineHabUnits = New System.Windows.Forms.ListBox()
         Me.Label19 = New System.Windows.Forms.Label()
         Me.lstLineHabQuan = New System.Windows.Forms.ListBox()
         Me.cmdChngLineCls = New System.Windows.Forms.Button()
@@ -57,7 +57,6 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstPolyHabCls = New System.Windows.Forms.ListBox()
         Me.lstPolyHabQuan = New System.Windows.Forms.ListBox()
         Me.Label20 = New System.Windows.Forms.Label()
-        Me.Label3 = New System.Windows.Forms.Label()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.Label28 = New System.Windows.Forms.Label()
         Me.Label4 = New System.Windows.Forms.Label()
@@ -146,6 +145,11 @@ Partial Class frmRunAdvancedAnalysis
         Me.cmdRInstallDir = New System.Windows.Forms.Button()
         Me.chkDCI = New System.Windows.Forms.CheckBox()
         Me.PictureBox6 = New System.Windows.Forms.PictureBox()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label33 = New System.Windows.Forms.Label()
+        Me.Label34 = New System.Windows.Forms.Label()
+        Me.lstLineLength = New System.Windows.Forms.ListBox()
+        Me.lstLineLengthUnits = New System.Windows.Forms.ListBox()
         Me.TabBarriers.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -281,7 +285,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox3.Controls.Add(Me.chkPathDownHab)
         Me.GroupBox3.Controls.Add(Me.chkDownHab)
         Me.GroupBox3.Controls.Add(Me.chkUpHab)
-        Me.GroupBox3.Location = New System.Drawing.Point(176, 109)
+        Me.GroupBox3.Location = New System.Drawing.Point(185, 104)
         Me.GroupBox3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox3.Name = "GroupBox3"
         Me.GroupBox3.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
@@ -360,32 +364,35 @@ Partial Class frmRunAdvancedAnalysis
         '
         Me.frmLayersInclude.Controls.Add(Me.GroupBox8)
         Me.frmLayersInclude.Controls.Add(Me.GroupBox2)
-        Me.frmLayersInclude.Controls.Add(Me.Label3)
         Me.frmLayersInclude.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.frmLayersInclude.Location = New System.Drawing.Point(29, 248)
+        Me.frmLayersInclude.Location = New System.Drawing.Point(29, 232)
         Me.frmLayersInclude.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.frmLayersInclude.Name = "frmLayersInclude"
         Me.frmLayersInclude.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.frmLayersInclude.Size = New System.Drawing.Size(897, 465)
+        Me.frmLayersInclude.Size = New System.Drawing.Size(897, 481)
         Me.frmLayersInclude.TabIndex = 1
         Me.frmLayersInclude.TabStop = False
-        Me.frmLayersInclude.Text = "Network and Habitat Layers to Include in Analysis"
+        Me.frmLayersInclude.Text = "Network and Habitat Setup"
         '
         'GroupBox8
         '
+        Me.GroupBox8.Controls.Add(Me.lstLineLengthUnits)
+        Me.GroupBox8.Controls.Add(Me.lstLineLength)
+        Me.GroupBox8.Controls.Add(Me.Label34)
+        Me.GroupBox8.Controls.Add(Me.Label33)
         Me.GroupBox8.Controls.Add(Me.lstLineLayers)
         Me.GroupBox8.Controls.Add(Me.Label18)
         Me.GroupBox8.Controls.Add(Me.Label1)
         Me.GroupBox8.Controls.Add(Me.lstLineHabCls)
-        Me.GroupBox8.Controls.Add(Me.lstLineUnit)
+        Me.GroupBox8.Controls.Add(Me.lstLineHabUnits)
         Me.GroupBox8.Controls.Add(Me.Label19)
         Me.GroupBox8.Controls.Add(Me.lstLineHabQuan)
         Me.GroupBox8.Controls.Add(Me.cmdChngLineCls)
-        Me.GroupBox8.Location = New System.Drawing.Point(30, 29)
+        Me.GroupBox8.Location = New System.Drawing.Point(30, 41)
         Me.GroupBox8.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox8.Name = "GroupBox8"
         Me.GroupBox8.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.GroupBox8.Size = New System.Drawing.Size(844, 182)
+        Me.GroupBox8.Size = New System.Drawing.Size(844, 217)
         Me.GroupBox8.TabIndex = 26
         Me.GroupBox8.TabStop = False
         Me.GroupBox8.Text = "Line Layers"
@@ -396,30 +403,30 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstLineLayers.Location = New System.Drawing.Point(15, 34)
         Me.lstLineLayers.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLineLayers.Name = "lstLineLayers"
-        Me.lstLineLayers.Size = New System.Drawing.Size(457, 109)
+        Me.lstLineLayers.Size = New System.Drawing.Size(419, 130)
         Me.lstLineLayers.TabIndex = 17
         '
         'Label18
         '
         Me.Label18.AutoSize = True
         Me.Label18.ForeColor = System.Drawing.SystemColors.InfoText
-        Me.Label18.Location = New System.Drawing.Point(498, 34)
+        Me.Label18.Location = New System.Drawing.Point(454, 83)
         Me.Label18.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label18.Name = "Label18"
-        Me.Label18.Size = New System.Drawing.Size(116, 20)
+        Me.Label18.Size = New System.Drawing.Size(172, 20)
         Me.Label18.TabIndex = 8
-        Me.Label18.Text = "Quantity Field*:"
+        Me.Label18.Text = "Habitat Quantity Field*:"
         '
         'Label1
         '
         Me.Label1.AutoSize = True
         Me.Label1.ForeColor = System.Drawing.SystemColors.InfoText
-        Me.Label1.Location = New System.Drawing.Point(558, 63)
+        Me.Label1.Location = New System.Drawing.Point(457, 112)
         Me.Label1.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(56, 20)
+        Me.Label1.Size = New System.Drawing.Size(169, 20)
         Me.Label1.TabIndex = 19
-        Me.Label1.Text = "Units*:"
+        Me.Label1.Text = "Habitat Quantity Units:"
         '
         'lstLineHabCls
         '
@@ -429,36 +436,36 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstLineHabCls.ForeColor = System.Drawing.Color.Black
         Me.lstLineHabCls.FormattingEnabled = True
         Me.lstLineHabCls.ItemHeight = 20
-        Me.lstLineHabCls.Location = New System.Drawing.Point(639, 92)
+        Me.lstLineHabCls.Location = New System.Drawing.Point(639, 141)
         Me.lstLineHabCls.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLineHabCls.Name = "lstLineHabCls"
         Me.lstLineHabCls.SelectionMode = System.Windows.Forms.SelectionMode.None
         Me.lstLineHabCls.Size = New System.Drawing.Size(170, 20)
         Me.lstLineHabCls.TabIndex = 11
         '
-        'lstLineUnit
+        'lstLineHabUnits
         '
-        Me.lstLineUnit.BackColor = System.Drawing.SystemColors.InactiveBorder
-        Me.lstLineUnit.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstLineUnit.ForeColor = System.Drawing.SystemColors.MenuText
-        Me.lstLineUnit.FormattingEnabled = True
-        Me.lstLineUnit.ItemHeight = 20
-        Me.lstLineUnit.Location = New System.Drawing.Point(639, 63)
-        Me.lstLineUnit.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.lstLineUnit.Name = "lstLineUnit"
-        Me.lstLineUnit.Size = New System.Drawing.Size(122, 20)
-        Me.lstLineUnit.TabIndex = 23
+        Me.lstLineHabUnits.BackColor = System.Drawing.SystemColors.InactiveBorder
+        Me.lstLineHabUnits.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstLineHabUnits.ForeColor = System.Drawing.SystemColors.MenuText
+        Me.lstLineHabUnits.FormattingEnabled = True
+        Me.lstLineHabUnits.ItemHeight = 20
+        Me.lstLineHabUnits.Location = New System.Drawing.Point(639, 112)
+        Me.lstLineHabUnits.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.lstLineHabUnits.Name = "lstLineHabUnits"
+        Me.lstLineHabUnits.Size = New System.Drawing.Size(169, 20)
+        Me.lstLineHabUnits.TabIndex = 23
         '
         'Label19
         '
         Me.Label19.AutoSize = True
         Me.Label19.ForeColor = System.Drawing.Color.Black
-        Me.Label19.Location = New System.Drawing.Point(519, 92)
+        Me.Label19.Location = New System.Drawing.Point(480, 141)
         Me.Label19.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label19.Name = "Label19"
-        Me.Label19.Size = New System.Drawing.Size(96, 20)
+        Me.Label19.Size = New System.Drawing.Size(146, 20)
         Me.Label19.TabIndex = 7
-        Me.Label19.Text = "Class Field*:"
+        Me.Label19.Text = "Habitat Class Field:"
         '
         'lstLineHabQuan
         '
@@ -468,7 +475,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstLineHabQuan.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstLineHabQuan.FormattingEnabled = True
         Me.lstLineHabQuan.ItemHeight = 20
-        Me.lstLineHabQuan.Location = New System.Drawing.Point(639, 34)
+        Me.lstLineHabQuan.Location = New System.Drawing.Point(639, 83)
         Me.lstLineHabQuan.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstLineHabQuan.Name = "lstLineHabQuan"
         Me.lstLineHabQuan.SelectionMode = System.Windows.Forms.SelectionMode.None
@@ -477,7 +484,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'cmdChngLineCls
         '
-        Me.cmdChngLineCls.Location = New System.Drawing.Point(582, 122)
+        Me.cmdChngLineCls.Location = New System.Drawing.Point(582, 172)
         Me.cmdChngLineCls.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdChngLineCls.Name = "cmdChngLineCls"
         Me.cmdChngLineCls.Size = New System.Drawing.Size(92, 35)
@@ -495,11 +502,11 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox2.Controls.Add(Me.lstPolyHabCls)
         Me.GroupBox2.Controls.Add(Me.lstPolyHabQuan)
         Me.GroupBox2.Controls.Add(Me.Label20)
-        Me.GroupBox2.Location = New System.Drawing.Point(30, 240)
+        Me.GroupBox2.Location = New System.Drawing.Point(30, 280)
         Me.GroupBox2.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.GroupBox2.Size = New System.Drawing.Size(844, 189)
+        Me.GroupBox2.Size = New System.Drawing.Size(844, 181)
         Me.GroupBox2.TabIndex = 25
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Polygon Layers"
@@ -510,7 +517,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstPolyLayers.Location = New System.Drawing.Point(15, 29)
         Me.lstPolyLayers.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPolyLayers.Name = "lstPolyLayers"
-        Me.lstPolyLayers.Size = New System.Drawing.Size(457, 109)
+        Me.lstPolyLayers.Size = New System.Drawing.Size(419, 130)
         Me.lstPolyLayers.TabIndex = 18
         '
         'lstPolyUnit
@@ -520,26 +527,26 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstPolyUnit.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstPolyUnit.FormattingEnabled = True
         Me.lstPolyUnit.ItemHeight = 20
-        Me.lstPolyUnit.Location = New System.Drawing.Point(639, 65)
+        Me.lstPolyUnit.Location = New System.Drawing.Point(639, 72)
         Me.lstPolyUnit.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPolyUnit.Name = "lstPolyUnit"
-        Me.lstPolyUnit.Size = New System.Drawing.Size(122, 20)
+        Me.lstPolyUnit.Size = New System.Drawing.Size(170, 20)
         Me.lstPolyUnit.TabIndex = 22
         '
         'Label21
         '
         Me.Label21.AutoSize = True
         Me.Label21.ForeColor = System.Drawing.Color.Black
-        Me.Label21.Location = New System.Drawing.Point(528, 98)
+        Me.Label21.Location = New System.Drawing.Point(480, 105)
         Me.Label21.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label21.Name = "Label21"
-        Me.Label21.Size = New System.Drawing.Size(96, 20)
+        Me.Label21.Size = New System.Drawing.Size(146, 20)
         Me.Label21.TabIndex = 9
-        Me.Label21.Text = "Class Field*:"
+        Me.Label21.Text = "Habitat Class Field:"
         '
         'cmdChngPolyCls
         '
-        Me.cmdChngPolyCls.Location = New System.Drawing.Point(582, 128)
+        Me.cmdChngPolyCls.Location = New System.Drawing.Point(582, 135)
         Me.cmdChngPolyCls.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.cmdChngPolyCls.Name = "cmdChngPolyCls"
         Me.cmdChngPolyCls.Size = New System.Drawing.Size(92, 35)
@@ -551,12 +558,12 @@ Partial Class frmRunAdvancedAnalysis
         '
         Me.Label2.AutoSize = True
         Me.Label2.ForeColor = System.Drawing.SystemColors.InfoText
-        Me.Label2.Location = New System.Drawing.Point(507, 65)
+        Me.Label2.Location = New System.Drawing.Point(457, 72)
         Me.Label2.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(119, 20)
+        Me.Label2.Size = New System.Drawing.Size(169, 20)
         Me.Label2.TabIndex = 20
-        Me.Label2.Text = "Quantity Units*:"
+        Me.Label2.Text = "Habitat Quantity Units:"
         '
         'lstPolyHabCls
         '
@@ -566,7 +573,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstPolyHabCls.ForeColor = System.Drawing.Color.Black
         Me.lstPolyHabCls.FormattingEnabled = True
         Me.lstPolyHabCls.ItemHeight = 20
-        Me.lstPolyHabCls.Location = New System.Drawing.Point(639, 98)
+        Me.lstPolyHabCls.Location = New System.Drawing.Point(639, 105)
         Me.lstPolyHabCls.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPolyHabCls.Name = "lstPolyHabCls"
         Me.lstPolyHabCls.SelectionMode = System.Windows.Forms.SelectionMode.None
@@ -581,7 +588,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.lstPolyHabQuan.ForeColor = System.Drawing.SystemColors.InfoText
         Me.lstPolyHabQuan.FormattingEnabled = True
         Me.lstPolyHabQuan.ItemHeight = 20
-        Me.lstPolyHabQuan.Location = New System.Drawing.Point(639, 29)
+        Me.lstPolyHabQuan.Location = New System.Drawing.Point(639, 36)
         Me.lstPolyHabQuan.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.lstPolyHabQuan.Name = "lstPolyHabQuan"
         Me.lstPolyHabQuan.SelectionMode = System.Windows.Forms.SelectionMode.None
@@ -592,24 +599,12 @@ Partial Class frmRunAdvancedAnalysis
         '
         Me.Label20.AutoSize = True
         Me.Label20.ForeColor = System.Drawing.SystemColors.InfoText
-        Me.Label20.Location = New System.Drawing.Point(507, 29)
+        Me.Label20.Location = New System.Drawing.Point(460, 36)
         Me.Label20.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.Label20.Name = "Label20"
-        Me.Label20.Size = New System.Drawing.Size(116, 20)
+        Me.Label20.Size = New System.Drawing.Size(166, 20)
         Me.Label20.TabIndex = 10
-        Me.Label20.Text = "Quantity Field*:"
-        '
-        'Label3
-        '
-        Me.Label3.AutoSize = True
-        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.ForeColor = System.Drawing.SystemColors.MenuText
-        Me.Label3.Location = New System.Drawing.Point(682, 434)
-        Me.Label3.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
-        Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(114, 20)
-        Me.Label3.TabIndex = 24
-        Me.Label3.Text = "(* = Required)"
+        Me.Label20.Text = "Habitat Quantity Field:"
         '
         'TabPage2
         '
@@ -1606,6 +1601,59 @@ Partial Class frmRunAdvancedAnalysis
         Me.PictureBox6.TabIndex = 11
         Me.PictureBox6.TabStop = False
         '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label3.ForeColor = System.Drawing.SystemColors.MenuText
+        Me.Label3.Location = New System.Drawing.Point(885, 832)
+        Me.Label3.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(114, 20)
+        Me.Label3.TabIndex = 24
+        Me.Label3.Text = "(* = Required)"
+        '
+        'Label33
+        '
+        Me.Label33.AutoSize = True
+        Me.Label33.Location = New System.Drawing.Point(450, 24)
+        Me.Label33.Name = "Label33"
+        Me.Label33.Size = New System.Drawing.Size(182, 20)
+        Me.Label33.TabIndex = 24
+        Me.Label33.Text = "Length / Distance Field*:"
+        '
+        'Label34
+        '
+        Me.Label34.AutoSize = True
+        Me.Label34.Location = New System.Drawing.Point(447, 53)
+        Me.Label34.Name = "Label34"
+        Me.Label34.Size = New System.Drawing.Size(179, 20)
+        Me.Label34.TabIndex = 25
+        Me.Label34.Text = "Length / Distance Units:"
+        '
+        'lstLineLength
+        '
+        Me.lstLineLength.BackColor = System.Drawing.SystemColors.Info
+        Me.lstLineLength.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstLineLength.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lstLineLength.FormattingEnabled = True
+        Me.lstLineLength.ItemHeight = 20
+        Me.lstLineLength.Location = New System.Drawing.Point(639, 28)
+        Me.lstLineLength.Name = "lstLineLength"
+        Me.lstLineLength.Size = New System.Drawing.Size(169, 20)
+        Me.lstLineLength.TabIndex = 26
+        '
+        'lstLineLengthUnits
+        '
+        Me.lstLineLengthUnits.BackColor = System.Drawing.SystemColors.InactiveBorder
+        Me.lstLineLengthUnits.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstLineLengthUnits.FormattingEnabled = True
+        Me.lstLineLengthUnits.ItemHeight = 20
+        Me.lstLineLengthUnits.Location = New System.Drawing.Point(639, 53)
+        Me.lstLineLengthUnits.Name = "lstLineLengthUnits"
+        Me.lstLineLengthUnits.Size = New System.Drawing.Size(165, 20)
+        Me.lstLineLengthUnits.TabIndex = 27
+        '
         'frmRunAdvancedAnalysis
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
@@ -1614,6 +1662,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.ClientSize = New System.Drawing.Size(1012, 903)
         Me.Controls.Add(Me.TabBarriers)
         Me.Controls.Add(Me.cmdSave)
+        Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.cmdCancel)
         Me.Controls.Add(Me.cmdRun)
         Me.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
@@ -1626,7 +1675,6 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
         Me.frmLayersInclude.ResumeLayout(False)
-        Me.frmLayersInclude.PerformLayout()
         Me.GroupBox8.ResumeLayout(False)
         Me.GroupBox8.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
@@ -1670,6 +1718,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox12.PerformLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
     Friend WithEvents cmdRun As System.Windows.Forms.Button
@@ -1691,7 +1740,7 @@ Partial Class frmRunAdvancedAnalysis
     Friend WithEvents Label18 As System.Windows.Forms.Label
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents lstLineHabCls As System.Windows.Forms.ListBox
-    Friend WithEvents lstLineUnit As System.Windows.Forms.ListBox
+    Friend WithEvents lstLineHabUnits As System.Windows.Forms.ListBox
     Friend WithEvents Label19 As System.Windows.Forms.Label
     Friend WithEvents lstLineHabQuan As System.Windows.Forms.ListBox
     Friend WithEvents cmdChngLineCls As System.Windows.Forms.Button
@@ -1704,7 +1753,6 @@ Partial Class frmRunAdvancedAnalysis
     Friend WithEvents lstPolyHabCls As System.Windows.Forms.ListBox
     Friend WithEvents lstPolyHabQuan As System.Windows.Forms.ListBox
     Friend WithEvents Label20 As System.Windows.Forms.Label
-    Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents TabPage2 As System.Windows.Forms.TabPage
     Friend WithEvents PictureBox3 As System.Windows.Forms.PictureBox
     Friend WithEvents GroupBox5 As System.Windows.Forms.GroupBox
@@ -1795,4 +1843,9 @@ Partial Class frmRunAdvancedAnalysis
     Friend WithEvents Label30 As System.Windows.Forms.Label
     Friend WithEvents Label31 As System.Windows.Forms.Label
     Friend WithEvents Label32 As System.Windows.Forms.Label
+    Friend WithEvents Label3 As System.Windows.Forms.Label
+    Friend WithEvents Label34 As System.Windows.Forms.Label
+    Friend WithEvents Label33 As System.Windows.Forms.Label
+    Friend WithEvents lstLineLengthUnits As System.Windows.Forms.ListBox
+    Friend WithEvents lstLineLength As System.Windows.Forms.ListBox
 End Class

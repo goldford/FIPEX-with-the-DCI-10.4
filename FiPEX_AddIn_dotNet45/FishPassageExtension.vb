@@ -1087,15 +1087,12 @@ Public Class FishPassageExtension
                 MsgBox("Debug2020 - Error saving FIPEX options 2/3")
                 Exit Sub
             End Try
-            
-
-
 
             ' ========== BEGIN ADD PROPERTIES TO DICTIONARY OBJECT =============
             'If there are any properties to write then save them to the stream
             If m_bLoaded = True Then
                 Try
-                    MsgBox("Debug2020 - Testing Save of Document 3/3")
+                    'MsgBox("Debug2020 - Testing Save of Document 3/3")
 
                     ' load the properties into a data dictionary for serialization to the stream
                     ' (there may be a better way to do this, but for add-ins the system.io.stream

@@ -756,7 +756,8 @@ Public Class Analysis
         sFlagCheck = flagcheck(pOriginalBarriersList, pOriginalEdgeFlagsList, pOriginaljuncFlagsList)
         '    MsgBox "FlagCheck may be null and crash..."
         '    MsgBox "sFlagcheck: " + sFlagCheck
-        If sFlagCheck = "error thrown because some flags are apparently on barriers while some are not" Then
+        If sFlagCheck = "error" Then
+            MsgBox("FIPEX Error 109: Please check that all flags are consistently on barriers or non-barriers.")
             Exit Sub
         End If
         ' ============= END FLAG CONSISTENCY CHECK ==================
@@ -1060,8 +1061,6 @@ Public Class Analysis
         End If ' DBF layers are included
 
 
-
-
         ' ========================== Begin Traces ====================
 
         'MsgBox("Debug:7")
@@ -1183,7 +1182,9 @@ Public Class Analysis
         '          a branch _in addition_ to the junctions representing 
         '          sinks or barriers. Create list of junctions that will 
         '          be treated like 'barriers' for purpose of connectivity 
-        '          table generation; amend list of original junction barriers
+        '          table generation; amend list of original junction barriers.
+        '          the 'original' in object name should be changed since the
+        '          actual originally set barriers are stored in pOriginalBarriersListSaved
         ' Logic: 
         ' If 'Advanced Connectivity is checked' 
         ' Clear All Flags and Barriers
@@ -1769,12 +1770,6 @@ Public Class Analysis
 
                     sOutID = pIDAndType.BarrID
 
-                    'If sOutID = "145" Then
-                    '    MsgBox("!!!")
-                    'End If
-
-
-
                     ' 2020 if the 'advanced connectivity' analysis (branching junctions respected)
                     '      then if element is a branch junction set permeability = 1
                     bBranchJunction = False
@@ -1806,6 +1801,7 @@ Public Class Analysis
                         Next
                     End If
 
+                    ' track whehter it's a branch or source junction
                     If bBranchJunction = True Then
                         sType = "Branch Junction"
                     ElseIf bSourceJunction = True Then
@@ -1820,6 +1816,25 @@ Public Class Analysis
 
                         sType = "Flag - Node"
 
+                        '2020 Note (Edge case fix): must add 'Flag - Node' type to 'barrier' list
+                        ' during 'advanced analysis' with dd. otherwise the downstream path trace
+                        ' from the next upstream nodes will pass the flag (if flag is not a 'sink').
+                        ' the resulting connectivity table for R DCI will be wrong.
+                        ' Fix here is thus to add the node to list of barriers temporarily to halt trace. 
+                        ' This means that the 'path downstream' now does not proceed all the way to the 
+                        ' network sink anymore. 
+                        ' don't worry about modifying pOriginalBarriersList because the barriers are 
+                        ' saved in pOriginalBarriersListSaved
+                        pOriginalBarriersList.Reset()
+                        pOriginalBarriersListGEN = New EnumNetEIDArray
+                        For p = 0 To pOriginalBarriersList.Count - 1
+                            iEID_p = pOriginalBarriersList.Next()
+                            pOriginalBarriersListGEN.Add(iEID_p)
+                        Next
+                        pOriginalBarriersListGEN.Add(iEID)
+                        pOriginalBarriersList = Nothing
+                        pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
+
                     ElseIf sType <> "Sink" And _
                         orderLoop = 0 And _
                         sFlagCheck = "barrier" Then
@@ -1830,7 +1845,7 @@ Public Class Analysis
 
                     ' Get barrier Permeability 
                     'MsgBox("2020 message pFilteredBranchJunctionsList.Count : " + Str(pFilteredBranchJunctionsList.Count))
-
+                    MsgBox("Debug2020: Flag / junction is a: " & sType)
 
                     ' Barrier permeability = 1 if branch junction
                     ' otherwise check the user-set attribute
@@ -2148,7 +2163,6 @@ Public Class Analysis
                                                            sType, _
                                                            f_sOutID, _
                                                            f_siOutEID, _
-                                                           sFlagCheck, _
                                                            sHabType, _
                                                            sHabDir)
                             End If
@@ -2264,7 +2278,6 @@ Public Class Analysis
                                                        sType, _
                                                        f_sOutID, _
                                                        f_siOutEID, _
-                                                       sFlagCheck, _
                                                        sHabType, _
                                                        sHabDir)
                             'MsgBox("Debug:25")
@@ -2367,7 +2380,6 @@ Public Class Analysis
                                                    sType, _
                                                    f_sOutID, _
                                                    f_siOutEID, _
-                                                   sFlagCheck, _
                                                    sHabType, _
                                                    sHabDir)
                         'MsgBox("Debug:30")
@@ -2479,7 +2491,6 @@ Public Class Analysis
                                                        sType, _
                                                        f_sOutID, _
                                                        f_siOutEID, _
-                                                       sFlagCheck, _
                                                        sHabType, _
                                                        sHabDir)
                             'MsgBox("Debug:34")
@@ -2583,7 +2594,6 @@ Public Class Analysis
                                                        sType, _
                                                        f_sOutID, _
                                                        f_siOutEID, _
-                                                       sFlagCheck, _
                                                        sHabType, _
                                                        sHabDir)
                             'MsgBox("Debug:39")
@@ -2676,7 +2686,6 @@ Public Class Analysis
                                                    sType, _
                                                    f_sOutID, _
                                                    f_siOutEID, _
-                                                   sFlagCheck, _
                                                    sHabType, _
                                                    sHabDir)
                         'MsgBox("Debug:44")
@@ -2703,7 +2712,7 @@ Public Class Analysis
                 pFlowEndJunctions = CType(pNoSourceFlowEnds, IEnumNetEID)
 
                 ' Store the first flow end elements
-                ' THESE VARS MAY NOT BE USED ANYMORE
+                ' 2012- THESE VARS MAY NOT BE USED ANYMORE
                 If orderLoop = 0 And sFlagCheck = "nonbarr" Then
                     pFirstJunctionBarriers = pFlowEndJunctions
                 ElseIf orderLoop = 0 And sFlagCheck = "barriers" Then
@@ -4395,10 +4404,10 @@ Public Class Analysis
             If Not pAllFlowEndBarriers Is Nothing Then
                 If pAllFlowEndBarriers.Count <> 0 Then
                     'MsgBox("Debug:71")
-                    pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: " & CStr(pAllFlowEndBarriers.Count + pOriginaljuncFlagsList.Count)
+                    pResultsForm3.lblNumBarriers.Text = "Number of Barriers / Nodes Analysed: " & CStr(pAllFlowEndBarriers.Count + pOriginaljuncFlagsList.Count)
                     'MsgBox("Debug:72")
                 Else
-                    pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: 1"
+                    pResultsForm3.lblNumBarriers.Text = "Number of Barriers / Nodes Analysed: 1"
                 End If
             End If
 
@@ -6135,11 +6144,11 @@ Public Class Analysis
                                      ByRef iEID As Integer, _
                                      ByRef sType As String, _
                                      ByRef f_sOutID As String, _
-                                     ByRef f_siOutEID As Integer, _
-                                     ByVal sKeyword As String, _
+                                     ByRef f_siOutEID As Integer,
                                      ByVal sHabTypeKeyword As String, _
                                      ByVal sDirection2 As String)
 
+        '2020 note: sKeyword unused. Deleted. -GO
         ' **************************************************************************************
         ' Subroutine:  Calculate Statistics (2) 
         ' Created By:  Greig Oldford
@@ -6160,6 +6169,7 @@ Public Class Analysis
         ' 
         '       Aug, 2020    --> Not sure why passing vars by ref other than lHabStatsList.
         '                        The function only changes Hab stats object
+        '                        deleted 'sKeyword' arg (checks if flag on barr or nonbarr) - it was unused
         ' 
         ' 
         '       Oct 5, 2010  --> Changing this subroutine to a function so it can update the statistics 

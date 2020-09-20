@@ -424,21 +424,43 @@ Public Class LayersAndFCIDsAndFields
 End Class
 
 ' Defines the object that can be added to a habParamList
-Public Class LayerToAdd
+Public Class LineLayerToAdd
     Public Layer As String
-    Public QuanField As String
-    Public ClsField As String
-    Public UnitField As String
+    Public LengthField As String
+    Public LengthUnits As String
+    Public HabQuanField As String
+    Public HabClsField As String
+    Public HabUnits As String
 
-    Public Sub New(ByVal layer As String, ByVal QuanField As String, ByVal ClsField As String, ByVal UnitField As String)
+    Public Sub New(ByVal layer As String, ByVal LengthField As String, ByVal LengthUnits As String, ByVal HabQuanField As String, ByVal HabClsField As String, ByVal HabUnits As String)
         Me.Layer = layer
-        Me.QuanField = QuanField
-        Me.ClsField = ClsField
-        Me.UnitField = UnitField
+        Me.LengthField = LengthField
+        Me.LengthUnits = LengthUnits
+        Me.HabQuanField = HabQuanField
+        Me.HabClsField = HabClsField
+        Me.HabUnits = HabUnits
 
     End Sub
 
 End Class
+
+' Defines the object that can be added to a habParamList
+Public Class PolyLayerToAdd
+    Public Layer As String
+    Public HabQuanField As String
+    Public HabClsField As String
+    Public HabUnitField As String
+
+    Public Sub New(ByVal layer As String, ByVal HabQuanField As String, ByVal HabClsField As String, ByVal HabUnitField As String)
+        Me.Layer = layer
+        Me.HabQuanField = HabQuanField
+        Me.HabClsField = HabClsField
+        Me.HabUnitField = HabUnitField
+
+    End Sub
+
+End Class
+
 ' Defines the object that can be added to Exclude List
 Public Class LayerToExclude
     Public Layer As String
