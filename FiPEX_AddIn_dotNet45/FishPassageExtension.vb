@@ -412,100 +412,7 @@ Public Class FishPassageExtension
             MsgBox("Error trying to 'add focusmap changed' handler to FIPEX. Code 18. " + ex.Message)
         End Try
 
-        'Initialize()
-
-        'If m_bHasNetworks = True Then
-        '    If m_bFlagsLoaded = False Then
-
-        '        Dim iFlagEIDCount As Integer = pPropset.GetProperty("numFlagEIDs")
-        '        If iFlagEIDCount > 0 Then
-
-        '            ' Get the active network
-        '            ' The network shouldn't be empty because the extension wouldn't be enabled otherwise
-        '            Dim pNetworkAnalysisExt As INetworkAnalysisExt
-        '            Dim pUNAExt As IUtilityNetworkAnalysisExt
-        '            pUNAExt = GetUNAExt()
-
-        '            Dim pGeometricNetwork As IGeometricNetwork
-        '            pNetworkAnalysisExt = CType(pUNAExt, INetworkAnalysisExt)
-        '            pGeometricNetwork = pNetworkAnalysisExt.CurrentNetwork
-
-        '            ' Get the network elements for EID retrieval
-        '            Dim pNetwork As INetwork
-        '            Dim pNetElements As INetElements
-        '            pNetwork = pGeometricNetwork.Network
-        '            pNetElements = CType(pNetwork, INetElements)
-
-        '            Dim pNetworkAnalysisExtFlags As INetworkAnalysisExtFlags
-        '            pNetworkAnalysisExtFlags = CType(pUNAExt, INetworkAnalysisExtFlags)
-
-        '            ' if current network has no flags loaded (double ensure this isn't run twice - 
-        '            '  only at the document load)
-        '            If pNetworkAnalysisExtFlags.JunctionFlagCount = 0 Then
-
-        '                Dim i As Integer = 0
-        '                Dim iEID, iFID, iFCID, iSubID As Integer
-        '                Dim lFlagEIDs As New List(Of Integer)
-        '                For i = 0 To iFlagEIDCount - 1
-        '                    iEID = Convert.ToInt32(pPropset.GetProperty("flagEID" + i.ToString))
-        '                    lFlagEIDs.Add(iEID)
-        '                Next
-
-        '                Dim pFlagDisplay As IFlagDisplay
-        '                Dim pRgbColor As ESRI.ArcGIS.Display.IRgbColor
-        '                pRgbColor = New ESRI.ArcGIS.Display.RgbColor
-
-        '                ' Set the flag symbol color and parameters
-        '                Dim pSimpleMarkerSymbol As ESRI.ArcGIS.Display.ISimpleMarkerSymbol
-        '                ' For the Flag marker
-        '                With pRgbColor
-        '                    .Red = 0
-        '                    .Green = 255
-        '                    .Blue = 0
-        '                End With
-        '                pSimpleMarkerSymbol = New ESRI.ArcGIS.Display.SimpleMarkerSymbol
-        '                With pSimpleMarkerSymbol
-        '                    .Color = pRgbColor
-        '                    .Style = ESRI.ArcGIS.Display.esriSimpleMarkerStyle.esriSMSSquare
-        '                    .Outline = True
-        '                    .Size = 10
-        '                End With
-
-        '                ' Result is a global variable containing a flag marker
-        '                'm_FlagSymbol4 = pSimpleMarkerSymbol
-        '                Dim pSymbol As ESRI.ArcGIS.Display.ISymbol
-        '                Dim pJuncFlagDisplay As IJunctionFlagDisplay
-
-        '                i = 0
-        '                For i = 0 To lFlagEIDs.Count - 1
-        '                    iEID = lFlagEIDs(i)
-        '                    ' just a safe guard against a screwup - ieid = 0
-        '                    If iEID <> 0 Then
-        '                        pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, iFCID, iFID, iSubID)
-
-        '                        ' Display the flags as a JunctionFlagDisplay type
-        '                        pFlagDisplay = New JunctionFlagDisplay
-        '                        pSymbol = CType(pSimpleMarkerSymbol, ESRI.ArcGIS.Display.ISymbol)
-        '                        With pFlagDisplay
-        '                            .FeatureClassID = iFCID
-        '                            .FID = iFID
-        '                            .Geometry = pGeometricNetwork.GeometryForJunctionEID(iEID)
-        '                            .Symbol = pSymbol
-        '                        End With
-
-        '                        ' Add the flags to the logical network
-        '                        pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
-        '                        pNetworkAnalysisExtFlags.AddJunctionFlag(pJuncFlagDisplay)
-        '                    End If ' ieid = 0
-        '                Next
-        '                ' flag count > 0 
-        '            End If 'there were any flags set for this network
-
-        '        End If
-        '        m_bFlagsLoaded = True
-        '    End If
-        ' End If
-
+        
     End Sub
 
     Private Sub AVEvents_FocusMapChanged()
@@ -731,9 +638,13 @@ Public Class FishPassageExtension
                         j = 0
                         For j = 0 To iLinesCount - 1
                             .SetProperty("IncLine" + j.ToString, Convert.ToString(sDictionary.Item("IncLine" + j.ToString)))
-                            .SetProperty("LineClassField" + j.ToString, Convert.ToString(sDictionary.Item("LineClassField" + j.ToString)))
-                            .SetProperty("LineQuanField" + j.ToString, Convert.ToString(sDictionary.Item("LineQuanField" + j.ToString)))
-                            .SetProperty("LineUnitField" + j.ToString, Convert.ToString(sDictionary.Item("LineUnitField" + j.ToString)))
+
+                            .SetProperty("LineLengthField" + j.ToString, Convert.ToString(sDictionary.Item("LineLengthField" + j.ToString)))
+                            .SetProperty("LineLengthUnits" + j.ToString, Convert.ToString(sDictionary.Item("LineLengthUnits" + j.ToString)))
+
+                            .SetProperty("LineHabClassField" + j.ToString, Convert.ToString(sDictionary.Item("LineHabClassField" + j.ToString)))
+                            .SetProperty("LineHabQuanField" + j.ToString, Convert.ToString(sDictionary.Item("LineHabQuanField" + j.ToString)))
+                            .SetProperty("LineHabUnits" + j.ToString, Convert.ToString(sDictionary.Item("LineHabUnits" + j.ToString)))
                         Next
                     End If
 
@@ -1148,9 +1059,11 @@ Public Class FishPassageExtension
                         j = 0
                         For j = 0 To iLinesCount - 1
                             sDictionary.Add("IncLine" + j.ToString, Convert.ToString(pPropset.GetProperty("IncLine" + j.ToString)))
-                            sDictionary.Add("LineClassField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineClassField" + j.ToString)))
-                            sDictionary.Add("LineQuanField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineQuanField" + j.ToString)))
-                            sDictionary.Add("LineUnitField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineUnitField" + j.ToString)))
+                            sDictionary.Add("LineLengthField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineLengthField" + j.ToString)))
+                            sDictionary.Add("LineLengthUnits" + j.ToString, Convert.ToString(pPropset.GetProperty("LineLengthUnits" + j.ToString)))
+                            sDictionary.Add("LineHabClassField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineHabClassField" + j.ToString)))
+                            sDictionary.Add("LineHabQuanField" + j.ToString, Convert.ToString(pPropset.GetProperty("LineHabQuanField" + j.ToString)))
+                            sDictionary.Add("LineHabUnits" + j.ToString, Convert.ToString(pPropset.GetProperty("LineHabUnits" + j.ToString)))
                         Next
                     End If
 

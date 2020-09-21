@@ -462,18 +462,18 @@ Public Class frmRunAdvancedAnalysis
         m_FiPEx.pPropset.SetProperty("numPolys", m_iPolysCount)
 
         ' variables to hold property names
-        Dim sIncLayer, sClassField, sQuanField, sUnitField As String
+        Dim sIncLayer, sLengthField, sLengthUnits, sHabClassField, sHabQuanField, sHabUnits As String
 
         If m_iPolysCount > 0 Then
             For i = 0 To m_iPolysCount - 1
                 sIncLayer = "IncPoly" + i.ToString
-                sClassField = "PolyClassField" + i.ToString
-                sQuanField = "PolyQuanField" + i.ToString
-                sUnitField = "PolyUnitField" + i.ToString
+                sHabClassField = "PolyClassField" + i.ToString
+                sHabQuanField = "PolyQuanField" + i.ToString
+                sHabUnits = "PolyUnitField" + i.ToString
                 m_FiPEx.pPropset.SetProperty(sIncLayer, m_PLayersFields.Item(i).Layer)
-                m_FiPEx.pPropset.SetProperty(sClassField, m_PLayersFields.Item(i).ClsField)
-                m_FiPEx.pPropset.SetProperty(sQuanField, m_PLayersFields.Item(i).QuanField)
-                m_FiPEx.pPropset.SetProperty(sUnitField, m_PLayersFields.Item(i).UnitField)
+                m_FiPEx.pPropset.SetProperty(sHabClassField, m_PLayersFields.Item(i).HabClsField)
+                m_FiPEx.pPropset.SetProperty(sHabQuanField, m_PLayersFields.Item(i).HabQuanField)
+                m_FiPEx.pPropset.SetProperty(sHabUnits, m_PLayersFields.Item(i).HabUnitField)
             Next
         End If
 
@@ -482,13 +482,17 @@ Public Class frmRunAdvancedAnalysis
         If m_iLinesCount > 0 Then
             For i = 0 To m_iLinesCount - 1
                 sIncLayer = "IncLine" + i.ToString
-                'sClassField = "LineClassField" + i
-                sQuanField = "LineQuanField" + i.ToString
-                sUnitField = "LineUnitField" + i.ToString
+                sLengthField = "LineLengthField" + i.ToString
+                sLengthUnits = "LineLengthUnitField" + i.ToString
+                sHabQuanField = "LineHabQuanField" + i.ToString
+                sHabUnits = "LineHabUnits" + i.ToString
                 m_FiPEx.pPropset.SetProperty(sIncLayer, m_LLayersFields.Item(i).Layer)
-                m_FiPEx.pPropset.SetProperty("LineClassField" + i.ToString, m_LLayersFields.Item(i).ClsField)
-                m_FiPEx.pPropset.SetProperty(sQuanField, m_LLayersFields.Item(i).QuanField)
-                m_FiPEx.pPropset.SetProperty(sUnitField, m_LLayersFields.Item(i).UnitField)
+
+                ' double check the new property names for lines, fix issues
+
+                m_FiPEx.pPropset.SetProperty("LineHabClassField" + i.ToString, m_LLayersFields.Item(i).HabClsField)
+                m_FiPEx.pPropset.SetProperty(sHabQuanField, m_LLayersFields.Item(i).HabQuanField)
+                m_FiPEx.pPropset.SetProperty(sHabUnits, m_LLayersFields.Item(i).HabUnits)
             Next
         End If
 
@@ -1238,7 +1242,7 @@ Public Class frmRunAdvancedAnalysis
         ' -----------------------------------------------------------------------
 
         Dim sLayer As String = lstLineLayers.SelectedItem.ToString
-        Dim pLayerToAdd As New LayerToAdd(sLayer, Nothing, Nothing, Nothing)
+        Dim pLayerToAdd As New LineLayerToAdd(sLayer, Nothing, Nothing, Nothing, Nothing, Nothing)
 
         ' If it is checked now check if it is part of the properties variable
         If e.NewValue = CheckState.Checked Then
@@ -1246,11 +1250,13 @@ Public Class frmRunAdvancedAnalysis
             ' turned on the changepoly command button so we need to do it here
 
             cmdChngLineCls.Enabled = True
+            lstLineLength.Items.Clear()
+            lstLineLengthUnits.Items.Clear()
             lstLineHabCls.Items.Clear()
             lstLineHabQuan.Items.Clear()
             lstLineHabUnits.Items.Clear()
             Dim bMatch As Boolean = False
-            Dim sLineUnit As String
+            Dim sLineLengthUnits, sLineHabUnits As String
 
             ' If there are any layers in the list then loop through the list to see if there
             ' is a match.  If there is a match then use the class and quantity fields associated
@@ -1270,20 +1276,27 @@ Public Class frmRunAdvancedAnalysis
                         '  in case the user clicks directly on the 'change' button
                         '  without highlighting a layer in the listbox)
                         If m_LLayerToAdd Is Nothing Then
-                            m_LLayerToAdd = New LayerToAdd(m_LLayersFields.Item(i).Layer, _
-m_LLayersFields.Item(i).QuanField, m_LLayersFields.Item(i).ClsField, m_LLayersFields.Item(i).UnitField)
+                            m_LLayerToAdd = New LineLayerToAdd(m_LLayersFields.Item(i).Layer, m_LLayersFields.Item(i).LengthField, m_LLayersFields.Item(i).LengthUnits, _
+m_LLayersFields.Item(i).HabQuanField, m_LLayersFields.Item(i).HabClsField, m_LLayersFields.Item(i).HabUnits)
                         Else
                             m_LLayerToAdd.Layer = m_LLayersFields.Item(i).Layer
-                            m_LLayerToAdd.ClsField = m_LLayersFields.Item(i).ClsField
-                            m_LLayerToAdd.QuanField = m_LLayersFields.Item(i).QuanField
-                            m_LLayerToAdd.UnitField = m_LLayersFields.Item(i).UnitField
+                            m_LLayerToAdd.LengthField = m_LLayersFields.Item(i).LengthField
+                            m_LLayerToAdd.LengthUnits = m_LLayersFields.Item(i).LengthUnits
+
+                            m_LLayerToAdd.HabClsField = m_LLayersFields.Item(i).HabClsField
+                            m_LLayerToAdd.HabQuanField = m_LLayersFields.Item(i).HabQuanField
+                            m_LLayerToAdd.HabUnits = m_LLayersFields.Item(i).HabUnits
                         End If
 
-                        lstLineHabCls.Items.Add(m_LLayersFields.Item(i).ClsField) ' load class field to box
-                        lstLineHabQuan.Items.Add(m_LLayersFields.Item(i).QuanField) ' load quantity field to box
+                        lstLineLength.Items.Add(m_LLayersFields.Item(i).LengthField) ' load class field to box
+                        sLineLengthUnits = m_LLayersFields.Item(i).LengthUnits
+                        lstLineLengthUnits.Items.Add(sLineLengthUnits) ' load quantity field to box
 
-                        sLineUnit = m_LLayersFields.Item(i).UnitField
-                        lstLineHabUnits.Items.Add(sLineUnit)
+                        lstLineHabCls.Items.Add(m_LLayersFields.Item(i).HabClsField) ' load class field to box
+                        lstLineHabQuan.Items.Add(m_LLayersFields.Item(i).HabQuanField) ' load quantity field to box
+
+                        sLineHabUnits = m_LLayersFields.Item(i).HabUnits
+                        lstLineHabUnits.Items.Add(sLineHabUnits)
 
                         'If sLineUnit = "Metres" Then
                         '    lstLineUnit.Items.Add("m")
@@ -1313,12 +1326,20 @@ m_LLayersFields.Item(i).QuanField, m_LLayersFields.Item(i).ClsField, m_LLayersFi
 
             ' If no existing layer was found in the global list then add it to the list
             If bMatch = False Then
+
+                lstLineLength.Items.Add("Not set")
+                lstLineLength.Items.Add("n/a")
                 lstLineHabCls.Items.Add("Not set")
                 lstLineHabQuan.Items.Add("Not set")
                 lstLineHabUnits.Items.Add("n/a")
-                pLayerToAdd.ClsField = "Not set"
-                pLayerToAdd.QuanField = "Not set"
-                pLayerToAdd.UnitField = "Not set"
+
+                pLayerToAdd.LengthField = "Not set"
+                pLayerToAdd.LengthUnits = "Not set"
+
+                pLayerToAdd.HabClsField = "Not set"
+                pLayerToAdd.HabQuanField = "Not set"
+                pLayerToAdd.HabUnits = "Not set"
+
                 m_LLayersFields.Add(pLayerToAdd)
             End If
             ' Add the layer to the exclusions list
@@ -1376,7 +1397,7 @@ m_LLayersFields.Item(i).QuanField, m_LLayersFields.Item(i).ClsField, m_LLayersFi
         ' -----------------------------------------------------------------------
 
         Dim sLayer As String = lstPolyLayers.SelectedItem.ToString
-        Dim pLayerToAdd As New LayerToAdd(sLayer, Nothing, Nothing, Nothing)
+        Dim pLayerToAdd As New PolyLayerToAdd(sLayer, Nothing, Nothing, Nothing)
 
         ' If it is checked now check if it is part of the properties variable
         If e.NewValue = CheckState.Checked Then
@@ -1411,20 +1432,20 @@ m_LLayersFields.Item(i).QuanField, m_LLayersFields.Item(i).ClsField, m_LLayersFi
                         '  in case the user clicks directly on the 'change' button
                         '  without highlighting a layer in the listbox)
                         If m_PLayerToAdd Is Nothing Then
-                            m_PLayerToAdd = New LayerToAdd(m_PLayersFields.Item(i).Layer, _
-m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFields.Item(i).UnitField)
+                            m_PLayerToAdd = New PolyLayerToAdd(m_PLayersFields.Item(i).Layer, _
+m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLayersFields.Item(i).HabUnitField)
                         Else
                             ' set the module level variable using these items
                             ' which can then be passed to the choosehabparam form
                             m_PLayerToAdd.Layer = m_PLayersFields.Item(i).Layer
-                            m_PLayerToAdd.ClsField = m_PLayersFields.Item(i).ClsField
-                            m_PLayerToAdd.QuanField = m_PLayersFields.Item(i).QuanField
-                            m_PLayerToAdd.UnitField = m_PLayersFields.Item(i).UnitField
+                            m_PLayerToAdd.HabClsField = m_PLayersFields.Item(i).HabClsField
+                            m_PLayerToAdd.HabQuanField = m_PLayersFields.Item(i).HabQuanField
+                            m_PLayerToAdd.HabUnitField = m_PLayersFields.Item(i).HabUnitField
                         End If
 
-                        lstPolyHabCls.Items.Add(m_PLayersFields.Item(i).ClsField) ' load class field to box
-                        lstPolyHabQuan.Items.Add(m_PLayersFields.Item(i).QuanField) ' load quantity field to box
-                        sPolyUnit = m_PLayersFields.Item(i).UnitField
+                        lstPolyHabCls.Items.Add(m_PLayersFields.Item(i).HabClsField) ' load class field to box
+                        lstPolyHabQuan.Items.Add(m_PLayersFields.Item(i).HabQuanField) ' load quantity field to box
+                        sPolyUnit = m_PLayersFields.Item(i).HabUnitField
                         lstPolyUnit.Items.Add(sPolyUnit)
                         'If sPolyUnit = "Metres" Then
                         '    lstPolyUnit.Items.Add("m")
@@ -1455,9 +1476,9 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                 lstPolyHabCls.Items.Add("Not set") ' load class field to box
                 lstPolyHabQuan.Items.Add("Not set") ' load quantity field to box
                 lstPolyUnit.Items.Add("n/a")
-                pLayerToAdd.ClsField = "Not set" 'need to put something in these fields
-                pLayerToAdd.QuanField = "Not set" ' or next .add will crash script
-                pLayerToAdd.UnitField = "Not set"
+                pLayerToAdd.HabClsField = "Not set" 'need to put something in these fields
+                pLayerToAdd.HabQuanField = "Not set" ' or next .add will crash script
+                pLayerToAdd.HabUnitField = "Not set"
                 m_PLayersFields.Add(pLayerToAdd)
             End If
 
@@ -1634,6 +1655,10 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         '  7.2 Update the listboxes with 'not set'
         ' -----------------------------------------------------------------------------------------
         ' clear the listboxes
+
+        lstLineLength.Items.Clear()
+        lstLineLengthUnits.Items.Clear()
+
         lstLineHabCls.Items.Clear()
         lstLineHabQuan.Items.Clear()
         lstLineHabUnits.Items.Clear()
@@ -1653,7 +1678,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             cmdChngLineCls.Enabled = False
 
             Dim iSelectedIndex As Integer = lstLineLayers.SelectedIndex
-            Dim sLineUnit As String
+            Dim sLineHabUnits, sLineLengthUnits As String
 
             ' if checked there should be some parameters for it
             If lstLineLayers.GetItemCheckState(iSelectedIndex) = CheckState.Checked Then
@@ -1668,20 +1693,27 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                                 ' set the module level variable using these items
                                 ' which can then be passed to the choosehabparam form
                                 If m_LLayerToAdd Is Nothing Then
-                                    m_LLayerToAdd = New LayerToAdd(m_LLayersFields.Item(i).Layer, _
-    m_LLayersFields.Item(i).QuanField, m_LLayersFields.Item(i).ClsField, m_LLayersFields.Item(i).UnitField)
+                                    m_LLayerToAdd = New LineLayerToAdd(m_LLayersFields.Item(i).Layer, m_LLayersFields.Item(i).LengthField, m_LLayersFields.Item(i).LengthUnits, _
+    m_LLayersFields.Item(i).HabQuanField, m_LLayersFields.Item(i).HabClsField, m_LLayersFields.Item(i).HabUnits)
                                 Else
                                     m_LLayerToAdd.Layer = m_LLayersFields.Item(i).Layer
-                                    m_LLayerToAdd.ClsField = m_LLayersFields.Item(i).ClsField
-                                    m_LLayerToAdd.QuanField = m_LLayersFields.Item(i).QuanField
-                                    m_LLayerToAdd.UnitField = m_LLayersFields.Item(i).UnitField
+                                    m_LLayerToAdd.LengthField = m_LLayersFields.Item(i).LengthField
+                                    m_LLayerToAdd.LengthUnits = m_LLayersFields.Item(i).LengthUnits
+                                    m_LLayerToAdd.HabClsField = m_LLayersFields.Item(i).HabClsField
+                                    m_LLayerToAdd.HabQuanField = m_LLayersFields.Item(i).HabQuanField
+                                    m_LLayerToAdd.HabUnits = m_LLayersFields.Item(i).HabUnits
                                 End If
-                                lstLineHabCls.Items.Add(m_LLayersFields.Item(i).ClsField) ' load class field to box
-                                lstLineHabQuan.Items.Add(m_LLayersFields.Item(i).QuanField) ' load quantity field to box
+
+                                lstLineLength.Items.Add(m_LLayersFields.Item(i).LengthField)
+                                sLineLengthUnits = m_LLayersFields.Item(i).LengthUnits
+                                lstLineLengthUnits.Items.Add(sLineLengthUnits)
+
+                                lstLineHabCls.Items.Add(m_LLayersFields.Item(i).HabClsField)
+                                lstLineHabQuan.Items.Add(m_LLayersFields.Item(i).HabQuanField)
 
                                 ' Add a abbreviated unit to the Lines Unit Listbox
-                                sLineUnit = m_LLayersFields.Item(i).UnitField
-                                lstLineHabUnits.Items.Add(sLineUnit)
+                                sLineHabUnits = m_LLayersFields.Item(i).HabUnits
+                                lstLineHabUnits.Items.Add(sLineHabUnits)
                                 'If sLineUnit = "Metres" Then
                                 '    lstLineUnit.Items.Add("m")
                                 'ElseIf sLineUnit = "Kilometres" Then
@@ -1717,13 +1749,21 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                 ' which can then be passed to the choosehabparam form
                 If m_LLayerToAdd Is Nothing Then ' check if it has been created already
                     ' else it will crash
-                    m_LLayerToAdd = New LayerToAdd(m_sLineLayer, "Not set", "Not set", "Not set")
+                    m_LLayerToAdd = New LineLayerToAdd(m_sLineLayer, "Not set", "Not set", "Not set", "Not set", "Not set")
                 Else
                     m_LLayerToAdd.Layer = m_sLineLayer
-                    m_LLayerToAdd.ClsField = "Not set"
-                    m_LLayerToAdd.QuanField = "Not set"
-                    m_LLayerToAdd.UnitField = "Not set"
+
+                    m_LLayerToAdd.LengthField = "Not set"
+                    m_LLayerToAdd.LengthUnits = "Not set"
+
+                    m_LLayerToAdd.HabClsField = "Not set"
+                    m_LLayerToAdd.HabQuanField = "Not set"
+                    m_LLayerToAdd.HabUnits = "Not set"
                 End If
+
+                lstLineLength.Items.Add("Not set")
+                lstLineLengthUnits.Items.Add("n/a")
+
                 lstLineHabCls.Items.Add("Not set")
                 lstLineHabQuan.Items.Add("Not set")
                 lstLineHabUnits.Items.Add("n/a")
@@ -1784,20 +1824,20 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                             ' if there is a match between layers
                             If m_PLayersFields.Item(i).Layer = m_sPolyLayer Then
                                 If m_PLayerToAdd Is Nothing Then
-                                    m_PLayerToAdd = New LayerToAdd(m_PLayersFields.Item(i).Layer, _
-    m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFields.Item(i).UnitField)
+                                    m_PLayerToAdd = New PolyLayerToAdd(m_PLayersFields.Item(i).Layer, _
+    m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLayersFields.Item(i).HabUnitField)
                                 Else
                                     ' set the module level variable using these items
                                     ' which can then be passed to the choosehabparam form
                                     m_PLayerToAdd.Layer = m_PLayersFields.Item(i).Layer
-                                    m_PLayerToAdd.ClsField = m_PLayersFields.Item(i).ClsField
-                                    m_PLayerToAdd.QuanField = m_PLayersFields.Item(i).QuanField
-                                    m_PLayerToAdd.UnitField = m_PLayersFields.Item(i).UnitField
+                                    m_PLayerToAdd.HabClsField = m_PLayersFields.Item(i).HabClsField
+                                    m_PLayerToAdd.HabQuanField = m_PLayersFields.Item(i).HabQuanField
+                                    m_PLayerToAdd.HabUnitField = m_PLayersFields.Item(i).HabUnitField
                                 End If
-                                lstPolyHabCls.Items.Add(m_PLayersFields.Item(i).ClsField) ' load class field to box
-                                lstPolyHabQuan.Items.Add(m_PLayersFields.Item(i).QuanField) ' load quantity field to box
+                                lstPolyHabCls.Items.Add(m_PLayersFields.Item(i).HabClsField) ' load class field to box
+                                lstPolyHabQuan.Items.Add(m_PLayersFields.Item(i).HabQuanField) ' load quantity field to box
 
-                                sPolyUnit = m_PLayersFields.Item(i).UnitField
+                                sPolyUnit = m_PLayersFields.Item(i).HabUnitField
                                 lstPolyUnit.Items.Add(sPolyUnit)
                                 'If sPolyUnit = "Metres" Then
                                 '    lstPolyUnit.Items.Add("m")
@@ -1832,12 +1872,12 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
                 ' which can then be passed to the choosehabparam form
                 If m_PLayerToAdd Is Nothing Then ' check if it has been created already
                     ' else it will crash
-                    m_PLayerToAdd = New LayerToAdd(m_sPolyLayer, "Not set", "Not set", "Not set")
+                    m_PLayerToAdd = New PolyLayerToAdd(m_sPolyLayer, "Not set", "Not set", "Not set")
                 Else
                     m_PLayerToAdd.Layer = m_sPolyLayer
-                    m_PLayerToAdd.ClsField = "Not set"
-                    m_PLayerToAdd.QuanField = "Not set"
-                    m_PLayerToAdd.UnitField = "Not set"
+                    m_PLayerToAdd.HabClsField = "Not set"
+                    m_PLayerToAdd.HabQuanField = "Not set"
+                    m_PLayerToAdd.HabUnitField = "Not set"
                 End If
                 lstPolyHabCls.Items.Add("Not set")
                 lstPolyHabQuan.Items.Add("Not set")
@@ -2025,7 +2065,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         Dim lLayerToAdd As New List(Of LineLayerToAdd)
 
         If m_LLayerToAdd IsNot Nothing Then
-            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChooseHabParam(m_sLineLayer, m_LLayerToAdd)
+            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChooseLineHabParam(m_sLineLayer, m_LLayerToAdd)
                 If MyForm.Form_Initialize(m_app) Then
                     MyForm.ShowDialog()
                     m_LLayerToAdd = MyForm.m_LayerToAdd
@@ -2034,11 +2074,15 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             ' update the lstboxes now
             'Me.LHabParamList = m_LLayerToAdd
             lstLineLength.Items.Clear()
-            lstLineLengthUnits.Items.Clear()
+            lstLineLength.Items.Add(m_LLayerToAdd.HabClsField)
+
             lstLineHabCls.Items.Clear()
-            lstLineHabCls.Items.Add(m_LLayerToAdd.ClsField)
+            lstLineHabCls.Items.Add(m_LLayerToAdd.HabClsField)
+
             lstLineHabQuan.Items.Clear()
-            lstLineHabQuan.Items.Add(m_LLayerToAdd.QuanField)
+            lstLineHabQuan.Items.Add(m_LLayerToAdd.HabQuanField)
+
+            lstLineLengthUnits.Items.Clear()
             lstLineHabUnits.Items.Clear()
 
             Dim sLineHabUnits As String = m_LLayerToAdd.HabUnits
@@ -2046,25 +2090,6 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
 
             lstLineHabUnits.Items.Add(sLineHabUnits)
             lstLineLengthUnits.Items.Add(sLineLengthUnits)
-            ''If sLineUnit = "Metres" Then
-            ''    lstLineUnit.Items.Add("m")
-            ''ElseIf sLineUnit = "Kilometres" Then
-            ''    lstLineUnit.Items.Add("km")
-            ''ElseIf sLineUnit = "Square Metres" Then
-            ''    lstLineUnit.Items.Add("m^2")
-            ''ElseIf sLineUnit = "Feet" Then
-            ''    lstLineUnit.Items.Add("ft")
-            ''ElseIf sLineUnit = "Miles" Then
-            ''    lstLineUnit.Items.Add("mi")
-            ''ElseIf sLineUnit = "Square Miles" Then
-            ''    lstLineUnit.Items.Add("mi^2")
-            ''ElseIf sLineUnit = "Hectares" Then
-            ''    lstLineUnit.Items.Add("ha")
-            ''ElseIf sLineUnit = "Acres" Then
-            ''    lstLineUnit.Items.Add("ac")
-            ''Else
-            ''    lstLineUnit.Items.Add("n/a")
-            ''End If
 
             ' also need to update the list variable
             ' add it to the property, which will add it to the list
@@ -2078,7 +2103,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         Dim lLayerToAdd As New List(Of PolyLayerToAdd)
 
         If m_PLayerToAdd IsNot Nothing Then
-            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChooseHabParam(m_sPolyLayer, m_PLayerToAdd)
+            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChoosePolyHabParam(m_sPolyLayer, m_PLayerToAdd)
                 If MyForm.Form_Initialize(m_app) Then
                     MyForm.ShowDialog()
                     m_PLayerToAdd = MyForm.m_LayerToAdd
@@ -2094,27 +2119,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
             lstPolyUnit.Items.Clear()
             Dim sPolyUnit As String = m_PLayerToAdd.HabUnitField
             lstPolyUnit.Items.Add(sPolyUnit)
-            'If sPolyUnit = "Metres" Then
-            '    lstPolyUnit.Items.Add("m")
-            'ElseIf sPolyUnit = "Kilometres" Then
-            '    lstPolyUnit.Items.Add("km")
-            'ElseIf sPolyUnit = "Square Metres" Then
-            '    lstPolyUnit.Items.Add("m^2")
-            'ElseIf sPolyUnit = "Feet" Then
-            '    lstPolyUnit.Items.Add("ft")
-            'ElseIf sPolyUnit = "Miles" Then
-            '    lstPolyUnit.Items.Add("mi")
-            'ElseIf sPolyUnit = "Square Miles" Then
-            '    lstPolyUnit.Items.Add("mi^2")
-            'ElseIf sPolyUnit = "Hectares" Then
-            '    lstPolyUnit.Items.Add("ha")
-            'ElseIf sPolyUnit = "Acres" Then
-            '    lstPolyUnit.Items.Add("ac")
-            'Else
-            '    lstPolyUnit.Items.Add("n/a")
-            'End If
-            ' also need to update the list variable
-            ' add it to the property, which will add it to the list
+            
             lLayerToAdd.Add(m_PLayerToAdd)
             PHabParamList = lLayerToAdd
         End If
@@ -2259,7 +2264,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         Public Sub New(ByVal name As String)
             _name = name
         End Sub
-        Public Function CompareNames(ByVal obj As PolyLayerToAdd) As Boolean
+        Public Function CompareNames(ByVal obj As LineLayerToAdd) As Boolean
             Return (_name = obj.Layer)
         End Function
     End Class
@@ -2269,7 +2274,7 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         Public Sub New(ByVal name As String)
             _name = name
         End Sub
-        Public Function CompareNames(ByVal obj As LineLayerToAdd) As Boolean
+        Public Function CompareNames(ByVal obj As PolyLayerToAdd) As Boolean
             Return (_name = obj.Layer)
         End Function
     End Class
@@ -3292,7 +3297,5 @@ m_PLayersFields.Item(i).QuanField, m_PLayersFields.Item(i).ClsField, m_PLayersFi
         End If
     End Sub
 
-    Private Sub Label31_Click(sender As Object, e As EventArgs) Handles Label31.Click
-
-    End Sub
+  
 End Class
