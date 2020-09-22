@@ -351,9 +351,6 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Options.resx">
-      <DependentUpon>Options.vb</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -387,12 +384,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Options.designer.vb">
-      <DependentUpon>Options.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Options.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="PlaceRemoveFlag.vb" />
     <AddInContent Include="Images\PlaceRemoveFlag.png;Images\PlaceRemoveFlag.cur" />
   </ItemGroup>

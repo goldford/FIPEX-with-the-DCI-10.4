@@ -836,8 +836,10 @@ Public Class frmRunAdvancedAnalysis
                         LineHabLayerObj = New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
                         With LineHabLayerObj
                             .Layer = sLineLayer
+
                             .LengthField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineLengthField" + j.ToString))
                             .LengthUnits = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineLengthUnits" + j.ToString))
+
                             .HabClsField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabClassField" + j.ToString))
                             .HabQuanField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabQuanField" + j.ToString))
                             .HabUnits = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabUnits" + j.ToString))
@@ -1046,8 +1048,6 @@ Public Class frmRunAdvancedAnalysis
         Else
             chkAdvConnect.Checked = False
         End If
-
-       
 
 
         ' default the things below dbf checkbox to disabled...
@@ -2708,67 +2708,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             ' add it to the property, which will add it to the list
             lBarrierIDs.Add(m_BarrierIDObj)
             BarrierParamList = lBarrierIDs
-        End If
-    End Sub
-
-    Private Sub cmdSelectBarrierPerm_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
-
-        m_sLayerType = "line"
-        Dim lLayerToAdd As New List(Of LineLayerToAdd)
-
-        If m_LLayerToAdd IsNot Nothing Then
-            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChooseHabParam(m_sLineLayer, m_LLayerToAdd)
-                If MyForm.Form_Initialize(m_app) Then
-                    MyForm.ShowDialog()
-                    m_LLayerToAdd = MyForm.m_LayerToAdd
-                End If
-            End Using
-            ' update the lstboxes now
-            'Me.LHabParamList = m_LLayerToAdd
-            lstLineLength.Items.Clear()
-            lstLineLength.Items.Add(m_LLayerToAdd.LengthField)
-
-            lstLineLengthUnits.Items.Clear()
-            lstLineLengthUnits.Items.Add(m_LLayerToAdd.LengthUnits)
-
-            lstLineHabCls.Items.Clear()
-            lstLineHabCls.Items.Add(m_LLayerToAdd.ClsField)
-
-            lstLineHabQuan.Items.Clear()
-            lstLineHabQuan.Items.Add(m_LLayerToAdd.QuanField)
-
-            lstLineHabUnits.Items.Clear()
-
-            Dim sLineHabUnits As String = m_LLayerToAdd.HabUnits
-            lstLineHabUnits.Items.Add(sLineHabUnits)
-
-            Dim sLineLengthUnits As String = m_LLayerToAdd.LengthUnits
-            lstLineLengthUnits.Items.Add(sLineLengthUnits)
-
-            ''If sLineUnit = "Metres" Then
-            ''    lstLineUnit.Items.Add("m")
-            ''ElseIf sLineUnit = "Kilometres" Then
-            ''    lstLineUnit.Items.Add("km")
-            ''ElseIf sLineUnit = "Square Metres" Then
-            ''    lstLineUnit.Items.Add("m^2")
-            ''ElseIf sLineUnit = "Feet" Then
-            ''    lstLineUnit.Items.Add("ft")
-            ''ElseIf sLineUnit = "Miles" Then
-            ''    lstLineUnit.Items.Add("mi")
-            ''ElseIf sLineUnit = "Square Miles" Then
-            ''    lstLineUnit.Items.Add("mi^2")
-            ''ElseIf sLineUnit = "Hectares" Then
-            ''    lstLineUnit.Items.Add("ha")
-            ''ElseIf sLineUnit = "Acres" Then
-            ''    lstLineUnit.Items.Add("ac")
-            ''Else
-            ''    lstLineUnit.Items.Add("n/a")
-            ''End If
-
-            ' also need to update the list variable
-            ' add it to the property, which will add it to the list
-            lLayerToAdd.Add(m_LLayerToAdd)
-            LHabParamList = lLayerToAdd
         End If
     End Sub
 

@@ -1,14 +1,14 @@
 ﻿Public Class SharedObjectClasses
 
 End Class
-' Defines the object that can be added to Exclude List
-Public Class StatisticsObject
-    Public UniqueClass As String
-    Public Quantity As Double
 
-    Public Sub New(ByVal uniqueclass As String, ByVal quantity As Double)
-        Me.UniqueClass = uniqueclass
-        Me.Quantity = quantity
+Public Class HabStatisticsObject
+    Public HabQuantity As Double
+    Public UniqueHabClass As String
+
+    Public Sub New(ByVal uniquehabclass As String, ByVal habquantity As Double)
+        Me.UniqueHabClass = uniquehabclass
+        Me.HabQuantity = habquantity
     End Sub
 
 End Class
@@ -21,6 +21,7 @@ Public Class StatisticsObject_2
     Public bEID As Integer
     Public bType As String
     Public Direction As String
+    Public LengthOrHabitat As String
     Public TotalImmedPath As String
     Public UniqueClass As String
     Public ClassName As String
@@ -28,7 +29,7 @@ Public Class StatisticsObject_2
     Public Unit As String
 
     Public Sub New(ByVal layer As String, ByVal layerID As Integer, ByVal sink As String, ByVal sinkEID As Integer, ByVal bid As String, ByVal barrEID As Integer, ByVal btype As String, ByVal direction As String, _
-    ByVal totalimmedpath As String, ByVal uniqueclass As String, ByVal classname As String, ByVal quantity As Double, ByVal unit As String)
+    ByVal lengthorhabitat As String, ByVal totalimmedpath As String, ByVal uniqueclass As String, ByVal classname As String, ByVal quantity As Double, ByVal unit As String)
         Me.Layer = layer
         Me.LayerID = layerID
         Me.Sink = sink
@@ -37,6 +38,7 @@ Public Class StatisticsObject_2
         Me.bEID = barrEID
         Me.bType = btype
         Me.Direction = direction
+        Me.LengthOrHabitat = lengthorhabitat
         Me.TotalImmedPath = totalimmedpath
         Me.UniqueClass = uniqueclass
         Me.ClassName = classname
@@ -53,15 +55,17 @@ Public Class DCIStatisticsObject
     '   BarrierPerm (double)
     '   BarrierYN (string 55)
     Public Barrier As String
-    Public Quantity As Double
+    Public Length As Double
+    Public HabQuantity As Double
     Public BarrierPerm As Double
     Public BarrierYN As String
 
 
-    Public Sub New(ByVal barrier As String, ByVal quantity As Double, ByVal barrierperm As Double, _
+    Public Sub New(ByVal barrier As String, ByVal length As Double, ByVal quantity As Double, ByVal barrierperm As Double, _
     ByVal barrieryn As String)
         Me.Barrier = barrier
-        Me.Quantity = quantity
+        Me.Length = length
+        Me.HabQuantity = quantity
         Me.BarrierPerm = barrierperm
         Me.BarrierYN = barrieryn
     End Sub

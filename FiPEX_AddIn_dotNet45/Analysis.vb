@@ -429,9 +429,15 @@ Public Class Analysis
 
         Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
         Dim iLinesCount As Integer = 0      ' number of lines layers currently using
-        Dim pLLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        Dim pPLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        Dim HabLayerObj As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+
+        Dim pLLayersFields As List(Of LineLayerToAdd) = New List(Of LineLayerToAdd)
+        Dim pPLayersFields As List(Of PolyLayerToAdd) = New List(Of PolyLayerToAdd)
+
+        '2020 ' replace hablayerobj above with two 
+        Dim LineLayerObj As New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+        Dim PolyLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+
+
         Dim lBarrierIDs As List(Of BarrierIDObj) = New List(Of BarrierIDObj)
         Dim pBarrierIDObj As New BarrierIDObj(Nothing, Nothing, Nothing, Nothing, Nothing)
 
@@ -513,23 +519,23 @@ Public Class Analysis
 
                 iPolysCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numPolys"))
 
-                HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+                PolyLayerObj = New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing)
 
                 ' Populate a list of the layers to use and habitat summary fields.
                 ' match any of the polygon layers saved in stream to those in listboxes 
                 If iPolysCount > 0 Then
                     For k = 0 To iPolysCount - 1
                         'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
-                        HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                        With HabLayerObj
+                        PolyLayerObj = New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing)
+                        With PolyLayerObj
                             .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
-                            .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
-                            .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
-                            .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
+                            .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
+                            .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
+                            .HabUnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
                         End With
 
                         ' Load that object into the list
-                        pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
+                        pPLayersFields.Add(PolyLayerObj)  'what are the brackets about - this could be aproblem!!
                     Next
                 End If
 
@@ -540,29 +546,34 @@ Public Class Analysis
                 If iCount1 > 0 Then
                     For m = 0 To iCount1 - 1
                         sTemp = pPLayersFields.Item(m).Layer
-                        If pPLayersFields.Item(m).QuanField = "Not set" Then
-                            System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for lacustrine layer. Please choose a field in the options menu.", "Parameter Missing")
+                        If pPLayersFields.Item(m).HabQuanField = "Not set" Then
+                            System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for polygon layer. Please choose a field in the options menu.", "Parameter Missing")
                             Exit Sub
                         End If
                     Next
                 End If
 
                 iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
-                Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+                LineLayerObj = New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
 
                 ' match any of the line layers saved in stream to those in listboxes
                 If iLinesCount > 0 Then
                     For j = 0 To iLinesCount - 1
                         'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
-                        HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                        With HabLayerObj2
-                            '.Layer = sLineLayer
+                        LineLayerObj = New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                        With LineLayerObj
+
                             .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
-                            .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
-                            .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
-                            .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineUnitField" + j.ToString))
+
+                            .LengthField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthField" + j.ToString))
+                            .LengthUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthUnits" + j.ToString))
+
+                            .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
+                            .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
+                            .HabUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabUnits" + j.ToString))
+
                         End With
-                        pLLayersFields.Add(HabLayerObj2)
+                        pLLayersFields.Add(LineLayerObj)
                     Next
                 End If
 
@@ -571,8 +582,12 @@ Public Class Analysis
                 iCount1 = pLLayersFields.Count
                 If iCount1 > 0 Then
                     For m = 0 To iCount1 - 1
-                        If pLLayersFields.Item(m).QuanField = "Not set" Then
-                            System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
+                        If pLLayersFields.Item(m).HabQuanField = "Not set" Then
+                            System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for line layer. Please choose a field in the options menu.", "Parameter Missing")
+                            Exit Sub
+                        End If
+                        If pLLayersFields.Item(m).LengthField = "Not set" Then
+                            System.Windows.Forms.MessageBox.Show("No length field set for line layer. Please choose a field in the options menu.", "Parameter Missing")
                             Exit Sub
                         End If
                     Next
@@ -618,38 +633,6 @@ Public Class Analysis
             Exit Sub
         End If
 
-        '======================================
-        ' Can use a 3 dimensional Array to populate statistics
-        ' These are multiple recordsets with rows and columns,
-        ' stacked on top of each other. 
-        'Dim statsArray3D(iOrderNum, 4, 1) As Double 'VB.NET
-
-        ' IF THE FOLLOWING DOCKWIN CODE IS ONLY NEEDED IN THE CALCSTATS SECTION
-        ' THEN THIS CODE COULD BE DELETED
-
-        '' Output Form (will replace dockable window)
-        'Dim pResultsForm As New FiPEx.frmResults
-        'pResultsForm.Show()
-
-        'Create Dockable Window
-        'If bDockWin = True Then
-        '    Dim u As New UID
-        '    u.Value = "{5904bd54-d8ec-4dd8-b1e1-9adcb6558d26}"
-
-        '    pDockWin = m_DockWinMgr.GetDockableWindow(u)
-        '    pDockWin.Show(True)
-        '    pDockWin.Dock(esriDockFlags.esriDockShow)
-
-        ' If pDockwin works, try to link in and clear the listbox
-        ' sample code from http://edndoc.esri.com/arcobjects/9.2/NET/ViewCodePages/e439cf8c-778b-4fdb-b4c4-fab51a546ac6ClearLoggingCommand.vb.htm
-        'If pDockWin IsNot Nothing Then
-        '    Dim containedBox As System.Windows.Forms.ListBox = TryCast(pDockWin.UserData, System.Windows.Forms.ListBox)
-        '    containedBox.Items.Clear()
-        'End If
-
-        'End If
-
-        'MsgBox("Debug:1")
 
         ' =============== SAVE ORIGINAL GEONet SETTINGS =========================
         ' check if user has hit 'close/cancel'
@@ -804,8 +787,14 @@ Public Class Analysis
         Dim iLineFCID, iPolyFCID As Integer
         Dim bLineFCIDFound, bPolyFCIDFound As Boolean
         Dim pLayer As ILayer
-        Dim lLLayersFieldsDCI As New List(Of LayerToAdd)
-        Dim lAllLayersFieldsGLPK As New List(Of LayerToAdd)
+
+        ' 2020 - added a polygon object so DCI can use areas as well as lengths
+        Dim lLLayersFieldsDCI As New List(Of LineLayerToAdd)
+        Dim lPLayersFieldsDCI As New List(Of PolyLayerToAdd)
+
+        ' for GLPK - 2020 - note the LayerToAdd object was split into two groups for lines and polys
+        '                   and this issue would need to be fixed
+        Dim lAllLayersFieldsGLPK As New List(Of LineLayerToAdd)
 
         Dim lGLPKUniqueEIDs As List(Of Integer)
         Dim sDCITableName, sMetricTableName As String
@@ -968,40 +957,58 @@ Public Class Analysis
                     Loop
                 End If
 
+                ' 2020 added a list of polygon layers and fields
+                ' no need to do checks as above
+                j = 0
+                For j = 0 To pPLayersFields.Count - 1
+                    lPLayersFieldsDCI.Add(pPLayersFields(j))
+                Next
+
             End If
             ' ============== End for DCI Output ===============
 
-            'MsgBox("Debug:6")
+            ' ###################################################
+            ' ###################################################
+            ' ############# FOR GLPK ############################
+            ' do not delete
+
             ' For GLPK Filter out the lines that are not part of the network 
             ' as above, but keep all polygons included in the analysis
-            lAllLayersFieldsGLPK = New List(Of LayerToAdd)
-            If bGLPKTables = True Then
-                'Initial set of feature class
-                pEnumSimpLineFCs.Reset()
-                pFeatureClass = pEnumSimpLineFCs.Next()
-                i = 0
-                j = 0
-                If lAllFCIDs.Count > 0 Then
-                    Do Until pFeatureClass Is Nothing
-                        For i = 0 To lAllFCIDs.Count - 1
-                            If lAllFCIDs(i).FCID = pFeatureClass.FeatureClassID Then
-                                For j = 0 To pLLayersFields.Count - 1
-                                    If pLLayersFields(j).Layer = lAllFCIDs(i).Name Then
-                                        lAllLayersFieldsGLPK.Add(pLLayersFields(j))
-                                    End If
-                                Next 'j                              
-                            End If
-                        Next 'i
-                        pFeatureClass = pEnumSimpLineFCs.Next()
-                    Loop
-                End If
-                j = 0
-                For j = 0 To pPLayersFields.Count - 1
-                    lAllLayersFieldsGLPK.Add(pPLayersFields(j))
-                Next 'j
-            End If
+            lAllLayersFieldsGLPK = New List(Of LineLayerToAdd)
+            ' 2020 - the above object needs to be fixed for GLPK to work
+            '        because LayerToAdd object has been split into two objects
+            '        one for line, one for poly
+
+            'If bGLPKTables = True Then
+            '    'Initial set of feature class
+            '    pEnumSimpLineFCs.Reset()
+            '    pFeatureClass = pEnumSimpLineFCs.Next()
+            '    i = 0
+            '    j = 0
+            '    If lAllFCIDs.Count > 0 Then
+            '        Do Until pFeatureClass Is Nothing
+            '            For i = 0 To lAllFCIDs.Count - 1
+            '                If lAllFCIDs(i).FCID = pFeatureClass.FeatureClassID Then
+            '                    For j = 0 To pLLayersFields.Count - 1
+            '                        If pLLayersFields(j).Layer = lAllFCIDs(i).Name Then
+            '                            lAllLayersFieldsGLPK.Add(pLLayersFields(j))
+            '                        End If
+            '                    Next 'j                              
+            '                End If
+            '            Next 'i
+            '            pFeatureClass = pEnumSimpLineFCs.Next()
+            '        Loop
+            '    End If
+            '    j = 0
+            '    For j = 0 To pPLayersFields.Count - 1
+            '        lAllLayersFieldsGLPK.Add(pPLayersFields(j))
+            '    Next 'j
+            'End If
+            ' ############################################################
+            ' ######## end for GLPK ######################################
 
 
+            ' 2020 unsure if below commented out section is for GLPK or not
             'Else ' If there is no DBF Table Output
 
             '' Still need the table names for output to dockable window
@@ -2132,15 +2139,20 @@ Public Class Analysis
                             Next
 
                             ' use results for DCI if needed
+                            ' 2020 changed calculateDCIStatistics to use areas
+                            ' as hab quantity or lengths. Also, differentiates lengths
+                            ' from habitat (uses new settings from user)
                             If bDCI = True Then
                                 Call calculateDCIStatistics(lDCIStatsList, _
                                                             lLLayersFieldsDCI, _
+                                                            lPLayersFieldsDCI, _
                                                             iEID, _
                                                             dBarrierPerm, _
                                                             sNaturalYN, _
                                                             orderLoop)
                             End If
 
+                            ' ############### FOR GLPK #####################
                             If bGLPKTables = True Then
                                 ' If this is the first loop then empty the 
                                 ' Statistics of results from other flags 
@@ -2151,7 +2163,7 @@ Public Class Analysis
                                                              lAllLayersFieldsGLPK, _
                                                              iEID, _
                                                              orderLoop)
-                            End If
+                            End If ' ############### FOR GLPK #####################
 
                             ' use results for Upstream habitat if needed
                             If bUpHab = True Then
@@ -2166,7 +2178,6 @@ Public Class Analysis
                                                            sHabType, _
                                                            sHabDir)
                             End If
-                            'MsgBox("Debug:20a")
 
                         End If '  If bUpHab = True Or bDCI = True Or bGLPKTables = True
 
@@ -3035,6 +3046,11 @@ Public Class Analysis
                                     pAdvDCIDataObj.DownstreamNeighDistance = Math.Round(lHabStatsList(k).Quantity, 2)
                                     pAdvDCIDataObj.DistanceUnits = lHabStatsList(k).Unit
 
+                                    ' 2020 insert a check for path down distance / length
+
+
+
+
                                 End If
                             End If
                         Next
@@ -3089,7 +3105,7 @@ Public Class Analysis
                         For j = 0 To lDCIStatsList.Count - 1
                             pRowBuffer = pTable.CreateRowBuffer
                             pRowBuffer.Value(1) = lDCIStatsList(j).Barrier
-                            pRowBuffer.Value(2) = Math.Round(lDCIStatsList(j).Quantity, 2)
+                            pRowBuffer.Value(2) = Math.Round(lDCIStatsList(j).HabQuantity, 2)
                             pRowBuffer.Value(3) = lDCIStatsList(j).BarrierPerm
                             If lDCIStatsList(j).BarrierPerm < 1 Then
                                 bNoPerm = True
@@ -3755,23 +3771,27 @@ Public Class Analysis
             j = 0
             For j = 0 To lHabStatsList.Count - 1
 
-                pRowBuffer = pTable.CreateRowBuffer
-                pRowBuffer.Value(1) = lHabStatsList(j).Sink
-                pRowBuffer.Value(2) = lHabStatsList(j).SinkEID
-                pRowBuffer.Value(3) = lHabStatsList(j).bID
-                pRowBuffer.Value(4) = lHabStatsList(j).bEID
-                pRowBuffer.Value(5) = lHabStatsList(j).bType
-                pRowBuffer.Value(6) = lHabStatsList(j).Layer
-                pRowBuffer.Value(7) = lHabStatsList(j).Direction
-                pRowBuffer.Value(8) = lHabStatsList(j).TotalImmedPath
-                pRowBuffer.Value(9) = lHabStatsList(j).UniqueClass
-                pRowBuffer.Value(10) = lHabStatsList(j).ClassName
-                pRowBuffer.Value(11) = lHabStatsList(j).Quantity
-                pRowBuffer.Value(12) = lHabStatsList(j).Unit
+                ' 2020 - do not print the line length to this file
+                '       optionally can do this in the future
+                If lHabStatsList(j).LengthOrHabitat = "Habitat" Then
+                    pRowBuffer = pTable.CreateRowBuffer
+                    pRowBuffer.Value(1) = lHabStatsList(j).Sink
+                    pRowBuffer.Value(2) = lHabStatsList(j).SinkEID
+                    pRowBuffer.Value(3) = lHabStatsList(j).bID
+                    pRowBuffer.Value(4) = lHabStatsList(j).bEID
+                    pRowBuffer.Value(5) = lHabStatsList(j).bType
+                    pRowBuffer.Value(6) = lHabStatsList(j).Layer
+                    pRowBuffer.Value(7) = lHabStatsList(j).Direction
+                    pRowBuffer.Value(8) = lHabStatsList(j).TotalImmedPath
+                    pRowBuffer.Value(9) = lHabStatsList(j).UniqueClass
+                    pRowBuffer.Value(10) = lHabStatsList(j).ClassName
+                    pRowBuffer.Value(11) = lHabStatsList(j).Quantity
+                    pRowBuffer.Value(12) = lHabStatsList(j).Unit
 
-                pCursor = pTable.Insert(True)
-                pCursor.InsertRow(pRowBuffer)
-                pCursor.Flush()
+                    pCursor = pTable.Insert(True)
+                    pCursor.InsertRow(pRowBuffer)
+                    pCursor.Flush()
+                End If
             Next
         End If ' write to DBF is True
 
@@ -5433,8 +5453,8 @@ Public Class Analysis
         ' this is a double-check and should 
         ' return true if there's a match between
         ' BOTH the layer and EID of the sink/barrier
-        Public Function CompareStatsClass(ByVal obj As StatisticsObject) As Boolean
-            Return (_Class = obj.UniqueClass)
+        Public Function CompareStatsClass(ByVal obj As HabStatisticsObject) As Boolean
+            Return (_Class = obj.UniqueHabClass)
         End Function
     End Class
     Private Class FindBarriersBySinkEIDPredicate
@@ -5477,17 +5497,24 @@ Public Class Analysis
     End Class
     Public Sub IntersectFeatures()
 
+        ' 2020 - note this intersects with polygon layers for habitat
+        '        based on any _selected_ line layers 
+        '        (i.e., network lines returned by trace)
+        '        it does not intersect with more line layers 
+
         'Read Extension Settings
         ' ================== READ EXTENSION SETTINGS =================
 
         Dim bDBF As Boolean = False         ' Include DBF output default 'no'
-        Dim pLLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        Dim pPLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
+        Dim pLLayersFields As List(Of LineLayerToAdd) = New List(Of LineLayerToAdd)
+        Dim pPLayersFields As List(Of PolyLayerToAdd) = New List(Of PolyLayerToAdd)
         Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
         Dim iLinesCount As Integer = 0      ' number of lines layers currently using
-        Dim HabLayerObj As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+
+        Dim HabLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+
         ' object to hold stats to add to list. 
-        Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+        Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
         Dim m As Integer = 0
         Dim k As Integer = 0
         Dim j As Integer = 0
@@ -5501,12 +5528,12 @@ Public Class Analysis
             If iPolysCount > 0 Then
                 For k = 0 To iPolysCount - 1
                     'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
-                    HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
+                    HabLayerObj = New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing)
                     With HabLayerObj
                         .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
-                        .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
-                        .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
-                        .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
+                        .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
+                        .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
+                        .HabUnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
                     End With
 
                     ' Load that object into the list
@@ -5520,27 +5547,31 @@ Public Class Analysis
 
             If iCount1 > 0 Then
                 For m = 0 To iCount1 - 1
-                    If pPLayersFields.Item(m).QuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for polygon layer. Please choose a field in the options menu.", "Parameter Missing")
+                    If pPLayersFields.Item(m).HabQuanField = "Not set" Then
+                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for polygon layer. Please choose a field in the options menu. FIPEX Error code 576. ", "Parameter Missing")
                         Exit Sub
                     End If
                 Next
             End If
 
             iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
-            Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+            Dim HabLayerObj2 As New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
             ' match any of the line layers saved in stream to those in listboxes
             If iLinesCount > 0 Then
                 For j = 0 To iLinesCount - 1
                     'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
-                    HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
+                    HabLayerObj2 = New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
                     With HabLayerObj2
                         '.Layer = sLineLayer
                         .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
-                        .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
-                        .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
-                        .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineUnitField" + j.ToString))
+
+                        .LengthField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthField" + j.ToString))
+                        .LengthUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthUnits" + j.ToString))
+
+                        .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
+                        .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
+                        .HabUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabUnits" + j.ToString))
                     End With
                     ' add to the module level list
                     pLLayersFields.Add(HabLayerObj2)
@@ -5552,11 +5583,16 @@ Public Class Analysis
             iCount1 = pLLayersFields.Count
             If iCount1 > 0 Then
                 For m = 0 To iCount1 - 1
-                    If pLLayersFields.Item(m).QuanField = "Not set" Then
+                    If pLLayersFields.Item(m).HabQuanField = "Not set" Then
                         System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
                         Exit Sub
                     End If
+                    If pLLayersFields.Item(m).LengthField = "Not set" Then
+                        System.Windows.Forms.MessageBox.Show("No length field is not set for river layer. Please choose a field in the options menu.", "Parameter Missing")
+                        Exit Sub
+                    End If
                 Next
+
             End If
         Else
             System.Windows.Forms.MessageBox.Show("Cannot read extension settings.", "Calculate Stats Error")
@@ -5575,7 +5611,7 @@ Public Class Analysis
         '         If it's on the 'include' list
         '           For each of the FocusMap layers 
         '             If it's a line layer (because we don't want to repeatedly 
-        '             intersect a polygon layer with itself, do we? DO WEEE???)
+        '             intersect a polygon layer with itself)
         '               If there are any selected features 
         '                 If the parameter array is already populated then empty it
         '                 Populate parameter array for intersect process
@@ -5678,7 +5714,7 @@ Public Class Analysis
 
     End Sub
     Public Sub calculateGLPKStatistics(ByRef lGLPKStatisticsList As List(Of GLPKStatisticsObject), _
-                                       ByVal lAllLayersFieldsGLPK As List(Of LayerToAdd), _
+                                       ByVal lAllLayersFieldsGLPK As List(Of LineLayerToAdd), _
                                        ByRef ID As Integer, _
                                        ByVal iOrderLoop As Integer)
 
@@ -5693,221 +5729,225 @@ Public Class Analysis
         '                 inclusion of non-network lines which requires additions to intersect sub)
         '              4) update statistics object and send back to onclick
 
-        Dim pMxDoc As IMxDocument
-        Dim pEnumLayer As IEnumLayer
-        Dim pFeatureLayer As IFeatureLayer
-        Dim pFeatureSelection As IFeatureSelection
-        Dim pFeatureCursor As IFeatureCursor
-        Dim pFeature As IFeature
-        Dim dTotalArea As Double ' alternative to 2D Matrix when no classes are given
-        Dim pUID As New UID
-        ' Get the pUID of the SelectByLayer command
-        'pUID.Value = "{82B9951B-DD63-11D1-AA7F-00C04FA37860}"
+        ' ##################### 2020 Commented out the code below ########################
+        '                       do not delete
 
-        Dim pMxDocument As IMxDocument
-        Dim pMap As IMap
+        'Dim pMxDoc As IMxDocument
+        'Dim pEnumLayer As IEnumLayer
+        'Dim pFeatureLayer As IFeatureLayer
+        'Dim pFeatureSelection As IFeatureSelection
+        'Dim pFeatureCursor As IFeatureCursor
+        'Dim pFeature As IFeature
+        'Dim dTotalArea As Double ' alternative to 2D Matrix when no classes are given
+        'Dim pUID As New UID
+        '' Get the pUID of the SelectByLayer command
+        ''pUID.Value = "{82B9951B-DD63-11D1-AA7F-00C04FA37860}"
 
-        Dim j, k, m As Integer
-        Dim iFieldVal As Integer  ' The field index
+        'Dim pMxDocument As IMxDocument
+        'Dim pMap As IMap
 
-        Dim pFields As IFields
-        Dim pSelectionSet As ISelectionSet
+        'Dim j, k, m As Integer
+        'Dim iFieldVal As Integer  ' The field index
 
-        ' K REPRESENTS NUMBER OF POSSIBLE HABITAT CLASSES
-        '  rows, columns.  ROWS SHOULD BE SET BY NUMBER OF SUMMARY FIELDS
-        ' cannot be redimension preserved later
+        'Dim pFields As IFields
+        'Dim pSelectionSet As ISelectionSet
 
-        Dim lStatsMatrix As New List(Of StatisticsObject)
-        Dim pStatisticsObject As New StatisticsObject(Nothing, Nothing)
+        '' K REPRESENTS NUMBER OF POSSIBLE HABITAT CLASSES
+        ''  rows, columns.  ROWS SHOULD BE SET BY NUMBER OF SUMMARY FIELDS
+        '' cannot be redimension preserved later
 
-        Dim pCursor As ICursor
-        Dim vTemp As Object
+        'Dim lStatsMatrix As New List(Of StatisticsObject)
+        'Dim pStatisticsObject As New StatisticsObject(Nothing, Nothing)
 
-        Dim pDoc As IDocument = My.ArcMap.Application.Document
-        pMxDoc = CType(pDoc, IMxDocument)
-        pMxDocument = CType(pDoc, IMxDocument)
-        pMap = pMxDocument.FocusMap
+        'Dim pCursor As ICursor
+        'Dim vTemp As Object
 
-        ' ================== READ EXTENSION SETTINGS =================
-        Dim sDirection, sDirection2 As String
+        'Dim pDoc As IDocument = My.ArcMap.Application.Document
+        'pMxDoc = CType(pDoc, IMxDocument)
+        'pMxDocument = CType(pDoc, IMxDocument)
+        'pMap = pMxDocument.FocusMap
 
-        Dim bDBF As Boolean = False         ' Include DBF output default 'no'
-        Dim pLLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        Dim pPLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
-        Dim iLinesCount As Integer = 0      ' number of lines layers currently using
-        Dim HabLayerObj As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
-        ' object to hold stats to add to list. 
-        Dim pGLPKStatisticsObject As New GLPKStatisticsObject(Nothing, Nothing)
+        '' ================== READ EXTENSION SETTINGS =================
+        'Dim sDirection, sDirection2 As String
 
-        If m_FiPEx__1.m_bLoaded = True Then
+        'Dim bDBF As Boolean = False         ' Include DBF output default 'no'
+        'Dim pLLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
+        'Dim pPLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
+        'Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
+        'Dim iLinesCount As Integer = 0      ' number of lines layers currently using
+        'Dim HabLayerObj As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+        '' object to hold stats to add to list. 
+        'Dim pGLPKStatisticsObject As New GLPKStatisticsObject(Nothing, Nothing)
 
-            sDirection = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("direction"))
+        'If m_FiPEx__1.m_bLoaded = True Then
 
-            'Make the direction more readable for dockable window output
-            If sDirection = "up" Then
-                sDirection2 = "upstream"
-            Else
-                sDirection2 = "downstream"
-            End If
+        '    sDirection = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("direction"))
 
-            ' Populate a list of the layers using and habitat summary fields.
-            ' match any of the polygon layers saved in stream to those in listboxes 
-            iPolysCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numPolys"))
-            If iPolysCount > 0 Then
-                For k = 0 To iPolysCount - 1
-                    'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
-                    HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                    With HabLayerObj
-                        .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
-                        .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
-                        .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
-                        .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
-                    End With
+        '    'Make the direction more readable for dockable window output
+        '    If sDirection = "up" Then
+        '        sDirection2 = "upstream"
+        '    Else
+        '        sDirection2 = "downstream"
+        '    End If
 
-                    ' Load that object into the list
-                    pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
-                Next
-            End If
+        '    ' Populate a list of the layers using and habitat summary fields.
+        '    ' match any of the polygon layers saved in stream to those in listboxes 
+        '    iPolysCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numPolys"))
+        '    If iPolysCount > 0 Then
+        '        For k = 0 To iPolysCount - 1
+        '            'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
+        '            HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
+        '            With HabLayerObj
+        '                .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
+        '                .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
+        '                .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
+        '                .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
+        '            End With
 
-            ' Need to be sure that quantity field has been assigned for each
-            ' layer using. 
-            Dim iCount1 As Integer = pPLayersFields.Count
+        '            ' Load that object into the list
+        '            pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
+        '        Next
+        '    End If
 
-            If iCount1 > 0 Then
-                For m = 0 To iCount1 - 1
-                    If pPLayersFields.Item(m).QuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for lacustrine layer. Please choose a field in the options menu.", "Parameter Missing")
-                        Exit Sub
-                    End If
-                Next
-            End If
+        '    ' Need to be sure that quantity field has been assigned for each
+        '    ' layer using. 
+        '    Dim iCount1 As Integer = pPLayersFields.Count
 
-            iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
-            Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+        '    If iCount1 > 0 Then
+        '        For m = 0 To iCount1 - 1
+        '            If pPLayersFields.Item(m).QuanField = "Not set" Then
+        '                System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for lacustrine layer. Please choose a field in the options menu.", "Parameter Missing")
+        '                Exit Sub
+        '            End If
+        '        Next
+        '    End If
 
-            ' match any of the line layers saved in stream to those in listboxes
-            If iLinesCount > 0 Then
-                For j = 0 To iLinesCount - 1
-                    'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
-                    HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                    With HabLayerObj2
-                        '.Layer = sLineLayer
-                        .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
-                        .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
-                        .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
-                        .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineUnitField" + j.ToString))
-                    End With
-                    ' add to the module level list
-                    pLLayersFields.Add(HabLayerObj2)
-                Next
-            End If
+        '    iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
+        '    Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
-            ' Need to be sure that quantity field has been assigned for each
-            ' layer using. 
-            iCount1 = pLLayersFields.Count
-            If iCount1 > 0 Then
-                For m = 0 To iCount1 - 1
-                    If pLLayersFields.Item(m).QuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
-                        Exit Sub
-                    End If
-                Next
-            End If
-        Else
-            System.Windows.Forms.MessageBox.Show("Cannot read extension settings.", "Calculate Stats Error")
-            Exit Sub
-        End If
+        '    ' match any of the line layers saved in stream to those in listboxes
+        '    If iLinesCount > 0 Then
+        '        For j = 0 To iLinesCount - 1
+        '            'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
+        '            HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
+        '            With HabLayerObj2
+        '                '.Layer = sLineLayer
+        '                .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
+        '                .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
+        '                .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
+        '                .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineUnitField" + j.ToString))
+        '            End With
+        '            ' add to the module level list
+        '            pLLayersFields.Add(HabLayerObj2)
+        '        Next
+        '    End If
 
-        ' ========== End Read Extension settings ===============
+        '    ' Need to be sure that quantity field has been assigned for each
+        '    ' layer using. 
+        '    iCount1 = pLLayersFields.Count
+        '    If iCount1 > 0 Then
+        '        For m = 0 To iCount1 - 1
+        '            If pLLayersFields.Item(m).QuanField = "Not set" Then
+        '                System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
+        '                Exit Sub
+        '            End If
+        '        Next
+        '    End If
+        'Else
+        '    System.Windows.Forms.MessageBox.Show("Cannot read extension settings.", "Calculate Stats Error")
+        '    Exit Sub
+        'End If
 
-        pUID.Value = "{E156D7E5-22AF-11D3-9F99-00C04F6BC78E}"
-        pEnumLayer = pMap.Layers(pUID, True)
-        pEnumLayer.Reset()
+        '' ========== End Read Extension settings ===============
 
-        ' Look at the next layer in the list
-        pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
+        'pUID.Value = "{E156D7E5-22AF-11D3-9F99-00C04F6BC78E}"
+        'pEnumLayer = pMap.Layers(pUID, True)
+        'pEnumLayer.Reset()
 
-        Dim iLoopCount As Integer = 0
-        Dim dTempQuan As Double
-        dTotalArea = 0
+        '' Look at the next layer in the list
+        'pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
 
-        Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
-            If pFeatureLayer.Valid = True Then ' or there will be an empty object ref
-                If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
-                pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryPolyline Or _
-                pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryPolygon Then ' or there will be an empty object ref
+        'Dim iLoopCount As Integer = 0
+        'Dim dTempQuan As Double
+        'dTotalArea = 0
 
-                    pFeatureSelection = CType(pFeatureLayer, IFeatureSelection)
-                    pSelectionSet = pFeatureSelection.SelectionSet
+        'Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
+        '    If pFeatureLayer.Valid = True Then ' or there will be an empty object ref
+        '        If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
+        '        pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryPolyline Or _
+        '        pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryPolygon Then ' or there will be an empty object ref
 
-                    ' get the fields from the featureclass
-                    pFields = pFeatureLayer.FeatureClass.Fields
-                    j = 0
+        '            pFeatureSelection = CType(pFeatureLayer, IFeatureSelection)
+        '            pSelectionSet = pFeatureSelection.SelectionSet
 
-                    For j = 0 To lAllLayersFieldsGLPK.Count - 1
-                        If lAllLayersFieldsGLPK(j).Layer = pFeatureLayer.Name Then
+        '            ' get the fields from the featureclass
+        '            pFields = pFeatureLayer.FeatureClass.Fields
+        '            j = 0
 
-                            If pFeatureSelection.SelectionSet.Count <> 0 Then
+        '            For j = 0 To lAllLayersFieldsGLPK.Count - 1
+        '                If lAllLayersFieldsGLPK(j).Layer = pFeatureLayer.Name Then
 
-                                pFeatureSelection.SelectionSet.Search(Nothing, False, pCursor)
-                                pFeatureCursor = CType(pCursor, IFeatureCursor)
-                                pFeature = pFeatureCursor.NextFeature
+        '                    If pFeatureSelection.SelectionSet.Count <> 0 Then
 
-                                ' Get the summary field and add the value to the
-                                ' total for habitat area.
-                                ' ** ==> Multiple fields could be added here in a 'for' loop.
+        '                        pFeatureSelection.SelectionSet.Search(Nothing, False, pCursor)
+        '                        pFeatureCursor = CType(pCursor, IFeatureCursor)
+        '                        pFeature = pFeatureCursor.NextFeature
 
-                                iFieldVal = pFeatureCursor.FindField(lAllLayersFieldsGLPK(j).QuanField)
+        '                        ' Get the summary field and add the value to the
+        '                        ' total for habitat area.
+        '                        ' ** ==> Multiple fields could be added here in a 'for' loop.
 
-                                ' For each selected feature
-                                m = 1
-                                Do While Not pFeature Is Nothing
-                                    Try
-                                        vTemp = pFeature.Value(iFieldVal)
-                                    Catch ex As Exception
-                                        vTemp = 0
-                                    End Try
+        '                        iFieldVal = pFeatureCursor.FindField(lAllLayersFieldsGLPK(j).QuanField)
 
-                                    Try
-                                        dTempQuan = Convert.ToDouble(pFeature.Value(iFieldVal))
-                                    Catch ex As Exception
-                                        dTempQuan = 0
-                                        MsgBox("The Habitat Quantity found in the " & pFeatureLayer.Name & " was not convertible" _
-                                            & " to type 'double'.  Null values in field may be responsible. " & ex.Message)
-                                    End Try
-                                    ' Insert into the corresponding column of the second
-                                    ' row the updated habitat area measurement.
-                                    dTotalArea = dTotalArea + dTempQuan
-                                    pFeature = pFeatureCursor.NextFeature
-                                Loop     ' selected feature
-                            End If ' there are selected features
+        '                        ' For each selected feature
+        '                        m = 1
+        '                        Do While Not pFeature Is Nothing
+        '                            Try
+        '                                vTemp = pFeature.Value(iFieldVal)
+        '                            Catch ex As Exception
+        '                                vTemp = 0
+        '                            End Try
 
-                            ' increment the loop counter for
-                            iLoopCount = iLoopCount + 1
+        '                            Try
+        '                                dTempQuan = Convert.ToDouble(pFeature.Value(iFieldVal))
+        '                            Catch ex As Exception
+        '                                dTempQuan = 0
+        '                                MsgBox("The Habitat Quantity found in the " & pFeatureLayer.Name & " was not convertible" _
+        '                                    & " to type 'double'.  Null values in field may be responsible. " & ex.Message)
+        '                            End Try
+        '                            ' Insert into the corresponding column of the second
+        '                            ' row the updated habitat area measurement.
+        '                            dTotalArea = dTotalArea + dTempQuan
+        '                            pFeature = pFeatureCursor.NextFeature
+        '                        Loop     ' selected feature
+        '                    End If ' there are selected features
 
-                        End If     ' feature layer matches hab class layer
-                    Next           ' habitat layer
-                End If ' featurelayer is valid
-            End If
-            pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
-        Loop ' next map layer
+        '                    ' increment the loop counter for
+        '                    iLoopCount = iLoopCount + 1
 
-        With pGLPKStatisticsObject
-            ' If iOrderLoop = 0 Then
-            ' .Barrier = "Sink"
-            ' Else
-            .Barrier = ID
-            'End If
-            '.BarrierPerm = dBarrierPerm
-            '.BarrierYN = sNaturalYN
-            .Quantity = dTotalArea
-        End With
+        '                End If     ' feature layer matches hab class layer
+        '            Next           ' habitat layer
+        '        End If ' featurelayer is valid
+        '    End If
+        '    pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
+        'Loop ' next map layer
 
-        lGLPKStatisticsList.Add(pGLPKStatisticsObject)
+        'With pGLPKStatisticsObject
+        '    ' If iOrderLoop = 0 Then
+        '    ' .Barrier = "Sink"
+        '    ' Else
+        '    .Barrier = ID
+        '    'End If
+        '    '.BarrierPerm = dBarrierPerm
+        '    '.BarrierYN = sNaturalYN
+        '    .Quantity = dTotalArea
+        'End With
+
+        'lGLPKStatisticsList.Add(pGLPKStatisticsObject)
     End Sub
     Public Sub calculateDCIStatistics(ByRef lDCIStatsList As List(Of DCIStatisticsObject), _
-                                      ByVal lLLayersFieldsDCI As List(Of LayerToAdd), _
+                                      ByVal lLLayersFieldsDCI As List(Of LineLayerToAdd), _
+                                      ByVal lPLayersFieldsDCI As List(Of PolyLayerToAdd), _
                                       ByRef ID As String, _
                                       ByVal dBarrierPerm As Double, _
                                       ByVal sNaturalYN As String, _
@@ -5932,127 +5972,133 @@ Public Class Analysis
         Dim pFeatureSelection As IFeatureSelection
         Dim pFeatureCursor As IFeatureCursor
         Dim pFeature As IFeature
-        Dim dTotalArea As Double ' alternative to 2D Matrix when no classes are given
         Dim pUID As New UID
-        ' Get the pUID of the SelectByLayer command
-        'pUID.Value = "{82B9951B-DD63-11D1-AA7F-00C04FA37860}"
 
         Dim pMxDocument As IMxDocument
         Dim pMap As IMap
 
         Dim j, k, m As Integer
-        Dim iFieldVal As Integer  ' The field index
+        Dim iHabField, iLengthField As Integer  ' The field index
 
         Dim pFields As IFields
         Dim pSelectionSet As ISelectionSet
 
-        ' K REPRESENTS NUMBER OF POSSIBLE HABITAT CLASSES
-        '  rows, columns.  ROWS SHOULD BE SET BY NUMBER OF SUMMARY FIELDS
-        ' cannot be redimension preserved later
-
-        Dim lStatsMatrix As New List(Of StatisticsObject)
-        Dim pStatisticsObject As New StatisticsObject(Nothing, Nothing)
+        Dim lStatsMatrix As New List(Of HabStatisticsObject)
+        Dim pStatisticsObject As New HabStatisticsObject(Nothing, Nothing)
 
         Dim pCursor As ICursor
         Dim vTemp As Object
+
+        ' object to hold stats to add to list. 
+        Dim pDCIStatsObject As New DCIStatisticsObject(Nothing, Nothing, Nothing, Nothing, Nothing)
+        Dim dTempQuan, dTempLength As Double
 
         Dim pDoc As IDocument = My.ArcMap.Application.Document
         pMxDoc = CType(pDoc, IMxDocument)
         pMxDocument = CType(pDoc, IMxDocument)
         pMap = pMxDocument.FocusMap
 
+        ' 2020 - removed read of extension settings - unnecessary
         ' ================== READ EXTENSION SETTINGS =================
-        Dim sDirection, sDirection2 As String
 
-        Dim bDBF As Boolean = False         ' Include DBF output default 'no'
-        Dim pLLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        Dim pPLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
-        Dim iLinesCount As Integer = 0      ' number of lines layers currently using
-        Dim HabLayerObj As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
-        ' object to hold stats to add to list. 
-        Dim pDCIStatsObject As New DCIStatisticsObject(Nothing, Nothing, Nothing, Nothing)
-        Dim dTempQuan As Double
+        ' Dim sDirection, sDirection2 As String
 
-        If m_FiPEx__1.m_bLoaded = True Then
+        'Dim bDBF As Boolean = False         ' Include DBF output default 'no'
+        'Dim pLLayersFields As List(Of LineLayerToAdd) = New List(Of LineLayerToAdd)
+        'Dim pPLayersFields As List(Of PolyLayerToAdd) = New List(Of PolyLayerToAdd)
+        'Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
+        'Dim iLinesCount As Integer = 0      ' number of lines layers currently using
 
-            sDirection = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("direction"))
-            bDBF = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDBF"))
+        'If m_FiPEx__1.m_bLoaded = True Then
 
-            'Make the direction more readable for dockable window output
-            If sDirection = "up" Then
-                sDirection2 = "upstream"
-            Else
-                sDirection2 = "downstream"
-            End If
+        '    sDirection = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("direction"))
+        '    bDBF = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDBF"))
 
-            ' Populate a list of the layers using and habitat summary fields.
-            ' match any of the polygon layers saved in stream to those in listboxes 
-            iPolysCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numPolys"))
-            If iPolysCount > 0 Then
-                For k = 0 To iPolysCount - 1
-                    'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
-                    HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                    With HabLayerObj
-                        .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
-                        .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
-                        .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
-                        .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
-                    End With
+        'Make the direction more readable for dockable window output
+        'If sDirection = "up" Then
+        '    sDirection2 = "upstream"
+        'Else
+        '    sDirection2 = "downstream"
+        'End If
 
-                    ' Load that object into the list
-                    pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
-                Next
-            End If
+        ' Populate a list of the layers using and habitat summary fields.
+        ' match any of the polygon layers saved in stream to those in listboxes 
+        'iPolysCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numPolys"))
+        'Dim HabLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing)
+        'If iPolysCount > 0 Then
+        '    For k = 0 To iPolysCount - 1
+        '        'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
+        '        HabLayerObj = New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing)
+        '        With HabLayerObj
+        '            .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
 
-            ' Need to be sure that quantity field has been assigned for each
-            ' layer using. 
-            Dim iCount1 As Integer = pPLayersFields.Count
+        '            .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
+        '            .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
+        '            .HabUnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
+        '        End With
 
-            If iCount1 > 0 Then
-                For m = 0 To iCount1 - 1
-                    If pPLayersFields.Item(m).QuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for lacustrine layer. Please choose a field in the options menu.", "Parameter Missing")
-                        Exit Sub
-                    End If
-                Next
-            End If
+        '        ' Load that object into the list
+        '        pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
+        '    Next
+        'End If
 
-            iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
-            Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+        '' Need to be sure that quantity field has been assigned for each
+        '' layer using. 
+        'Dim iCount1 As Integer = pPLayersFields.Count
 
-            ' match any of the line layers saved in stream to those in listboxes
-            If iLinesCount > 0 Then
-                For j = 0 To iLinesCount - 1
-                    'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
-                    HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                    With HabLayerObj2
-                        '.Layer = sLineLayer
-                        .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
-                        .ClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
-                        .QuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
-                        .UnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineUnitField" + j.ToString))
-                    End With
-                    ' add to the module level list
-                    pLLayersFields.Add(HabLayerObj2)
-                Next
-            End If
+        'If iCount1 > 0 Then
+        '    For m = 0 To iCount1 - 1
+        '        If pPLayersFields.Item(m).HabQuanField = "Not set" Then
+        '            System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for polygon layer. Please choose a field in the options menu.", "Parameter Missing")
+        '            Exit Sub
+        '        End If
+        '    Next
+        'End If
 
-            ' Need to be sure that quantity field has been assigned for each
-            ' layer using. 
-            iCount1 = pLLayersFields.Count
-            If iCount1 > 0 Then
-                For m = 0 To iCount1 - 1
-                    If pLLayersFields.Item(m).QuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
-                        Exit Sub
-                    End If
-                Next
-            End If
-        Else
-            System.Windows.Forms.MessageBox.Show("Cannot read extension settings.", "Calculate Stats Error")
-            Exit Sub
-        End If
+        'iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
+        'Dim HabLayerObj2 As New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
+
+        '' match any of the line layers saved in stream to those in listboxes
+        'If iLinesCount > 0 Then
+        '    For j = 0 To iLinesCount - 1
+        '        'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
+        '        HabLayerObj2 = New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+        '        With HabLayerObj2
+        '            '.Layer = sLineLayer
+        '            .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
+
+        '            .LengthField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthField" + j.ToString))
+        '            .LengthUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthUnits" + j.ToString))
+
+        '            .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabClassField" + j.ToString))
+        '            .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabQuanField" + j.ToString))
+        '            .HabUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabUnits" + j.ToString))
+
+        '        End With
+        '        ' add to the module level list
+        '        pLLayersFields.Add(HabLayerObj2)
+        '    Next
+        'End If
+
+        '' Need to be sure that quantity field has been assigned for each
+        '' layer using. 
+        'iCount1 = pLLayersFields.Count
+        'If iCount1 > 0 Then
+        '    For m = 0 To iCount1 - 1
+        '        If pLLayersFields.Item(m).HabQuanField = "Not set" Then
+        '            System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for line layer. Please choose a field in the options menu.", "Parameter Missing")
+        '            Exit Sub
+        '        End If
+        '        If pLLayersFields.Item(m).LengthField = "Not set" Then
+        '            System.Windows.Forms.MessageBox.Show("No length field set for line layer. Please choose a field in the options menu.", "Parameter Missing")
+        '            Exit Sub
+        '        End If
+        '    Next
+        'End If
+        'Else
+        'System.Windows.Forms.MessageBox.Show("Cannot read extension settings.", "Calculate Stats Error")
+        'Exit Sub
+        'End If
 
         ' ========== End Read Extension settings ===============
 
@@ -6064,10 +6110,14 @@ Public Class Analysis
         pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
 
         Dim iLoopCount As Integer = 0
-        dTotalArea = 0
+        Dim dTotalHab As Double = 0
+        Dim dTotalLength As Double = 0
 
         Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
             If pFeatureLayer.Valid = True Then ' or there will be an empty object ref
+
+                ' 2020 
+
                 If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
                 pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryPolyline Then ' or there will be an empty object ref
 
@@ -6087,31 +6137,65 @@ Public Class Analysis
                                 pFeatureCursor = CType(pCursor, IFeatureCursor)
                                 pFeature = pFeatureCursor.NextFeature
 
-                                ' Get the summary field and add the value to the
-                                ' total for habitat area.
-                                ' ** ==> Multiple fields could be added here in a 'for' loop.
 
-                                iFieldVal = pFeatureCursor.FindField(lLLayersFieldsDCI(j).QuanField)
+                                ' 2020 - only get habitat from line if the user has chosen line
+                                'IF...
 
                                 ' For each selected feature
+                                ' Get the habitat field and add the value to the
+                                ' total for habitat quantity.
+
+                                Try
+                                    iHabField = pFeatureCursor.FindField(lLLayersFieldsDCI(j).HabQuanField)
+                                Catch ex As Exception
+                                    MsgBox("Error finding the field in line layer for habitat. FIPEX code 986")
+                                    Exit Sub
+
+                                End Try
+
+                                Try
+                                    iLengthField = pFeatureCursor.FindField(lLLayersFieldsDCI(j).LengthField)
+                                Catch ex As Exception
+                                    MsgBox("Error finding the field in line layer for length. FIPEX code 987")
+                                    Exit Sub
+
+                                End Try
+
                                 m = 1
                                 Do While Not pFeature Is Nothing
                                     Try
-                                        vTemp = pFeature.Value(iFieldVal)
+                                        vTemp = pFeature.Value(iHabField)
                                     Catch ex As Exception
+                                        MsgBox("Problem converting value from habitat attribute in line layer to double / decimal. Please ensure values in attribute are of type double. FIPEX code 984.")
                                         vTemp = 0
                                     End Try
 
                                     Try
-                                        dTempQuan = Convert.ToDouble(pFeature.Value(iFieldVal))
+                                        dTempQuan = Convert.ToDouble(pFeature.Value(iHabField))
                                     Catch ex As Exception
                                         dTempQuan = 0
-                                        MsgBox("DCI table creation error. The Habitat Quantity found in the " & pFeatureLayer.Name & " was not convertible" _
+                                        MsgBox("DCI table creation error. The habitat quantity found in field in " & pFeatureLayer.Name & " was not convertible" _
                                             & " to type 'double'.  Null values in field may be responsible. " & ex.Message)
                                     End Try
-                                    ' Insert into the corresponding column of the second
-                                    ' row the updated habitat area measurement.
-                                    dTotalArea = dTotalArea + dTempQuan
+                                    dTotalHab = dTotalHab + dTempQuan
+
+
+                                    ' 2020 get distance / length field and quantity
+                                    Try
+                                        vTemp = pFeature.Value(iLengthField)
+                                    Catch ex As Exception
+                                        MsgBox("Problem converting value from length attribute in line layer to double / decimal. Please ensure values in attribute are of type double. FIPEX code 984.")
+                                        vTemp = 0
+                                    End Try
+                                    Try
+                                        dTempQuan = Convert.ToDouble(pFeature.Value(iLengthField))
+                                    Catch ex As Exception
+                                        dTempQuan = 0
+                                        MsgBox("DCI table creation error. The length found in field in " & pFeatureLayer.Name & " was not convertible" _
+                                            & " to type 'double'.  Null values in field may be responsible. " & ex.Message)
+                                    End Try
+                                    dTotalLength = dTotalLength + dTempQuan
+
                                     pFeature = pFeatureCursor.NextFeature
                                 Loop     ' selected feature
                             End If ' there are selected features
@@ -6121,6 +6205,11 @@ Public Class Analysis
 
                         End If     ' feature layer matches hab class layer
                     Next           ' habitat layer
+
+                    ' 2020 - if user has selected poly for hab then....
+
+
+
                 End If ' featurelayer is valid
             End If
             pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
@@ -6134,7 +6223,8 @@ Public Class Analysis
             End If
             .BarrierPerm = dBarrierPerm
             .BarrierYN = sNaturalYN
-            .Quantity = dTotalArea
+            .Length = dTotalLength
+            .HabQuantity = dTotalHab
         End With
 
         lDCIStatsList.Add(pDCIStatsObject)
@@ -6242,8 +6332,8 @@ Public Class Analysis
 
         'Dim mHabClassVals() As Object       'Matrix holds the unique classes and values
         'ReDim mHabClassVals(0 To 4, 0 To 400)         'temporary dimension statement
-        Dim lStatsMatrix As New List(Of StatisticsObject)
-        Dim pStatisticsObject As New StatisticsObject(Nothing, Nothing)
+        Dim lHabStatsMatrix As New List(Of HabStatisticsObject)
+        Dim pHabStatisticsObject As New HabStatisticsObject(Nothing, Nothing)
 
         'Dim pFeatureWkSp As IFeatureWorkspace
         Dim pDataStats As IDataStatistics
@@ -6282,7 +6372,7 @@ Public Class Analysis
 
 
         ' object to hold stats to add to list. 
-        Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+        Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
         Dim sDirection As String
 
         If m_FiPEx__1.m_bLoaded = True Then
@@ -6380,6 +6470,7 @@ Public Class Analysis
         '  1.1 Filter out any excluded features
         '  1.2 Get a list of all fields in the layer
         '  1.3 Combine the polygon and line layers into one list
+        '      2020 - changed this so they are no longer combined
         '  1.4 Prepare the dockable window 
         '    2.0 For each habitat layer in the new list (polygons and lines)
         '      3.0 If there's a match b/w the current layer and habitat layer in list
@@ -6436,6 +6527,7 @@ Public Class Analysis
                     lPolyLayersFields.Add(pPLayersFields(j))
                 Next
 
+                ' 2020 - separate loops for polys and lines introduced (not most efficient)
                 j = 0
                 For j = 0 To lLineLayersFields.Count - 1
                     If lLineLayersFields(j).Layer = pFeatureLayer.Name Then
@@ -6474,33 +6566,29 @@ Public Class Analysis
 
                             ' Reset the stats objects
                             pDataStats = New DataStatistics
-                            pStatisticsObject = New StatisticsObject(Nothing, Nothing)
+                            pHabStatisticsObject = New HabStatisticsObject(Nothing, Nothing)
                             ' Clear the statsMatrix
-                            lStatsMatrix = New List(Of StatisticsObject)
+                            lHabStatsMatrix = New List(Of HabStatisticsObject)
 
                             If pFeatureSelection.SelectionSet.Count <> 0 Then
                                 pSelectionSet.Search(Nothing, False, pCursor)
 
-                                pStatisticsObject = New StatisticsObject(Nothing, Nothing)
-                                With pStatisticsObject
-                                    .UniqueClass = "Classes"
-                                    .Quantity = Nothing '***
+                                pHabStatisticsObject = New HabStatisticsObject(Nothing, Nothing)
+                                With pHabStatisticsObject
+                                    .UniqueHabClass = "Classes"
+                                    .HabQuantity = Nothing '***
                                 End With
-                                lStatsMatrix.Add(pStatisticsObject)
+                                lHabStatsMatrix.Add(pHabStatisticsObject)
 
                                 pSelectionSet.Search(Nothing, False, pCursor) ' THIS LINE MAY BE REDUNDANT (SEE ABOVE)
                                 pFeatureCursor = CType(pCursor, IFeatureCursor)
 
                                 pFeature = pFeatureCursor.NextFeature                            ' For each selected feature
                                 Do While Not pFeature Is Nothing
-                                    'pFields = pFeature.Fields  '** removed because should be redundant
 
                                     ' The habitat class field could be a number or a string
                                     ' so the variable used to hold it is an ambiguous object (variant)
-                                    vFeatHbClsVl = pFeature.Value(pFields.FindField(lLayersFields(j).ClsField))
-                                    'vFeatHbClsVl = pFeature.Value(pFields.FindField("Strahler"))
-
-                                    'dHabArea = Convert.ToDouble(pFeature.Value(pFields.FindField(lLayersFields(j).QuanField)))
+                                    vFeatHbClsVl = pFeature.Value(pFields.FindField(lLineLayersFields(j).HabClsField))
 
                                     ' Loop through each unique habitat class again
                                     ' and check if it matches the class value of the feature
@@ -6511,7 +6599,7 @@ Public Class Analysis
                                     Try
                                         sClass = Convert.ToString(vFeatHbClsVl)
                                     Catch ex As Exception
-                                        MsgBox("The Habitat Class found in the " & lLayersFields(j).Layer & " was not convertible" _
+                                        MsgBox("The Habitat Class found in the " & lLineLayersFields(j).Layer & " was not convertible" _
                                         & " to type 'string'.  " & ex.Message)
                                         sClass = "not set"
                                     End Try
@@ -6519,12 +6607,12 @@ Public Class Analysis
                                         sClass = "not set"
                                     End If
 
-                                    vHabTemp = pFeature.Value(pFields.FindField(lLayersFields(j).QuanField))
+                                    vHabTemp = pFeature.Value(pFields.FindField(lLineLayersFields(j).HabQuanField))
 
                                     Try
                                         dHabArea = Convert.ToDouble(vHabTemp)
                                     Catch ex As Exception
-                                        MsgBox("The Habitat Quantity found in the " & lLayersFields(j).Layer & " was not convertible" _
+                                        MsgBox("The Habitat Quantity found in the " & lLineLayersFields(j).Layer & " was not convertible" _
                                         & " to type 'double'.  Null values in field may be responsible. " & ex.Message)
                                         dHabArea = 0
                                     End Try
@@ -6532,86 +6620,31 @@ Public Class Analysis
                                     classComparer = New FindStatsClassPredicate(sClass)
                                     ' use the layer and sink ID to get a refined list of habitat stats for 
                                     ' this sink, layer combo
-                                    iStatsMatrixIndex = lStatsMatrix.FindIndex(AddressOf classComparer.CompareStatsClass)
+                                    iStatsMatrixIndex = lHabStatsMatrix.FindIndex(AddressOf classComparer.CompareStatsClass)
                                     If iStatsMatrixIndex = -1 Then
                                         bClassFound = False
-                                        pStatisticsObject = New StatisticsObject(sClass, dHabArea)
-                                        lStatsMatrix.Add(pStatisticsObject)
+                                        pHabStatisticsObject = New HabStatisticsObject(sClass, dHabArea)
+                                        lHabStatsMatrix.Add(pHabStatisticsObject)
                                     Else
                                         bClassFound = True
-                                        lStatsMatrix(iStatsMatrixIndex).Quantity = lStatsMatrix(iStatsMatrixIndex).Quantity + dHabArea
+                                        lHabStatsMatrix(iStatsMatrixIndex).HabQuantity = lHabStatsMatrix(iStatsMatrixIndex).HabQuantity + dHabArea
                                     End If
-
-                                    ' Check if the unique class exists in the object list yet
-                                    ' if it doesn't trigger flag or add it... 
-
-                                    '' k starts at 1 because the first item in the list will just be column
-                                    '' headings
-                                    'For k = 1 To lStatsMatrix.Count - 1
-                                    '    'vMatClmnVl = mHabClassVals(0, k) vb6
-                                    '    sMatrixVal = lStatsMatrix(k).UniqueClass
-                                    '    If Len(sFeatClassVal) <> 0 And Len(sMatrixVal) <> 0 Then
-                                    '        If sMatrixVal = sFeatClassVal Then
-
-                                    '            ' Get the summary field and add the value to the
-                                    '            ' total for habitat area.
-                                    '            ' ** ==> Multiple fields could be added here in a 'for' loop.
-                                    '            'lFieldVal = pFields.FindField(m_aHabSumFld(j))
-                                    '            ' Insert into the corresponding column of the second
-                                    '            ' row the updated habitat area measurement.
-                                    '            'mHabClassVals(1, k) = mHabClassVals(1, k) + lHabArea vb6
-                                    '            lStatsMatrix(k).Quantity = lStatsMatrix(k).Quantity + dHabArea
-                                    '            sTemp = lStatsMatrix(k).UniqueClass.ToString
-                                    '        End If
-                                    '        'ElseIf Len(sFeatClassVal) <>  Then
-                                    '    End If
-                                    'Next ' unique habitat class
 
                                     pFeature = pFeatureCursor.NextFeature
 
                                 Loop     ' selected feature
-
-                                'k = 0
-                                'Dim dTemp As Double
-                                'For k = 0 To lStatsMatrix.Count - 1
-                                '    Dim sTemp2 As String = lStatsMatrix(k).UniqueClass
-                                '    dTemp = lStatsMatrix(k).Quantity
-                                'Next
-
                             End If ' There is a selection set
 
-                            '' Print Quantity Field
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Regular)
-                            'pResultsForm.txtRichResults.AppendText("        Quantity Field (" + sUnit + "): ")
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Italic)
-                            'pResultsForm.txtRichResults.AppendText(lLayersFields(j).QuanField + Environment.NewLine)
-
-                            '' Print Class Field
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Regular)
-                            'pResultsForm.txtRichResults.AppendText("        Class Field: ")
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Italic)
-                            'pResultsForm.txtRichResults.AppendText(lLayersFields(j).ClsField + Environment.NewLine)
-
-                            '' add 'columns' for each
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Regular)
-                            'pResultsForm.txtRichResults.AppendText("        <class> / <habitat>" + Environment.NewLine)
-
-                            'If bDockWin = True Then
-                            '    If containedBox IsNot Nothing Then
-                            '        containedBox.Items.Add("   Quantity Field: " + lLayersFields(j).QuanField)
-                            '        containedBox.Items.Add("      Class Field: " + lLayersFields(j).ClsField)
-                            '    End If
-                            'End If ' bDockWin True
-
+                           
                             ' If there are items in the stats matrix
-                            If lStatsMatrix.Count <> 0 Then
+                            If lHabStatsMatrix.Count <> 0 Then
                                 k = 1
                                 ' For each unique value in the matrix
                                 ' (always skip first row of matrix as it is the 'column headings')
-                                For k = 1 To lStatsMatrix.Count - 1
+                                For k = 1 To lHabStatsMatrix.Count - 1
                                     'If bDBF = True Then
 
-                                    pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                                    pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
                                     With pHabStatsObject_2
                                         .Layer = pFeatureLayer.Name
                                         .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -6621,15 +6654,259 @@ Public Class Analysis
                                         .Sink = f_sOutID
                                         .SinkEID = f_siOutEID
                                         .Direction = sDirection2
+                                        .LengthOrHabitat = "Habitat"
                                         .TotalImmedPath = sHabTypeKeyword
-                                        .UniqueClass = CStr(lStatsMatrix(k).UniqueClass)
-                                        .ClassName = CStr(lLayersFields(j).ClsField)
-                                        .Quantity = lStatsMatrix(k).Quantity
+                                        .UniqueClass = CStr(lHabStatsMatrix(k).UniqueHabClass)
+                                        .ClassName = CStr(lLineLayersFields(j).HabClsField)
+                                        .Quantity = lHabStatsMatrix(k).HabQuantity
                                         .Unit = sUnit
                                     End With
                                     lHabStatsList.Add(pHabStatsObject_2)
 
-                                    'End If
+                                Next
+
+
+                            Else ' If there are no statistics
+
+                                pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                                With pHabStatsObject_2
+                                    .Layer = pFeatureLayer.Name
+                                    .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
+                                    .bID = ID
+                                    .bEID = iEID
+                                    .bType = sType
+                                    .Sink = f_sOutID
+                                    .SinkEID = f_siOutEID
+                                    .Direction = sDirection
+                                    .LengthOrHabitat = "Habitat"
+                                    .TotalImmedPath = sHabTypeKeyword
+                                    .UniqueClass = "none"
+                                    .ClassName = CStr(lLineLayersFields(j).HabClsField)
+                                    .Quantity = 0.0
+                                    .Unit = sUnit
+                                End With
+                                lHabStatsList.Add(pHabStatsObject_2)
+
+                            End If ' There are items in the statsmatrix
+
+                        Else   ' if the habitat class case field is not found
+
+                            dTotalArea = 0
+
+                            If pFeatureSelection.SelectionSet.Count <> 0 Then
+
+                                pFeatureSelection.SelectionSet.Search(Nothing, False, pCursor)
+
+                                pFeatureCursor = CType(pCursor, IFeatureCursor)
+                                pFeature = pFeatureCursor.NextFeature
+
+                                ' Get the summary field and add the value to the
+                                ' total for habitat area.
+                                ' ** ==> Multiple fields could be added here in a 'for' loop.
+
+                                iFieldVal = pFeatureCursor.FindField(lLineLayersFields(j).HabQuanField)
+
+                                ' For each selected feature
+                                m = 1
+                                Do While Not pFeature Is Nothing
+                                    Try
+                                        vTemp = pFeature.Value(iFieldVal)
+                                    Catch ex As Exception
+                                        MsgBox("Could not convert quantity field found in " + lLineLayersFields(j).Layer.ToString + _
+                                               " was not convertible to type 'double'.  Null values in field may be responsible. " & ex.Message)
+                                        vTemp = 0
+                                    End Try
+                                    Try
+                                        dTempQuan = Convert.ToDouble(vTemp)
+                                    Catch ex As Exception
+                                        MsgBox("Could not convert the habitat quantity value found in the" + _
+                                        lLineLayersFields(j).Layer.ToString + ". Was not convertable to type 'double'." + _
+                                        ex.Message)
+                                        dTempQuan = 0
+                                    End Try
+                                    ' Insert into the corresponding column of the second
+                                    ' row the updated habitat area measurement.
+                                    dTotalArea = dTotalArea + dTempQuan
+                                    pFeature = pFeatureCursor.NextFeature
+                                Loop     ' selected feature
+                            End If ' there are selected features
+
+                            ' If DBF tables are to be output
+                            'If bDBF = True Then
+
+                            pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                            With pHabStatsObject_2
+                                .Layer = pFeatureLayer.Name
+                                .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
+                                .bID = ID
+                                .bEID = iEID
+                                .bType = sType
+                                .Sink = f_sOutID
+                                .SinkEID = f_siOutEID
+                                .Direction = sDirection2
+                                .LengthOrHabitat = "Habitat"
+                                .TotalImmedPath = sHabTypeKeyword
+                                .UniqueClass = "none"
+                                .ClassName = CStr(lLineLayersFields(j).HabClsField)
+                                .Quantity = dTotalArea
+                                .Unit = sUnit
+                            End With
+                            lHabStatsList.Add(pHabStatsObject_2)
+
+
+                        End If ' found habitat class field in layer
+
+                        ' Insert loop for retrieving line length statistics
+                        ' 
+
+
+
+                        ' increment the loop counter for
+                        iLoopCount = iLoopCount + 1
+
+                    End If     ' feature layer matches hab class layer
+                Next    ' line layer
+
+                ' ##########################################################
+                ' ##########################################################
+                'Sep 2020 - separate loops for polys and lines.
+                '       not efficient, but easiest and running short on time. 
+
+                j = 0
+                For j = 0 To lPolyLayersFields.Count - 1
+                    If lPolyLayersFields(j).Layer = pFeatureLayer.Name Then
+
+                        ' Get the Units of measure, if any
+                        sUnit = lPolyLayersFields(j).HabUnitField
+                        If sUnit = "Metres" Then
+                            sUnit = "m"
+                        ElseIf sUnit = "Kilometres" Then
+                            sUnit = "km"
+                        ElseIf sUnit = "Square Metres" Then
+                            sUnit = "m^2"
+                        ElseIf sUnit = "Feet" Then
+                            sUnit = "ft"
+                        ElseIf sUnit = "Miles" Then
+                            sUnit = "mi"
+                        ElseIf sUnit = "Square Miles" Then
+                            sUnit = "mi^2"
+                        ElseIf sUnit = "Hectares" Then
+                            sUnit = "ha"
+                        ElseIf sUnit = "Acres" Then
+                            sUnit = "ac"
+                        ElseIf sUnit = "Hectometres" Then
+                            sUnit = "hm"
+                        ElseIf sUnit = "Dekametres" Then
+                            sUnit = "dm"
+                        ElseIf sUnit = "Square Kilometres" Then
+                            sUnit = "km^2"
+                        Else
+                            sUnit = "n/a"
+                        End If
+
+                        iClassCheckTemp = pFields.FindField(lPolyLayersFields(j).HabClsField)
+                        'If pFields.FindField(lLayersFields(j).ClsField) <> -1 Then
+                        If iClassCheckTemp <> -1 Then
+
+                            ' Reset the stats objects
+                            pDataStats = New DataStatistics
+                            pHabStatisticsObject = New HabStatisticsObject(Nothing, Nothing)
+                            ' Clear the statsMatrix
+                            lHabStatsMatrix = New List(Of HabStatisticsObject)
+
+                            If pFeatureSelection.SelectionSet.Count <> 0 Then
+                                pSelectionSet.Search(Nothing, False, pCursor)
+
+                                pHabStatisticsObject = New HabStatisticsObject(Nothing, Nothing)
+                                With pHabStatisticsObject
+                                    .UniqueHabClass = "Classes"
+                                    .HabQuantity = Nothing '***
+                                End With
+                                lHabStatsMatrix.Add(pHabStatisticsObject)
+
+                                pSelectionSet.Search(Nothing, False, pCursor) ' THIS LINE MAY BE REDUNDANT (SEE ABOVE)
+                                pFeatureCursor = CType(pCursor, IFeatureCursor)
+
+                                pFeature = pFeatureCursor.NextFeature                            ' For each selected feature
+                                Do While Not pFeature Is Nothing
+                                    'pFields = pFeature.Fields  '** removed because should be redundant
+
+                                    ' The habitat class field could be a number or a string
+                                    ' so the variable used to hold it is an ambiguous object (variant)
+                                    vFeatHbClsVl = pFeature.Value(pFields.FindField(lPolyLayersFields(j).HabClsField))
+
+                                    ' Loop through each unique habitat class again
+                                    ' and check if it matches the class value of the feature
+                                    k = 1
+                                    bClassFound = False
+                                    iStatsMatrixIndex = 0
+
+                                    Try
+                                        sClass = Convert.ToString(vFeatHbClsVl)
+                                    Catch ex As Exception
+                                        MsgBox("The Habitat Class found in the " & lPolyLayersFields(j).Layer & " was not convertible" _
+                                        & " to type 'string'.  " & ex.Message)
+                                        sClass = "not set"
+                                    End Try
+                                    If sClass = "" Then
+                                        sClass = "not set"
+                                    End If
+
+                                    vHabTemp = pFeature.Value(pFields.FindField(lPolyLayersFields(j).HabQuanField))
+
+                                    Try
+                                        dHabArea = Convert.ToDouble(vHabTemp)
+                                    Catch ex As Exception
+                                        MsgBox("The Habitat Quantity found in the " & lPolyLayersFields(j).Layer & " was not convertible" _
+                                        & " to type 'double'.  Null values in field may be responsible. " & ex.Message)
+                                        dHabArea = 0
+                                    End Try
+
+                                    classComparer = New FindStatsClassPredicate(sClass)
+                                    ' use the layer and sink ID to get a refined list of habitat stats for 
+                                    ' this sink, layer combo
+                                    iStatsMatrixIndex = lHabStatsMatrix.FindIndex(AddressOf classComparer.CompareStatsClass)
+                                    If iStatsMatrixIndex = -1 Then
+                                        bClassFound = False
+                                        pHabStatisticsObject = New HabStatisticsObject(sClass, dHabArea)
+                                        lHabStatsMatrix.Add(pHabStatisticsObject)
+                                    Else
+                                        bClassFound = True
+                                        lHabStatsMatrix(iStatsMatrixIndex).HabQuantity = lHabStatsMatrix(iStatsMatrixIndex).HabQuantity + dHabArea
+                                    End If
+
+                                    pFeature = pFeatureCursor.NextFeature
+
+                                Loop     ' selected feature
+                            End If ' There is a selection set
+
+
+                            ' If there are items in the stats matrix
+                            If lHabStatsMatrix.Count <> 0 Then
+                                k = 1
+                                ' For each unique value in the matrix
+                                ' (always skip first row of matrix as it is the 'column headings')
+                                For k = 1 To lHabStatsMatrix.Count - 1
+                                    'If bDBF = True Then
+
+                                    pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                                    With pHabStatsObject_2
+                                        .Layer = pFeatureLayer.Name
+                                        .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
+                                        .bID = ID
+                                        .bEID = iEID
+                                        .bType = sType
+                                        .Sink = f_sOutID
+                                        .SinkEID = f_siOutEID
+                                        .Direction = sDirection2
+                                        .LengthOrHabitat = "Habitat"
+                                        .TotalImmedPath = sHabTypeKeyword
+                                        .UniqueClass = CStr(lHabStatsMatrix(k).UniqueHabClass)
+                                        .ClassName = CStr(lPolyLayersFields(j).HabClsField)
+                                        .Quantity = lHabStatsMatrix(k).HabQuantity
+                                        .Unit = sUnit
+                                    End With
+                                    lHabStatsList.Add(pHabStatsObject_2)
 
                                     If sUnit = "n/a" Then
                                         'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Regular)
@@ -6640,13 +6917,10 @@ Public Class Analysis
                                     End If
                                 Next
 
-                                ' Insert a line break
-                                'pResultsForm.txtRichResults.AppendText(Environment.NewLine)
 
                             Else ' If there are no statistics
-                                'If bDBF = True Then
 
-                                pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                                pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
                                 With pHabStatsObject_2
                                     .Layer = pFeatureLayer.Name
                                     .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -6656,9 +6930,10 @@ Public Class Analysis
                                     .Sink = f_sOutID
                                     .SinkEID = f_siOutEID
                                     .Direction = sDirection
+                                    .LengthOrHabitat = "Habitat"
                                     .TotalImmedPath = sHabTypeKeyword
                                     .UniqueClass = "none"
-                                    .ClassName = CStr(lLayersFields(j).ClsField)
+                                    .ClassName = CStr(lPolyLayersFields(j).HabClsField)
                                     .Quantity = 0.0
                                     .Unit = sUnit
                                 End With
@@ -6674,32 +6949,9 @@ Public Class Analysis
                                     'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Regular)
                                     'pResultsForm.txtRichResults.AppendText("         none    0.00" & sUnit & Environment.NewLine)
                                 End If
-
-
-                                'If bDockWin = True Then
-                                '    If containedBox IsNot Nothing Then
-                                '        If sUnit = "n/a" Then
-                                '            containedBox.Items.Add("            " & "0.00")
-                                '        Else
-                                '            containedBox.Items.Add("            " & "0.00" & sUnit)
-                                '        End If
-                                '    End If
-                                'End If
                             End If ' There are items in the statsmatrix
 
-                            '' Insert a line break
-                            'pResultsForm.txtRichResults.AppendText(Environment.NewLine)
-
                         Else   ' if the habitat class case field is not found
-
-
-                            '' Reset the stats objects
-                            ''---------TEMP----------
-                            'pDataStats = New DataStatistics
-                            'pStatisticsObject = New StatisticsObject(Nothing, Nothing)
-                            '' Clear the statsMatrix
-                            'lStatsMatrix = New List(Of StatisticsObject)
-                            '' -------- END TEMP -----------
 
                             dTotalArea = 0
 
@@ -6714,7 +6966,7 @@ Public Class Analysis
                                 ' total for habitat area.
                                 ' ** ==> Multiple fields could be added here in a 'for' loop.
 
-                                iFieldVal = pFeatureCursor.FindField(lLayersFields(j).QuanField)
+                                iFieldVal = pFeatureCursor.FindField(lPolyLayersFields(j).HabQuanField)
 
                                 ' For each selected feature
                                 m = 1
@@ -6722,7 +6974,7 @@ Public Class Analysis
                                     Try
                                         vTemp = pFeature.Value(iFieldVal)
                                     Catch ex As Exception
-                                        MsgBox("Could not convert quantity field found in " + lLayersFields(j).Layer.ToString + _
+                                        MsgBox("Could not convert quantity field found in " + lPolyLayersFields(j).Layer.ToString + _
                                                " was not convertible to type 'double'.  Null values in field may be responsible. " & ex.Message)
                                         vTemp = 0
                                     End Try
@@ -6730,7 +6982,7 @@ Public Class Analysis
                                         dTempQuan = Convert.ToDouble(vTemp)
                                     Catch ex As Exception
                                         MsgBox("Could not convert the habitat quantity value found in the" + _
-                                        lLayersFields(j).Layer.ToString + ". Was not convertable to type 'double'." + _
+                                        lPolyLayersFields(j).Layer.ToString + ". Was not convertable to type 'double'." + _
                                         ex.Message)
                                         dTempQuan = 0
                                     End Try
@@ -6744,7 +6996,7 @@ Public Class Analysis
                             ' If DBF tables are to be output
                             'If bDBF = True Then
 
-                            pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                            pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
                             With pHabStatsObject_2
                                 .Layer = pFeatureLayer.Name
                                 .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -6754,25 +7006,15 @@ Public Class Analysis
                                 .Sink = f_sOutID
                                 .SinkEID = f_siOutEID
                                 .Direction = sDirection2
+                                .LengthOrHabitat = "Habitat"
                                 .TotalImmedPath = sHabTypeKeyword
                                 .UniqueClass = "none"
-                                .ClassName = CStr(lLayersFields(j).ClsField)
+                                .ClassName = CStr(lPolyLayersFields(j).HabClsField)
                                 .Quantity = dTotalArea
                                 .Unit = sUnit
                             End With
                             lHabStatsList.Add(pHabStatsObject_2)
 
-                            'End If ' DBF tables output
-
-                            '' Print Quantity Field
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Regular)
-                            'pResultsForm.txtRichResults.AppendText("        Quantity Field (" + sUnit + "): ")
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Italic)
-                            'pResultsForm.txtRichResults.AppendText(lLayersFields(j).QuanField + Environment.NewLine)
-
-                            '' add 'columns' for each
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Regular)
-                            'pResultsForm.txtRichResults.AppendText("        <habitat>" + Environment.NewLine)
 
                             If sUnit = "n/a" Then
                                 'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Regular)
@@ -6782,20 +7024,6 @@ Public Class Analysis
                                 'pResultsForm.txtRichResults.AppendText("        " & Format(dTotalArea, "0.00") & sUnit & Environment.NewLine)
                             End If
 
-                            'If bDockWin = True Then
-                            '    If containedBox IsNot Nothing Then
-                            '        containedBox.Items.Add("   Quantity Field: " + lLayersFields(j).QuanField)
-                            '        If sUnit = "n/a" Then
-                            '            containedBox.Items.Add("            " & Format(dTotalArea, "0.00"))
-                            '        Else
-                            '            containedBox.Items.Add("            " & Format(dTotalArea, "0.00") & sUnit)
-                            '        End If
-                            '    End If
-
-                            'End If
-
-                            '' Insert a line break
-                            'pResultsForm.txtRichResults.AppendText(Environment.NewLine)
 
                         End If ' found habitat class field in layer
 
@@ -6803,7 +7031,10 @@ Public Class Analysis
                         iLoopCount = iLoopCount + 1
 
                     End If     ' feature layer matches hab class layer
-                Next           ' habitat layer
+                Next    ' poly layer
+
+
+
             End If ' featurelayer is valid
             pFeatureLayer = CType(pEnumLayer.Next(), IFeatureLayer)
         Loop
