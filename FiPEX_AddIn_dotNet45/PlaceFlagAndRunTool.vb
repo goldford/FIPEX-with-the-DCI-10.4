@@ -482,6 +482,7 @@ Public Class PlaceFlagAndRunTool
         Dim pBarrierIDObj As New BarrierIDObj(Nothing, Nothing, Nothing, Nothing, Nothing)
         Dim bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab As Boolean
 
+
         Dim lHabStatsList As List(Of StatisticsObject_2) = New List(Of StatisticsObject_2)
         Dim iBarrierIDs As Integer
         Dim sBarrierIDLayer, sBarrierIDField As String
@@ -3251,11 +3252,11 @@ Public Class PlaceFlagAndRunTool
 
                         For k = 0 To iBarrierIds - 1
                             If lBarrierIDs.Item(k).Layer = pFLayer.Name Then
-                                MsgBox("The Layer in TOC: " + CStr(pFLayer.Name))
-                                MsgBox("The Layer in List: " + CStr(lBarrierIDs.Item(k).Layer))
+                                'MsgBox("The Layer in TOC: " + CStr(pFLayer.Name))
+                                'MsgBox("The Layer in List: " + CStr(lBarrierIDs.Item(k).Layer))
 
                                 sBarrierPermField = lBarrierIDs.Item(k).PermField
-                                MsgBox("Permeability field: " + CStr(sBarrierPermField))
+                                'MsgBox("Permeability field: " + CStr(sBarrierPermField))
 
                                 If pFields.FindField(sBarrierPermField) <> -1 Then
                                     ''MsgBox("Debug:C12")
@@ -3357,8 +3358,8 @@ Public Class PlaceFlagAndRunTool
                         .LengthField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthField" + j.ToString))
                         .LengthUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthUnits" + j.ToString))
 
-                        .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
-                        .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
+                        .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabClassField" + j.ToString))
+                        .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabQuanField" + j.ToString))
                         .HabUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabUnits" + j.ToString))
                     End With
                     ' add to the module level list

@@ -40,6 +40,10 @@ Partial Class frmRunAdvancedAnalysis
         Me.chkUpHab = New System.Windows.Forms.CheckBox()
         Me.frmLayersInclude = New System.Windows.Forms.GroupBox()
         Me.GroupBox8 = New System.Windows.Forms.GroupBox()
+        Me.lstLineLengthUnits = New System.Windows.Forms.ListBox()
+        Me.lstLineLength = New System.Windows.Forms.ListBox()
+        Me.Label34 = New System.Windows.Forms.Label()
+        Me.Label33 = New System.Windows.Forms.Label()
         Me.lstLineLayers = New System.Windows.Forms.CheckedListBox()
         Me.Label18 = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -146,10 +150,9 @@ Partial Class frmRunAdvancedAnalysis
         Me.chkDCI = New System.Windows.Forms.CheckBox()
         Me.PictureBox6 = New System.Windows.Forms.PictureBox()
         Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label33 = New System.Windows.Forms.Label()
-        Me.Label34 = New System.Windows.Forms.Label()
-        Me.lstLineLength = New System.Windows.Forms.ListBox()
-        Me.lstLineLengthUnits = New System.Windows.Forms.ListBox()
+        Me.rdoHabLength = New System.Windows.Forms.RadioButton()
+        Me.rdoHabArea = New System.Windows.Forms.RadioButton()
+        Me.GroupBox13 = New System.Windows.Forms.GroupBox()
         Me.TabBarriers.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -179,6 +182,7 @@ Partial Class frmRunAdvancedAnalysis
         CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox12.SuspendLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox13.SuspendLayout()
         Me.SuspendLayout()
         '
         'cmdRun
@@ -396,6 +400,47 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox8.TabIndex = 26
         Me.GroupBox8.TabStop = False
         Me.GroupBox8.Text = "Line Layers"
+        '
+        'lstLineLengthUnits
+        '
+        Me.lstLineLengthUnits.BackColor = System.Drawing.SystemColors.InactiveBorder
+        Me.lstLineLengthUnits.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstLineLengthUnits.FormattingEnabled = True
+        Me.lstLineLengthUnits.ItemHeight = 20
+        Me.lstLineLengthUnits.Location = New System.Drawing.Point(639, 53)
+        Me.lstLineLengthUnits.Name = "lstLineLengthUnits"
+        Me.lstLineLengthUnits.Size = New System.Drawing.Size(165, 20)
+        Me.lstLineLengthUnits.TabIndex = 27
+        '
+        'lstLineLength
+        '
+        Me.lstLineLength.BackColor = System.Drawing.SystemColors.Info
+        Me.lstLineLength.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstLineLength.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lstLineLength.FormattingEnabled = True
+        Me.lstLineLength.ItemHeight = 20
+        Me.lstLineLength.Location = New System.Drawing.Point(639, 28)
+        Me.lstLineLength.Name = "lstLineLength"
+        Me.lstLineLength.Size = New System.Drawing.Size(169, 20)
+        Me.lstLineLength.TabIndex = 26
+        '
+        'Label34
+        '
+        Me.Label34.AutoSize = True
+        Me.Label34.Location = New System.Drawing.Point(447, 53)
+        Me.Label34.Name = "Label34"
+        Me.Label34.Size = New System.Drawing.Size(179, 20)
+        Me.Label34.TabIndex = 25
+        Me.Label34.Text = "Length / Distance Units:"
+        '
+        'Label33
+        '
+        Me.Label33.AutoSize = True
+        Me.Label33.Location = New System.Drawing.Point(450, 24)
+        Me.Label33.Name = "Label33"
+        Me.Label33.Size = New System.Drawing.Size(182, 20)
+        Me.Label33.TabIndex = 24
+        Me.Label33.Text = "Length / Distance Field*:"
         '
         'lstLineLayers
         '
@@ -1388,6 +1433,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'GroupBox7
         '
+        Me.GroupBox7.Controls.Add(Me.GroupBox13)
         Me.GroupBox7.Controls.Add(Me.GroupBox11)
         Me.GroupBox7.Controls.Add(Me.chkDCISectional)
         Me.GroupBox7.Controls.Add(Me.cmdDCIModelDir)
@@ -1400,7 +1446,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox7.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.GroupBox7.Name = "GroupBox7"
         Me.GroupBox7.Padding = New System.Windows.Forms.Padding(4, 5, 4, 5)
-        Me.GroupBox7.Size = New System.Drawing.Size(876, 511)
+        Me.GroupBox7.Size = New System.Drawing.Size(853, 511)
         Me.GroupBox7.TabIndex = 12
         Me.GroupBox7.TabStop = False
         Me.GroupBox7.Text = "DCI Calculation in R 3.6.1"
@@ -1415,7 +1461,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox11.Controls.Add(Me.Label27)
         Me.GroupBox11.Location = New System.Drawing.Point(30, 174)
         Me.GroupBox11.Name = "GroupBox11"
-        Me.GroupBox11.Size = New System.Drawing.Size(796, 318)
+        Me.GroupBox11.Size = New System.Drawing.Size(770, 318)
         Me.GroupBox11.TabIndex = 14
         Me.GroupBox11.TabStop = False
         Me.GroupBox11.Text = "Distance Limits"
@@ -1536,7 +1582,7 @@ Partial Class frmRunAdvancedAnalysis
         'chkDCISectional
         '
         Me.chkDCISectional.AutoSize = True
-        Me.chkDCISectional.Location = New System.Drawing.Point(279, 29)
+        Me.chkDCISectional.Location = New System.Drawing.Point(252, 29)
         Me.chkDCISectional.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.chkDCISectional.Name = "chkDCISectional"
         Me.chkDCISectional.Size = New System.Drawing.Size(214, 24)
@@ -1559,7 +1605,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.txtDCIModelDir.Location = New System.Drawing.Point(233, 124)
         Me.txtDCIModelDir.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.txtDCIModelDir.Name = "txtDCIModelDir"
-        Me.txtDCIModelDir.Size = New System.Drawing.Size(486, 26)
+        Me.txtDCIModelDir.Size = New System.Drawing.Size(299, 26)
         Me.txtDCIModelDir.TabIndex = 3
         '
         'txtRInstallDir
@@ -1567,7 +1613,7 @@ Partial Class frmRunAdvancedAnalysis
         Me.txtRInstallDir.Location = New System.Drawing.Point(233, 79)
         Me.txtRInstallDir.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.txtRInstallDir.Name = "txtRInstallDir"
-        Me.txtRInstallDir.Size = New System.Drawing.Size(486, 26)
+        Me.txtRInstallDir.Size = New System.Drawing.Size(299, 26)
         Me.txtRInstallDir.TabIndex = 2
         '
         'cmdRInstallDir
@@ -1613,46 +1659,38 @@ Partial Class frmRunAdvancedAnalysis
         Me.Label3.TabIndex = 24
         Me.Label3.Text = "(* = Required)"
         '
-        'Label33
+        'rdoHabLength
         '
-        Me.Label33.AutoSize = True
-        Me.Label33.Location = New System.Drawing.Point(450, 24)
-        Me.Label33.Name = "Label33"
-        Me.Label33.Size = New System.Drawing.Size(182, 20)
-        Me.Label33.TabIndex = 24
-        Me.Label33.Text = "Length / Distance Field*:"
+        Me.rdoHabLength.AutoSize = True
+        Me.rdoHabLength.Location = New System.Drawing.Point(32, 34)
+        Me.rdoHabLength.Name = "rdoHabLength"
+        Me.rdoHabLength.Size = New System.Drawing.Size(117, 24)
+        Me.rdoHabLength.TabIndex = 15
+        Me.rdoHabLength.TabStop = True
+        Me.rdoHabLength.Text = "Use Length"
+        Me.rdoHabLength.UseVisualStyleBackColor = True
         '
-        'Label34
+        'rdoHabArea
         '
-        Me.Label34.AutoSize = True
-        Me.Label34.Location = New System.Drawing.Point(447, 53)
-        Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(179, 20)
-        Me.Label34.TabIndex = 25
-        Me.Label34.Text = "Length / Distance Units:"
+        Me.rdoHabArea.AutoSize = True
+        Me.rdoHabArea.Location = New System.Drawing.Point(32, 74)
+        Me.rdoHabArea.Name = "rdoHabArea"
+        Me.rdoHabArea.Size = New System.Drawing.Size(101, 24)
+        Me.rdoHabArea.TabIndex = 16
+        Me.rdoHabArea.TabStop = True
+        Me.rdoHabArea.Text = "Use Area"
+        Me.rdoHabArea.UseVisualStyleBackColor = True
         '
-        'lstLineLength
+        'GroupBox13
         '
-        Me.lstLineLength.BackColor = System.Drawing.SystemColors.Info
-        Me.lstLineLength.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstLineLength.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lstLineLength.FormattingEnabled = True
-        Me.lstLineLength.ItemHeight = 20
-        Me.lstLineLength.Location = New System.Drawing.Point(639, 28)
-        Me.lstLineLength.Name = "lstLineLength"
-        Me.lstLineLength.Size = New System.Drawing.Size(169, 20)
-        Me.lstLineLength.TabIndex = 26
-        '
-        'lstLineLengthUnits
-        '
-        Me.lstLineLengthUnits.BackColor = System.Drawing.SystemColors.InactiveBorder
-        Me.lstLineLengthUnits.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstLineLengthUnits.FormattingEnabled = True
-        Me.lstLineLengthUnits.ItemHeight = 20
-        Me.lstLineLengthUnits.Location = New System.Drawing.Point(639, 53)
-        Me.lstLineLengthUnits.Name = "lstLineLengthUnits"
-        Me.lstLineLengthUnits.Size = New System.Drawing.Size(165, 20)
-        Me.lstLineLengthUnits.TabIndex = 27
+        Me.GroupBox13.Controls.Add(Me.rdoHabArea)
+        Me.GroupBox13.Controls.Add(Me.rdoHabLength)
+        Me.GroupBox13.Location = New System.Drawing.Point(549, 29)
+        Me.GroupBox13.Name = "GroupBox13"
+        Me.GroupBox13.Size = New System.Drawing.Size(244, 123)
+        Me.GroupBox13.TabIndex = 17
+        Me.GroupBox13.TabStop = False
+        Me.GroupBox13.Text = "Habitat Length or Area for DCI"
         '
         'frmRunAdvancedAnalysis
         '
@@ -1717,6 +1755,8 @@ Partial Class frmRunAdvancedAnalysis
         Me.GroupBox12.ResumeLayout(False)
         Me.GroupBox12.PerformLayout()
         CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox13.ResumeLayout(False)
+        Me.GroupBox13.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -1848,4 +1888,7 @@ Partial Class frmRunAdvancedAnalysis
     Friend WithEvents Label33 As System.Windows.Forms.Label
     Friend WithEvents lstLineLengthUnits As System.Windows.Forms.ListBox
     Friend WithEvents lstLineLength As System.Windows.Forms.ListBox
+    Friend WithEvents GroupBox13 As System.Windows.Forms.GroupBox
+    Friend WithEvents rdoHabArea As System.Windows.Forms.RadioButton
+    Friend WithEvents rdoHabLength As System.Windows.Forms.RadioButton
 End Class

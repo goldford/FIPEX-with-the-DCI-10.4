@@ -408,7 +408,8 @@ Public Class Analysis
         Dim bDCI As Boolean = False         ' Calculate DCI?
         Dim bDCISectional As Boolean = False ' Calculate DCI Sectional?
 
-        '2020 
+        '2020
+        Dim bUseHabLength, bUseHabArea As Boolean
         Dim bDistanceLim As Boolean = False
         Dim bDistanceDecay As Boolean = False
         Dim dMaxDist As Double = 0.0
@@ -479,6 +480,18 @@ Public Class Analysis
                 sPrefix = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("TabPrefix"))
 
                 '2020
+                Try
+                    bUseHabLength = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bUseHabLength"))
+                Catch ex As Exception
+                    'MsgBox("Trouble loading FIPEX property UseHabLength. Setting it to True.")
+                    bUseHabLength = True
+                End Try
+                Try
+                    bUseHabArea = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bUseHabArea"))
+                Catch ex As Exception
+                    'MsgBox("Trouble loading FIPEX property bUseHabArea. Setting it to False.")
+                    bUseHabArea = False
+                End Try
                 Try
                     bDistanceDecay = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bDistanceDecay"))
                 Catch ex As Exception
@@ -568,8 +581,8 @@ Public Class Analysis
                             .LengthField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthField" + j.ToString))
                             .LengthUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthUnits" + j.ToString))
 
-                            .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
-                            .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
+                            .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabClassField" + j.ToString))
+                            .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabQuanField" + j.ToString))
                             .HabUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabUnits" + j.ToString))
 
                         End With

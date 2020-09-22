@@ -598,6 +598,8 @@ Public Class FishPassageExtension
 
                     '2020
                     .SetProperty("advconnecttab", Convert.ToBoolean(sDictionary.Item("advconnecttab")))
+                    .SetProperty("bUseHabLength", Convert.ToBoolean(sDictionary.Item("bUseHabLength")))
+                    .SetProperty("bUseHabArea", Convert.ToBoolean(sDictionary.Item("bUseHabArea")))
                     .SetProperty("bDistanceDecay", Convert.ToBoolean(sDictionary.Item("bDistanceDecay")))
                     .SetProperty("bDistanceLim", Convert.ToBoolean(sDictionary.Item("bDistanceLim")))
                     .SetProperty("dMaxDist", Convert.ToDouble(sDictionary.Item("dMaxDist")))
@@ -735,7 +737,9 @@ Public Class FishPassageExtension
                 .SetProperty("sDCIModelDir", Convert.ToString("not set"))
                 .SetProperty("sRInstallDir", Convert.ToString("not set"))
 
-                '2020
+                    '2020
+                    .SetProperty("bUseHabLength", Convert.ToBoolean("True"))
+                    .SetProperty("bUseHabArea", Convert.ToBoolean("False"))
                     .SetProperty("bDistanceDecay", Convert.ToBoolean("False"))
                     .SetProperty("bDistanceLim", Convert.ToBoolean("False"))
                     .SetProperty("dMaxDist", Convert.ToDouble(0))
@@ -775,91 +779,6 @@ Public Class FishPassageExtension
             m_bLoaded = True
         End If
 
-        'If streamCheck = "check" Then
-        '    With pPropset
-        '        .SetProperty("direction", Convert.ToString(Stream.Read()))
-        '        .SetProperty("ordernum", Convert.ToInt32(Stream.Read()))
-        '        .SetProperty("maximum", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("connecttab", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("advconnecttab", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("barrierperm", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("naturalyn", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("dciyn", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("dcisectionalyn", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("sDCIModelDir", Convert.ToString(Stream.Read()))
-        '        .SetProperty("sRInstallDir", Convert.ToString(Stream.Read()))
-        '        .SetProperty("bDBF", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("sGDB", Convert.ToString(Stream.Read()))
-        '        .SetProperty("TabPrefix", Convert.ToString(Stream.Read()))
-
-        '        .SetProperty("UpHab", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("TotalUpHab", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("DownHab", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("TotalDownHab", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("PathDownHab", Convert.ToBoolean(Stream.Read()))
-        '        .SetProperty("TotalPathDownHab", Convert.ToBoolean(Stream.Read()))
-
-        '        .SetProperty("numPolys", Convert.ToInt32(Stream.Read()))
-
-        '        ' Add each polygon and respective hab quan and qual fields as a property
-        '        ' Add each habitat class and quantity field as property
-        '        iPolysCount = Convert.ToInt32(pPropset.GetProperty("numPolys"))
-        '        If iPolysCount > 0 Then
-        '            For i = 0 To iPolysCount - 1
-        '                .SetProperty("IncPoly" + i.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("PolyClassField" + i.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("PolyQuanField" + i.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("PolyUnitField" + i.ToString, Convert.ToString(Stream.Read()))
-        '            Next
-        '        End If
-
-        '        .SetProperty("numLines", Convert.ToInt32(Stream.Read()))
-
-        '        ' Add each line included as a property
-        '        ' Add each habitat class and quantity field as property
-        '        iLinesCount = Convert.ToInt32(pPropset.GetProperty("numLines"))
-        '        If iLinesCount > 0 Then
-        '            For j = 0 To iLinesCount - 1
-        '                .SetProperty("IncLine" + j.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("LineClassField" + j.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("LineQuanField" + j.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("LineUnitField" + j.ToString, Convert.ToString(Stream.Read()))
-        '            Next
-        '        End If
-
-        '        .SetProperty("numExclusions", Convert.ToInt32(Stream.Read()))
-
-        '        ' Add each line included as a property
-        '        ' Add each habitat class and quantity field as property
-        '        iExclusions = Convert.ToInt32(pPropset.GetProperty("numExclusions"))
-        '        If iExclusions > 0 Then
-        '            For i = 0 To iExclusions - 1
-        '                .SetProperty("ExcldLayer" + i.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("ExcldFeature" + i.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("ExcldValue" + i.ToString, Convert.ToString(Stream.Read()))
-        '            Next
-        '        End If
-
-        '        .SetProperty("numBarrierIDs", Convert.ToInt32(Stream.Read()))
-
-        '        ' Add each line included as a property
-        '        ' Add each habitat class and quantity field as property
-        '        iBarrierIDs = Convert.ToInt32(pPropset.GetProperty("numBarrierIDs"))
-        '        If iBarrierIDs > 0 Then
-        '            For i = 0 To iBarrierIDs - 1
-        '                .SetProperty("BarrierIDLayer" + i.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("BarrierIDField" + i.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("BarrierPermField" + i.ToString, Convert.ToString(Stream.Read()))
-        '                .SetProperty("BarrierNaturalYNField" + i.ToString, Convert.ToString(Stream.Read()))
-        '            Next
-        '        End If
-
-        '    End With
-        '    'End If
-        '    bLoaded = True
-        'End If
-        ''MessageBox.Show("setting1: " + pPropset.GetProperty("setting1"))
-        'Marshal.ReleaseComObject(Stream) 'this releases the data stream 
     End Sub
     ' this sub is run at the time the document is saved
     Protected Overloads Overrides Sub OnSave(ByVal outStrm As Stream)
@@ -1024,6 +943,10 @@ Public Class FishPassageExtension
 
                     '2020
                     sDictionary.Add("advconnecttab", Convert.ToString(pPropset.GetProperty("advconnecttab")))
+
+                    sDictionary.Add("bUseHabLength", Convert.ToString(pPropset.GetProperty("bUseHabLength")))
+                    sDictionary.Add("bUseHabArea", Convert.ToString(pPropset.GetProperty("bUseHabArea")))
+
                     sDictionary.Add("bDistanceDecay", Convert.ToString(pPropset.GetProperty("bDistanceDecay")))
                     sDictionary.Add("bDistanceLim", Convert.ToString(pPropset.GetProperty("bDistanceLim")))
                     sDictionary.Add("dMaxDist", Convert.ToString(pPropset.GetProperty("dMaxDist")))
@@ -1122,47 +1045,210 @@ Public Class FishPassageExtension
                     sDictionary.Add("sGnuWinDir", Convert.ToString(pPropset.GetProperty("sGnuWinDir")))
 
                 Catch ex As Exception
-                    sDictionary.Add("check", "check")
-                    sDictionary.Add("direction", "up")
-                    sDictionary.Add("ordernum", Convert.ToString(999))
-                    sDictionary.Add("maximum", Convert.ToString("True"))
-                    sDictionary.Add("connecttab", Convert.ToString(False))
-                    sDictionary.Add("advconnecttab", Convert.ToString(False))
-                    sDictionary.Add("barrierperm", Convert.ToString(False))
-                    sDictionary.Add("naturalyn", Convert.ToString(False))
-                    sDictionary.Add("dciyn", Convert.ToString(False))
-                    sDictionary.Add("dcisectionalyn", Convert.ToString(False))
-                    sDictionary.Add("sDCIModelDir", "not set")
-                    sDictionary.Add("sRInstallDir", "not set")
+                    ' 2020 added all these tries because when the above code fails
+                    ' some properties have already been set, so adding a second time triggers
+                    ' an unhandled failure
+                    Try
+                        sDictionary.Add("check", "check")
+                    Catch ex1 As Exception
 
-                    '2020
-                    sDictionary.Add("bDistanceDecay", Convert.ToString(False))
-                    sDictionary.Add("bDistanceLim", Convert.ToString(False))
-                    sDictionary.Add("dMaxDist", Convert.ToString(0))
-                    sDictionary.Add("sDDFunction", "none")
-                    sDictionary.Add("advconnecttab", Convert.ToString(False))
+                    End Try
+                    Try
+                        sDictionary.Add("direction", "up")
+                    Catch ex1 As Exception
 
-                    sDictionary.Add("bDBF", Convert.ToString(False))
-                    sDictionary.Add("sGDB", "not set")
-                    sDictionary.Add("TabPrefix", "not set")
-                    sDictionary.Add("UpHab", Convert.ToString(True))
-                    sDictionary.Add("TotalUpHab", Convert.ToString(True))
-                    sDictionary.Add("DownHab", Convert.ToString(False))
-                    sDictionary.Add("TotalDownHab", Convert.ToString(False))
-                    sDictionary.Add("PathDownHab", Convert.ToString(False))
-                    sDictionary.Add("TotalPathDownHab", Convert.ToString(False))
-                    sDictionary.Add("numPolys", Convert.ToString(0))
-                    sDictionary.Add("numLines", Convert.ToString(0))
-                    sDictionary.Add("numExclusions", Convert.ToString(0))
-                    sDictionary.Add("numBarrierIDs", Convert.ToString(0))
-                    sDictionary.Add("barrierEIDsLoadedyn", "false")
-                    sDictionary.Add("numBarrierEIDs", Convert.ToString(0))
-                    sDictionary.Add("flagEIDsLoadedyn", "false")
-                    sDictionary.Add("numFlagEIDs", Convert.ToString(0))
+                    End Try
+                    Try
+                        sDictionary.Add("ordernum", Convert.ToString(999))
+                    Catch ex1 As Exception
 
-                    sDictionary.Add("bGLPKTables", Convert.ToString(False))
-                    sDictionary.Add("sGLPKModelDir", Convert.ToString("not set"))
-                    sDictionary.Add("sGnuWinDir", Convert.ToString("not set"))
+                    End Try
+                    Try
+                        sDictionary.Add("maximum", Convert.ToString("True"))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("connecttab", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("advconnecttab", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("barrierperm", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("naturalyn", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("dciyn", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("dcisectionalyn", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("sDCIModelDir", "not set")
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("sRInstallDir", "not set")
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("bUseHabLength", Convert.ToString(True))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("bUseHabArea", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("bDistanceDecay", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("bDistanceLim", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("dMaxDist", Convert.ToString(0))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("sDDFunction", "none")
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("advconnecttab", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("bDBF", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("sGDB", "not set")
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("TabPrefix", "not set")
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("TabPrefix", "not set")
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("UpHab", Convert.ToString(True))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("TotalUpHab", Convert.ToString(True))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("DownHab", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("TotalDownHab", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("PathDownHab", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("TotalPathDownHab", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("numPolys", Convert.ToString(0))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("numLines", Convert.ToString(0))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("numExclusions", Convert.ToString(0))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("numBarrierIDs", Convert.ToString(0))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("barrierEIDsLoadedyn", "false")
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("numBarrierEIDs", Convert.ToString(0))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("flagEIDsLoadedyn", "false")
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("numFlagEIDs", Convert.ToString(0))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("bGLPKTables", Convert.ToString(False))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("sGLPKModelDir", Convert.ToString("not set"))
+                    Catch ex1 As Exception
+
+                    End Try
+                    Try
+                        sDictionary.Add("sGnuWinDir", Convert.ToString("not set"))
+                    Catch ex1 As Exception
+
+                    End Try
+                    
                 End Try
             Else ' if (for some weird reason) the extension hasn't been loaded
                 '  (the bloaded var is set as false) then save defaults to stream
@@ -1181,6 +1267,8 @@ Public Class FishPassageExtension
                 sDictionary.Add("sRInstallDir", "not set")
 
                 '2020
+                sDictionary.Add("bUseHabLength", Convert.ToString(True))
+                sDictionary.Add("bUseHabArea", Convert.ToString(False))
                 sDictionary.Add("bDistanceDecay", Convert.ToString(False))
                 sDictionary.Add("bDistanceLim", Convert.ToString(False))
                 sDictionary.Add("dMaxDist", Convert.ToString(0))

@@ -106,11 +106,8 @@ Public Class frmRunAdvancedAnalysis
         Dim bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab As Boolean
         Dim sPrefix As String
         Dim sDirection As String
-        Dim bConnectTab As Boolean
-        Dim bBarrierPerm As Boolean
-        Dim bNaturalYN As Boolean
-        Dim bDCI As Boolean
-        Dim bDCISectional As Boolean
+        Dim bConnectTab, bBarrierPerm, bNaturalYN As Boolean
+        Dim bDCISectional, bDCI, bUseHabLength, bUseHabArea As Boolean
 
         '2020
         Dim bAdvConnectTab As Boolean = False
@@ -126,6 +123,7 @@ Public Class frmRunAdvancedAnalysis
         Dim sGnuWinDir As String
 
         Dim i As Integer = 0
+
         ' Set the analysis direction
         If OptUp.Checked = True Then
             sDirection = "up"
@@ -265,6 +263,15 @@ Public Class frmRunAdvancedAnalysis
         Else
             bDCI = False
             sRInstallDir = "n/a"
+        End If
+
+        '2020 
+        If rdoHabLength.Enabled = True Then
+            bUseHabLength = True
+            bUseHabArea = False
+        Else
+            bUseHabLength = False
+            bUseHabArea = True
         End If
 
         '2020
@@ -420,6 +427,8 @@ Public Class frmRunAdvancedAnalysis
         m_FiPEx.pPropset.SetProperty("sDCIModelDir", sDCIModelDir)
 
         '2020
+        m_FiPEx.pPropset.SetProperty("bUseHabLength", bUseHabLength)
+        m_FiPEx.pPropset.SetProperty("bUseHabArea", bUseHabArea)
         m_FiPEx.pPropset.SetProperty("bDistanceLim", bDistanceLim)
         m_FiPEx.pPropset.SetProperty("dMaxDist", dMaxDist)
         m_FiPEx.pPropset.SetProperty("bDistanceDecay", bDistanceDecay)
@@ -483,15 +492,16 @@ Public Class frmRunAdvancedAnalysis
             For i = 0 To m_iLinesCount - 1
                 sIncLayer = "IncLine" + i.ToString
                 sLengthField = "LineLengthField" + i.ToString
-                sLengthUnits = "LineLengthUnitField" + i.ToString
+                sLengthUnits = "LineLengthUnits" + i.ToString
                 sHabQuanField = "LineHabQuanField" + i.ToString
                 sHabUnits = "LineHabUnits" + i.ToString
                 m_FiPEx.pPropset.SetProperty(sIncLayer, m_LLayersFields.Item(i).Layer)
 
                 ' double check the new property names for lines, fix issues
-
-                m_FiPEx.pPropset.SetProperty("LineHabClassField" + i.ToString, m_LLayersFields.Item(i).HabClsField)
+                m_FiPEx.pPropset.SetProperty(sLengthField, m_LLayersFields.Item(i).LengthField)
+                m_FiPEx.pPropset.SetProperty(sLengthUnits, m_LLayersFields.Item(i).LengthUnits)
                 m_FiPEx.pPropset.SetProperty(sHabQuanField, m_LLayersFields.Item(i).HabQuanField)
+                m_FiPEx.pPropset.SetProperty("LineHabClassField" + i.ToString, m_LLayersFields.Item(i).HabClsField)
                 m_FiPEx.pPropset.SetProperty(sHabUnits, m_LLayersFields.Item(i).HabUnits)
             Next
         End If
@@ -618,6 +628,8 @@ Public Class frmRunAdvancedAnalysis
         Dim sDCIModelDir As String = "n/a"
 
         '2020
+        Dim bUseHabLength As Boolean = True
+        Dim bUseHabArea As Boolean = False
         Dim bDistanceLim As Boolean = False
         Dim bDistanceDecay As Boolean = False
         Dim dMaxDist As Double = 0.0
@@ -670,6 +682,8 @@ Public Class frmRunAdvancedAnalysis
         chkDistanceLimit.Enabled = False
         chkDistanceDecay.Enabled = False
         txtMaxDistance.Enabled = False
+        rdoHabArea.Enabled = False
+        rdoHabLength.Enabled = False
         rdoLinear.Enabled = False
         rdoNatExp1.Enabled = False
         rdoCircle.Enabled = False
@@ -757,6 +771,20 @@ Public Class frmRunAdvancedAnalysis
                 sRInstallDir = Convert.ToString(m_FiPEx.pPropset.GetProperty("sRInstallDir"))
 
                 '2020
+
+                Try
+                    bUseHabLength = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bUseHabLength"))
+                Catch ex As Exception
+                    bUseHabLength = False
+                End Try
+
+
+                Try
+                    bUseHabArea = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bUseHabArea"))
+                Catch ex As Exception
+                    bUseHabArea = False
+                End Try
+
                 Try
                     bDistanceDecay = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bDistanceDecay"))
                 Catch ex As Exception
@@ -785,7 +813,6 @@ Public Class frmRunAdvancedAnalysis
                     sDDFunction = "none"
                 End Try
 
-
                 bDBF = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("bDBF"))
                 sGDB = Convert.ToString(m_FiPEx.pPropset.GetProperty("sGDB"))
                 sPrefix = Convert.ToString(m_FiPEx.pPropset.GetProperty("TabPrefix"))
@@ -798,8 +825,8 @@ Public Class frmRunAdvancedAnalysis
                 bTotalPathDownHab = Convert.ToBoolean(m_FiPEx.pPropset.GetProperty("TotalPathDownHab"))
 
                 m_iPolysCount = Convert.ToInt32(m_FiPEx.pPropset.GetProperty("numPolys"))
-                Dim PolyHabLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
-                ' Note: never did start using the property - used the global list variable instead
+
+                Dim PolyHabLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing)
 
                 ' match any of the polygon layers saved in stream to those in listboxes and select
                 If m_iPolysCount > 0 Then
@@ -828,6 +855,7 @@ Public Class frmRunAdvancedAnalysis
 
                 m_iLinesCount = Convert.ToInt32(m_FiPEx.pPropset.GetProperty("numLines"))
                 ' match any of the line layers saved in stream to those in listboxes and select
+
                 Dim LineHabLayerObj As New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
                 If m_iLinesCount > 0 Then
@@ -836,10 +864,8 @@ Public Class frmRunAdvancedAnalysis
                         LineHabLayerObj = New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
                         With LineHabLayerObj
                             .Layer = sLineLayer
-
                             .LengthField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineLengthField" + j.ToString))
                             .LengthUnits = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineLengthUnits" + j.ToString))
-
                             .HabClsField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabClassField" + j.ToString))
                             .HabQuanField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabQuanField" + j.ToString))
                             .HabUnits = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineHabUnits" + j.ToString))
@@ -891,6 +917,7 @@ Public Class frmRunAdvancedAnalysis
                 Dim sBarrierIDField As String
                 Dim sBarrierPermField As String
                 Dim sBarrierNaturalYNField As String
+
                 Dim pBarrierIDObj As New BarrierIDObj(Nothing, Nothing, Nothing, Nothing, Nothing)
                 m_iBarrierCount = Convert.ToInt32(m_FiPEx.pPropset.GetProperty("numBarrierIDs"))
                 If m_iBarrierCount > 0 Then
@@ -950,6 +977,8 @@ Public Class frmRunAdvancedAnalysis
                 sRInstallDir = "not set"
 
                 '2020
+                bUseHabLength = True
+                bUseHabArea = False
                 bDistanceLim = False
                 dMaxDist = 0.0
                 bDistanceDecay = False
@@ -991,6 +1020,9 @@ Public Class frmRunAdvancedAnalysis
             sDCIModelDir = "not set"
             sRInstallDir = "not set"
 
+            '2020
+            bUseHabLength = True
+            bUseHabArea = False
             bDistanceLim = False
             dMaxDist = 0.0
             bDistanceDecay = False
@@ -1146,6 +1178,7 @@ Public Class frmRunAdvancedAnalysis
 
         ' Set the DCI output y/n 
         If bDCI = True Then
+
             chkDCI.Checked = True
             chkDCISectional.Checked = bDCISectional
             txtDCIModelDir.Text = sDCIModelDir
@@ -1154,7 +1187,9 @@ Public Class frmRunAdvancedAnalysis
             '2020
             chkDistanceLimit.Enabled = True
             chkDistanceLimit.Checked = bDistanceLim
-           
+            rdoHabArea.Checked = bUseHabArea
+            rdoHabLength.Checked = bUseHabLength
+
             txtMaxDistance.Text = dMaxDist
             chkDistanceDecay.Checked = bDistanceDecay
             If sDDFunction = "linear" Then
@@ -1174,6 +1209,8 @@ Public Class frmRunAdvancedAnalysis
             txtRInstallDir.Text = "n/a"
 
             '2020
+            rdoHabArea.Checked = False
+            rdoHabLength.Checked = True
             chkDistanceLimit.Checked = False
             txtMaxDistance.Text = 0.0
             chkDistanceDecay.Checked = False
@@ -1185,7 +1222,6 @@ Public Class frmRunAdvancedAnalysis
         End If
 
     End Sub
-
     Private Sub ChkDBFOutput_Click()
 
         ' If the checkbox is checked then enable
@@ -1211,7 +1247,6 @@ Public Class frmRunAdvancedAnalysis
 
         End If
     End Sub
-
     Private Sub lstLineLayers_ItemCheck(ByVal sender As System.Object, ByVal e As ItemCheckEventArgs) Handles lstLineLayers.ItemCheck
         ' -----------------------------------------------------------------------
         ' This sub does the following:
@@ -1506,7 +1541,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         End If ' checked state
 
     End Sub
-
     Private Sub chkLstBarriersLayers_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles chkLstBarriersLayers.ItemCheck
         ' -----------------------------------------------------------------------
         ' This sub does the following:
@@ -1629,7 +1663,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         End If
 
     End Sub
-
     Private Sub lstLineLayers_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstLineLayers.SelectedIndexChanged
         ' Populates two listboxes if there are habitat class and quantity fields set for it in property set
         ' MAY CAUSE ISSUE IF LAYERS SHARE A COMMON NAME - temp sol'n: will use first layer encountered in propset
@@ -1771,7 +1804,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
 
         End If
     End Sub
-
     Private Sub lstPolyLayers_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstPolyLayers.SelectedIndexChanged
         ' Populates two listboxes if there are habitat class and quantity fields set for it in property set
         ' MAY CAUSE ISSUE IF LAYERS SHARE A COMMON NAME - temp sol'n: will use first layer encountered in propset
@@ -2023,7 +2055,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             rdoNatExp1.Enabled = False
         End If
     End Sub
-
     Private Sub cmdAddGDB_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdAddGDB.Click
         Dim pGxDialog As IGxDialog
         Dim pDstFilter As IGxObjectFilter
@@ -2058,7 +2089,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         End If
         txtGDB.Text = pGxDatabase.Workspace.PathName
     End Sub
-
     Private Sub cmdChngLineCls_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdChngLineCls.Click
 
         m_sLayerType = "line"
@@ -2074,7 +2104,7 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             ' update the lstboxes now
             'Me.LHabParamList = m_LLayerToAdd
             lstLineLength.Items.Clear()
-            lstLineLength.Items.Add(m_LLayerToAdd.HabClsField)
+            lstLineLength.Items.Add(m_LLayerToAdd.LengthField)
 
             lstLineHabCls.Items.Clear()
             lstLineHabCls.Items.Add(m_LLayerToAdd.HabClsField)
@@ -2097,7 +2127,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             LHabParamList = lLayerToAdd
         End If
     End Sub
-
     Private Sub cmdChngPolyCls_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdChngPolyCls.Click
         m_sLayerType = "poly"
         Dim lLayerToAdd As New List(Of PolyLayerToAdd)
@@ -2119,12 +2148,11 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             lstPolyUnit.Items.Clear()
             Dim sPolyUnit As String = m_PLayerToAdd.HabUnitField
             lstPolyUnit.Items.Add(sPolyUnit)
-            
+
             lLayerToAdd.Add(m_PLayerToAdd)
             PHabParamList = lLayerToAdd
         End If
     End Sub
-
     Private Sub cmdCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdCancel.Click
         Me.Close()
     End Sub
@@ -2268,7 +2296,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             Return (_name = obj.Layer)
         End Function
     End Class
-
     Private Class ComparePolyLayerNamePred
         Private _name As String
         Public Sub New(ByVal name As String)
@@ -2289,7 +2316,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             Return (_name = obj.Layer)
         End Function
     End Class
-
     Private Sub ChkMaxOrd_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
         If ChkMaxOrd.Checked = True Then
             TxtOrder.Enabled = False
@@ -2297,7 +2323,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             TxtOrder.Enabled = True
         End If
     End Sub
-
     Private Sub cmdRemove2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdRemove2.Click
         ' -------------------------------------------------------
         ' 1. Removes the selected exclusion from the list
@@ -2347,7 +2372,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             MsgBox("Error trying to remove exclusion from list" + ex.Message)
         End Try
     End Sub
-
     Private Sub lstLayers_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstLayers.SelectedIndexChanged
         ' --------------------------------------------------------
         ' 1. Matches layer name in list with layer name in TOC
@@ -2402,7 +2426,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         Next
 
     End Sub
-
     Private Sub lstFields_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstFields.SelectedIndexChanged
         ' -----------------------------------------------------
         ' Populates the lstValues box with unique values of
@@ -2458,7 +2481,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             vVar = pEnumerator.Current
         End While
     End Sub
-
     Private Sub cmdAddExcld_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdAddExcld.Click
         ' --------------------------------------------------------------
         ' 1. Adds the selected layer, feature, and value to the excludes
@@ -2859,7 +2881,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
 
     End Sub
 
-
     'Private Sub chkDCI_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
 
     'If chkDCI.CheckState = CheckState.Checked Then
@@ -2948,8 +2969,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         End If
     End Sub
 
-    
-
     Private Sub chkDCI_CheckedChanged_1(sender As Object, e As EventArgs) Handles chkDCI.CheckedChanged
         'MsgBox("chkDCI checked changed 1 triggered")
         If chkDCI.CheckState = CheckState.Checked Then
@@ -2959,7 +2978,10 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             txtRInstallDir.Enabled = True
             chkDCISectional.Enabled = True
             chkDistanceLimit.Enabled = True
-            
+
+            rdoHabLength.Enabled = True
+            rdoHabArea.Enabled = True
+
             If rdoNatExp1.Checked = True Then
                 PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
             End If
@@ -2980,6 +3002,10 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             chkDCISectional.Enabled = False
             chkDistanceLimit.Enabled = False
             chkDistanceDecay.Enabled = False
+
+            rdoHabLength.Enabled = False
+            rdoHabArea.Enabled = False
+
             rdoLinear.Enabled = False
             rdoNatExp1.Enabled = False
             rdoCircle.Enabled = False
@@ -2997,6 +3023,9 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             txtRInstallDir.Enabled = True
             chkDCISectional.Enabled = True
             chkDistanceLimit.Enabled = True
+
+            rdoHabLength.Enabled = True
+            rdoHabArea.Enabled = True
         Else
             cmdDCIModelDir.Enabled = False
             txtDCIModelDir.Enabled = False
@@ -3005,6 +3034,10 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             chkDCISectional.Enabled = False
             chkDistanceLimit.Enabled = False
             chkDistanceDecay.Enabled = False
+
+            rdoHabLength.Enabled = False
+            rdoHabArea.Enabled = False
+
             rdoLinear.Enabled = False
             rdoCircle.Enabled = False
             rdoSigmoid.Enabled = False
@@ -3012,8 +3045,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
 
         End If
     End Sub
-
-
 
     Public Sub New()
 
@@ -3148,7 +3179,6 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         End If
     End Sub
 
-
     Private Sub chkDistanceLimit_EnabledChanged(sender As Object, e As EventArgs) Handles chkDistanceLimit.EnabledChanged
         If chkDistanceLimit.Enabled = True And chkDistanceLimit.Checked = True Then
             txtMaxDistance.Enabled = True
@@ -3236,5 +3266,4 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         End If
     End Sub
 
-  
 End Class

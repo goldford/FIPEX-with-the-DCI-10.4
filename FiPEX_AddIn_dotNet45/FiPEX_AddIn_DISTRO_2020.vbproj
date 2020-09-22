@@ -448,7 +448,7 @@
     <AddInContent Include="Images\VisualizeDecisions.png" />
     <AddInContent Include="Images\VisualizeDecisionsAndNet.png" />
     <Content Include="Resources\CircleDD.jpg" />
-    <Content Include="Resources\FIPEX_DCI_Logo_2020_90x90a.JPG" />
+    <Content Include="Resources\FIPEX_DCI_Logo_2020_90x90a.jpg" />
     <Content Include="Resources\LinearDD.jpg" />
     <Content Include="Resources\NatExp1DD.jpg" />
     <None Include="Resources\SigmoidDD.jpg" />
