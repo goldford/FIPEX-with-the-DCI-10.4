@@ -21,7 +21,12 @@ Public Class StatisticsObject_2
     Public bEID As Integer
     Public bType As String
     Public Direction As String
+    '2020 - for distance decay (does object represent distance or habitat?)
+    '     - can be "habitat" or "length"
     Public LengthOrHabitat As String
+    '2020 - for allowing calculating DCI using length or areas (allows using polygons for habitat for DCI)
+    '     - can be "area" or "length"
+    Public HabitatDimension As String
     Public TotalImmedPath As String
     Public UniqueClass As String
     Public ClassName As String
@@ -29,7 +34,7 @@ Public Class StatisticsObject_2
     Public Unit As String
 
     Public Sub New(ByVal layer As String, ByVal layerID As Integer, ByVal sink As String, ByVal sinkEID As Integer, ByVal bid As String, ByVal barrEID As Integer, ByVal btype As String, ByVal direction As String, _
-    ByVal lengthorhabitat As String, ByVal totalimmedpath As String, ByVal uniqueclass As String, ByVal classname As String, ByVal quantity As Double, ByVal unit As String)
+    ByVal lengthorhabitat As String, ByVal habitatdimension As String, ByVal totalimmedpath As String, ByVal uniqueclass As String, ByVal classname As String, ByVal quantity As Double, ByVal unit As String)
         Me.Layer = layer
         Me.LayerID = layerID
         Me.Sink = sink
@@ -39,6 +44,7 @@ Public Class StatisticsObject_2
         Me.bType = btype
         Me.Direction = direction
         Me.LengthOrHabitat = lengthorhabitat
+        Me.HabitatDimension = habitatdimension
         Me.TotalImmedPath = totalimmedpath
         Me.UniqueClass = uniqueclass
         Me.ClassName = classname

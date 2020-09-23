@@ -3303,7 +3303,7 @@ Public Class PlaceFlagAndRunTool
         Dim HabLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
         ' object to hold stats to add to list. 
-        Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+        Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
         Dim m As Integer = 0
         Dim k As Integer = 0
         Dim j As Integer = 0
@@ -4085,7 +4085,9 @@ Public Class PlaceFlagAndRunTool
 
 
         ' object to hold stats to add to list. 
-        Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+        Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, _
+                                                        Nothing, Nothing, Nothing, Nothing, Nothing, _
+                                                        Nothing, Nothing, Nothing, Nothing, Nothing)
         Dim sDirection As String
 
         If m_FiPEx__1.m_bLoaded = True Then
@@ -4357,7 +4359,10 @@ Public Class PlaceFlagAndRunTool
                                 For k = 1 To lHabStatsMatrix.Count - 1
                                     'If bDBF = True Then
 
-                                    pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                                    pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, _
+                                                                               Nothing, Nothing, Nothing, Nothing, _
+                                                                               Nothing, Nothing, Nothing, Nothing, _
+                                                                               Nothing, Nothing, Nothing)
                                     With pHabStatsObject_2
                                         .Layer = pFeatureLayer.Name
                                         .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -4367,7 +4372,8 @@ Public Class PlaceFlagAndRunTool
                                         .Sink = f_sOutID
                                         .SinkEID = f_siOutEID
                                         .Direction = sDirection2
-                                        .LengthOrHabitat = "Habitat"
+                                        .LengthOrHabitat = "habitat"
+                                        .HabitatDimension = "length"
                                         .TotalImmedPath = sHabTypeKeyword
                                         .UniqueClass = CStr(lHabStatsMatrix(k).UniqueHabClass)
                                         .ClassName = CStr(lLineLayersFields(j).HabClsField)
@@ -4381,7 +4387,10 @@ Public Class PlaceFlagAndRunTool
 
                             Else ' If there are no statistics
 
-                                pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                                pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, _
+                                                                           Nothing, Nothing, Nothing, Nothing, _
+                                                                           Nothing, Nothing, Nothing, Nothing, _
+                                                                           Nothing, Nothing, Nothing)
                                 With pHabStatsObject_2
                                     .Layer = pFeatureLayer.Name
                                     .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -4391,7 +4400,8 @@ Public Class PlaceFlagAndRunTool
                                     .Sink = f_sOutID
                                     .SinkEID = f_siOutEID
                                     .Direction = sDirection
-                                    .LengthOrHabitat = "Habitat"
+                                    .LengthOrHabitat = "habitat"
+                                    .HabitatDimension = "length"
                                     .TotalImmedPath = sHabTypeKeyword
                                     .UniqueClass = "none"
                                     .ClassName = CStr(lLineLayersFields(j).HabClsField)
@@ -4447,7 +4457,10 @@ Public Class PlaceFlagAndRunTool
                             ' If DBF tables are to be output
                             'If bDBF = True Then
 
-                            pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                            pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, _
+                                                                       Nothing, Nothing, Nothing, Nothing, _
+                                                                       Nothing, Nothing, Nothing, Nothing, _
+                                                                       Nothing, Nothing, Nothing)
                             With pHabStatsObject_2
                                 .Layer = pFeatureLayer.Name
                                 .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -4457,7 +4470,8 @@ Public Class PlaceFlagAndRunTool
                                 .Sink = f_sOutID
                                 .SinkEID = f_siOutEID
                                 .Direction = sDirection2
-                                .LengthOrHabitat = "Habitat"
+                                .LengthOrHabitat = "habitat"
+                                .HabitatDimension = "length"
                                 .TotalImmedPath = sHabTypeKeyword
                                 .UniqueClass = "none"
                                 .ClassName = CStr(lLineLayersFields(j).HabClsField)
@@ -4602,7 +4616,10 @@ Public Class PlaceFlagAndRunTool
                                 For k = 1 To lHabStatsMatrix.Count - 1
                                     'If bDBF = True Then
 
-                                    pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                                    pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, _
+                                                                               Nothing, Nothing, Nothing, Nothing, _
+                                                                               Nothing, Nothing, Nothing, Nothing, _
+                                                                               Nothing, Nothing, Nothing)
                                     With pHabStatsObject_2
                                         .Layer = pFeatureLayer.Name
                                         .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -4612,7 +4629,8 @@ Public Class PlaceFlagAndRunTool
                                         .Sink = f_sOutID
                                         .SinkEID = f_siOutEID
                                         .Direction = sDirection2
-                                        .LengthOrHabitat = "Habitat"
+                                        .LengthOrHabitat = "habitat"
+                                        .HabitatDimension = "area"
                                         .TotalImmedPath = sHabTypeKeyword
                                         .UniqueClass = CStr(lHabStatsMatrix(k).UniqueHabClass)
                                         .ClassName = CStr(lPolyLayersFields(j).HabClsField)
@@ -4633,7 +4651,10 @@ Public Class PlaceFlagAndRunTool
 
                             Else ' If there are no statistics
 
-                                pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                                pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, _
+                                                                           Nothing, Nothing, Nothing, Nothing, _
+                                                                           Nothing, Nothing, Nothing, Nothing, _
+                                                                           Nothing, Nothing, Nothing)
                                 With pHabStatsObject_2
                                     .Layer = pFeatureLayer.Name
                                     .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -4643,7 +4664,8 @@ Public Class PlaceFlagAndRunTool
                                     .Sink = f_sOutID
                                     .SinkEID = f_siOutEID
                                     .Direction = sDirection
-                                    .LengthOrHabitat = "Habitat"
+                                    .LengthOrHabitat = "habitat"
+                                    .HabitatDimension = "area"
                                     .TotalImmedPath = sHabTypeKeyword
                                     .UniqueClass = "none"
                                     .ClassName = CStr(lPolyLayersFields(j).HabClsField)
@@ -4709,7 +4731,10 @@ Public Class PlaceFlagAndRunTool
                             ' If DBF tables are to be output
                             'If bDBF = True Then
 
-                            pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
+                            pHabStatsObject_2 = New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, _
+                                                                       Nothing, Nothing, Nothing, Nothing, _
+                                                                       Nothing, Nothing, Nothing, Nothing, _
+                                                                       Nothing, Nothing, Nothing)
                             With pHabStatsObject_2
                                 .Layer = pFeatureLayer.Name
                                 .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -4719,7 +4744,8 @@ Public Class PlaceFlagAndRunTool
                                 .Sink = f_sOutID
                                 .SinkEID = f_siOutEID
                                 .Direction = sDirection2
-                                .LengthOrHabitat = "Habitat"
+                                .LengthOrHabitat = "habitat"
+                                .HabitatDimension = "area"
                                 .TotalImmedPath = sHabTypeKeyword
                                 .UniqueClass = "none"
                                 .ClassName = CStr(lPolyLayersFields(j).HabClsField)
