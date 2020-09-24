@@ -3487,6 +3487,9 @@ Public Class PlaceFlagAndRunTool
                                                         pParameterArray.Add("#")
                                                         pParameterArray.Add("ADD_TO_SELECTION")
 
+                                                        ' 2020 - turn off history otherwise results and MXD gets huge
+                                                        pGp.LogHistory = False
+
                                                         pGPResults = pGp.Execute("SelectLayerByLocation_management", pParameterArray, Nothing)
                                                     End If ' it has a feature selection
                                                 End If ' It's a line

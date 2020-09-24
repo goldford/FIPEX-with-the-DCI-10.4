@@ -266,12 +266,15 @@ Public Class frmRunAdvancedAnalysis
         End If
 
         '2020 
-        If rdoHabLength.Enabled = True Then
+        If rdoHabLength.Checked = True Then
             bUseHabLength = True
             bUseHabArea = False
-        Else
+        ElseIf rdoHabArea.Checked = True Then
             bUseHabLength = False
             bUseHabArea = True
+        Else
+            bUseHabLength = False
+            bUseHabArea = False
         End If
 
         '2020

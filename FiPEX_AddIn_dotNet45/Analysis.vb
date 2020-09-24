@@ -5562,6 +5562,10 @@ Public Class Analysis
 
         Dim pGp As IGeoProcessor
         pGp = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
+
+        Dim pGp2 As IGeoProcessor2
+        pGp2 = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
+
         Dim pParameterArray As IVariantArray
         Dim pMxDocument As IMxDocument
         Dim pMap As IMap
@@ -5636,7 +5640,12 @@ Public Class Analysis
                                                         pParameterArray.Add("#")
                                                         pParameterArray.Add("ADD_TO_SELECTION")
 
-                                                        pGPResults = pGp.Execute("SelectLayerByLocation_management", pParameterArray, Nothing)
+                                                        ' 2020 - turn off loghistory otherwise results get huge and MXD gets huge
+                                                        'pGp.LogHistory = False
+                                                        pGp2.AddToResults = False
+                                                        pGp2.LogHistory = False
+
+                                                        pGp2.Execute("SelectLayerByLocation_management", pParameterArray, Nothing)
                                                     End If ' it has a feature selection
                                                 End If ' It's a line
                                             End If ' It's a feature layer
@@ -6235,8 +6244,8 @@ Public Class Analysis
         ' Get the pUID of the SelectByLayer command
         'pUID.Value = "{82B9951B-DD63-11D1-AA7F-00C04FA37860}"
 
-        Dim pGp As IGeoProcessor
-        pGp = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
+        'Dim pGp As IGeoProcessor
+        'pGp = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
         Dim pMxDocument As IMxDocument
         Dim pMap As IMap
 
@@ -9971,8 +9980,7 @@ Public Class Analysis
 
         Catch Ex As Exception
             ErrInfo = Ex.Message
-            MsgBox("Error reading DCI output file. " + ErrInfo)
-
+            MsgBox("Error reading DCI output file. FIPEX code asd62. " + ErrInfo)
         End Try
 
     End Sub
