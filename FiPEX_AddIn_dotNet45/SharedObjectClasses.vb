@@ -62,18 +62,24 @@ Public Class DCIStatisticsObject
     '   BarrierYN (string 55)
     Public Barrier As String
     Public Length As Double
+    Public LengthUnits As String
     Public HabQuantity As Double
+    Public HabUnits As String
     Public BarrierPerm As Double
     Public BarrierYN As String
+    Public NodeType As String
 
 
-    Public Sub New(ByVal barrier As String, ByVal length As Double, ByVal quantity As Double, ByVal barrierperm As Double, _
-    ByVal barrieryn As String)
+    Public Sub New(ByVal barrier As String, ByVal length As Double, ByVal lengthunits As String, _
+                   ByVal quantity As Double, ByVal habunits As String, ByVal barrierperm As Double, _
+                   ByVal barrieryn As String, ByVal nodetype As String)
         Me.Barrier = barrier
         Me.Length = length
+        Me.LengthUnits = lengthunits
         Me.HabQuantity = quantity
+        Me.HabUnits = habunits
         Me.BarrierPerm = barrierperm
-        Me.BarrierYN = barrieryn
+        Me.BarrierYN = BarrierYN
     End Sub
 
 End Class

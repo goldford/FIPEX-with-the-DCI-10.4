@@ -372,7 +372,10 @@ Public Class Analysis
         Dim lHabStatsList As List(Of StatisticsObject_2) = New List(Of StatisticsObject_2)
         Dim lDCIStatsList As List(Of DCIStatisticsObject) = New List(Of DCIStatisticsObject)
 
-        '2020 new object below to eventually replace lDCIStatsList
+        '2020 - below object is only populated for downstream path traces
+        '     - note no 'classes' are used for habitat
+        Dim lAdvancedDCIStatsList As List(Of DCIStatisticsObject) = New List(Of DCIStatisticsObject) 
+        '2020 new object below is wide table containing more than the DCIStatsList (additional metadata)
         Dim lAdv_DCI_Data_Object As List(Of Adv_DCI_Data_Object) = New List(Of Adv_DCI_Data_Object)
         Dim pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, _
                                                                  Nothing, Nothing, Nothing, Nothing, Nothing)
@@ -427,7 +430,6 @@ Public Class Analysis
         Dim bPathDownHab As Boolean = False
         Dim bTotalPathDownHab As Boolean = False
 
-
         Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
         Dim iLinesCount As Integer = 0      ' number of lines layers currently using
 
@@ -438,15 +440,12 @@ Public Class Analysis
         Dim LineLayerObj As New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
         Dim PolyLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
-
         Dim lBarrierIDs As List(Of BarrierIDObj) = New List(Of BarrierIDObj)
         Dim pBarrierIDObj As New BarrierIDObj(Nothing, Nothing, Nothing, Nothing, Nothing)
 
         Dim iBarrierIDs As Integer = 0
         Dim sBarrierIDLayer, sBarrierIDField, sBarrierNaturalYNField, sBarrierPermField As String
         Dim sBarrierType As String = "Barrier" ' field name found in layers (GLPK / 2020 adv connect)
-
-
         Dim bGLPKTables As Boolean = False
         Dim sGLPKModelDir As String = ""
         Dim sGnuWinDir As String = ""
@@ -1598,6 +1597,7 @@ Public Class Analysis
             ' reset statistics lists
             lConnectivity = New List(Of BarrierAndDownstreamID)
             lDCIStatsList = New List(Of DCIStatisticsObject)
+            lAdvancedDCIStatsList = New List(Of DCIStatisticsObject)
 
             ' reset the flow end elements tracker (barriers tracker)
             ' this variable prevents infinite looping but can be reset
@@ -1919,7 +1919,8 @@ Public Class Analysis
                         sBarrierType = "Barrier"
                     End If
                    
-
+                    ' ################################################################
+                    ' ####################### FOR GLPK ###############################
                     ' populate tables for optimization analysis
                     If bGLPKTables = True Then
 
@@ -1952,6 +1953,8 @@ Public Class Analysis
                         Next
 
                     End If 'GLPK tables
+                    ' ####################### END FOR GLPK ###########################
+                    ' ################################################################
 
                     ' Will save this sOutID and sType for later use, if this is orderloop zero (flag)
                     ' because will need to insert the DCI Metric at the end of this flag loop
@@ -1978,7 +1981,7 @@ Public Class Analysis
                                                        dBarrierPerm)
                     lMetricsObject.Add(pMetricsObject)
 
-                    ' ================ END GET IDS AND METRICS =============
+                    ' ===================== END GET IDS AND METRICS =========================
                     ' =======================================================================
 
                     ' Before the next stage, save the iFID variable because it may 
@@ -2118,7 +2121,7 @@ Public Class Analysis
                                          "Current Barrier 'Order': " & orderLoop.ToString & " of " & iOrderNum.ToString & " (max)." & ControlChars.NewLine & _
                                          "Direction: " & sDirection)
 
-                            Call IntersectFeatures()
+                            Call IntersectFeatures(pLLayersFields, pPLayersFields)
 
                             ' =======================================================================
                             ' ========================== EXCLUDE FEATURES ===========================
@@ -2164,7 +2167,8 @@ Public Class Analysis
                                                             sNaturalYN, _
                                                             orderLoop, _
                                                             bUseHabLength, _
-                                                            bUseHabArea)
+                                                            bUseHabArea, _
+                                                            sType)
                             End If
 
                             ' ##############################################
@@ -2278,7 +2282,7 @@ Public Class Analysis
                                          "Current Barrier 'Order': " & orderLoop.ToString & " of " & iOrderNum.ToString & " (max)." & ControlChars.NewLine & _
                                          "Direction: Immediate Downstream ")
 
-                            Call IntersectFeatures()
+                            Call IntersectFeatures(pLLayersFields, pPLayersFields)
                             ' ======================== END INTERSECT FEATURES ===========================
                             ' =======================================================================
 
@@ -2387,7 +2391,7 @@ Public Class Analysis
                                              "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count) & ControlChars.NewLine & _
                                          "Current Barrier 'Order': " & orderLoop.ToString & " of " & iOrderNum.ToString & " (max)." & ControlChars.NewLine & _
                                          "Direction: Path Downstream ")
-                        Call IntersectFeatures()
+                        Call IntersectFeatures(pLLayersFields, pPLayersFields)
 
                         ' ====================== END INTERSECT FEATURES ========================
                         ' ======================================================================
@@ -2422,6 +2426,25 @@ Public Class Analysis
                                                            f_siOutEID, _
                                                            sHabType, _
                                                            sHabDir)
+
+                        If bAdvConnectTab = True Then
+                            ' lhabstatsobj is going to be huge and slow things down. habitat records in that
+                            ' object are going to be divided by habitat class, which we don't 
+                            ' want for DCI. Can use the existing DCI stats function to populate a separate
+                            ' object / table that only holds _downstream path_ trace results
+                            Call calculateDCIStatistics(lAdvancedDCIStatsList, _
+                                                            lLLayersFieldsDCI, _
+                                                            lPLayersFieldsDCI, _
+                                                            iEID, _
+                                                            dBarrierPerm, _
+                                                            sNaturalYN, _
+                                                            orderLoop, _
+                                                            bUseHabLength, _
+                                                            bUseHabArea, _
+                                                            sType)
+
+                        End If
+
                     End If ' Downstream Path Habitat desired
 
                     ' If any total tables desired clear all barriers and run traces. 
@@ -2500,7 +2523,7 @@ Public Class Analysis
                                          "Direction: Total Upstream")
 
                             ' =================== INTERSECT FEATURES =============
-                            Call IntersectFeatures()
+                            Call IntersectFeatures(pLLayersFields, pPLayersFields)
                             ' ---- EXCLUDE FEATURES -----
                             pEnumLayer.Reset()
                             ' Look at the next layer in the list
@@ -2598,7 +2621,7 @@ Public Class Analysis
                             pNetworkAnalysisExtResults.CreateSelection(pDownConnectedJunctions, pDownConnectedEdges)
 
                             ' =================== INTERSECT FEATURES =============
-                            Call IntersectFeatures()
+                            Call IntersectFeatures(pLLayersFields, pPLayersFields)
                             ' ---- EXCLUDE FEATURES -----
                             pEnumLayer.Reset()
                             ' Look at the next layer in the list
@@ -2689,7 +2712,7 @@ Public Class Analysis
                         ' Get results as selection
                         pNetworkAnalysisExtResults.CreateSelection(pResultJunctions, pResultEdges)
                         ' =================== INTERSECT FEATURES =============
-                        Call IntersectFeatures()
+                        Call IntersectFeatures(pLLayersFields, pPLayersFields)
                         ' ---- EXCLUDE FEATURES -----
                         pEnumLayer.Reset()
                         ' Look at the next layer in the list
@@ -2757,11 +2780,12 @@ Public Class Analysis
 
             iProgress = 50
 
-            ' ======= CREATE and WRITE TO TABLES ========
+            ' ################################################################
+            ' ################# CREATE and WRITE TO TABLES #################
+
             ' Use the stats object list to write 
             ' rows to the table. 
             If bDBF = True Then
-                'MsgBox("Debug:45")
                 ' check if user has hit 'close/cancel'
                 If m_bCancel = True Then
                     backgroundworker1.CancelAsync()
@@ -2774,8 +2798,11 @@ Public Class Analysis
                 backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
                                              "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count))
 
-                ' ============== DCI, GLPK, Habitat and Metric Table Name ========
-                ' First Generate a Random 5 digit code for the table name to keep track of multiple analyses
+
+                ' ################################################################
+                ' ############ DCI, GLPK, Habitat and Metric Table Name ##########
+
+                '  Generate random 5 digit code for the table name to keep track of multiple analyses
                 Dim s As String = "abcdefghijklmnopqrstuvwxyz0123456789"
                 Dim r As New Random
                 Dim sb As New System.Text.StringBuilder
@@ -2950,7 +2977,10 @@ Public Class Analysis
                     'MsgBox("Debug:52")
 
                 End If
-                ' ============== End New DCI, Hab and Metric Table Name ==========
+
+                ' ############### End New DCI, Hab and Metric Table Name #########
+                ' ################################################################
+
 
                 '2020 if advanced connectivity then no regular connectivity table
                 If bConnectTab = True And bAdvConnectTab = False Then
@@ -2995,12 +3025,10 @@ Public Class Analysis
                     backgroundworker1.ReportProgress(iProgress, "Writing To Output Tables" & ControlChars.NewLine & _
                                                              "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count & ControlChars.NewLine & _
                                                                                                                          "Table: Connectivity"))
-                    'MsgBox("Debug:53")
-                    'pTable = pFWorkspace.OpenTable(sAdvConnectTabName)
+                   
                     j = 0
                     For j = 0 To lConnectivity.Count - 1
 
-                        'pRowBuffer = pTable.CreateRowBuffer
 
                         pAdvDCIDataObj = New Adv_DCI_Data_Object(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, _
                                                                  Nothing, Nothing, Nothing, Nothing, Nothing)
@@ -3017,72 +3045,65 @@ Public Class Analysis
                         ' DownstreamNeighbDistance
                         ' DownstreamNeighbUnits
 
-                        'pRowBuffer.Value(1) = lConnectivity(j).BarrID
-                        'pRowBuffer.Value(2) = lConnectivity(j).BarrLabel
-
                         pAdvDCIDataObj.NodeEID = lConnectivity(j).BarrID
                         pAdvDCIDataObj.NodeLabel = lConnectivity(j).BarrLabel
-
-                        For k = 0 To lDCIStatsList.Count - 1
-                            If lDCIStatsList(k).Barrier = lConnectivity(j).BarrID Then
-                                ' 2020 to-do - fix from here to pCursor
-                                '            - DCIStatsList should have same stats as lhabstatslist need to add 
-                                '              room for all params required for DCI
-                                '              downstream habitat length, hab area, and distance to next barrier 
-                                '              (distance often = length, but not always) 
-                                'pRowBuffer.Value(5) = lDCIStatsList(k).BarrierPerm
-                                'pRowBuffer.Value(6) = lDCIStatsList(k).BarrierYN
-
-                                pAdvDCIDataObj.BarrierPerm = lDCIStatsList(k).BarrierPerm
-                                pAdvDCIDataObj.NaturalTF = lDCIStatsList(k).BarrierYN
-
-                            End If
-                        Next
-
-                        'pRowBuffer.Value(7) = lConnectivity(j).DownstreamBarrierID
-                        'pRowBuffer.Value(8) = lConnectivity(j).DownstreamBarrLabel
-
                         pAdvDCIDataObj.DownstreamEID = lConnectivity(j).DownstreamBarrierID
                         pAdvDCIDataObj.DownstreamNodeLabel = lConnectivity(j).DownstreamBarrLabel
 
-                        For k = 0 To lHabStatsList.Count - 1
-                            If lHabStatsList(k).bEID = lConnectivity(j).BarrID Then
-                                If lHabStatsList(k).TotalImmedPath = "Path" And lHabStatsList(k).Direction = "downstream" Then
+                        For k = 0 To lAdvancedDCIStatsList.Count - 1
+                            If lAdvancedDCIStatsList(k).Barrier = lConnectivity(j).BarrID Then
 
-                                    ' 2020 to do: currently this restricts habitat to length  - should fix
-                                    '             and add user-options 
+                                pAdvDCIDataObj.BarrierPerm = lAdvancedDCIStatsList(k).BarrierPerm
+                                pAdvDCIDataObj.NaturalTF = lAdvancedDCIStatsList(k).BarrierYN
 
-                                    'pRowBuffer.Value(3) = Math.Round(lHabStatsList(k).Quantity, 2)
-                                    'pRowBuffer.Value(4) = lHabStatsList(k).Unit
-                                    'pRowBuffer.Value(9) = Math.Round(lHabStatsList(k).Quantity, 2)
-                                    'pRowBuffer.Value(10) = lHabStatsList(k).Unit
+                                pAdvDCIDataObj.DownstreamNeighDistance = Math.Round(lAdvancedDCIStatsList(k).Length, 2)
+                                pAdvDCIDataObj.DistanceUnits = lAdvancedDCIStatsList(k).LengthUnits
+                                pAdvDCIDataObj.HabQuantity = Math.Round(lAdvancedDCIStatsList(k).HabQuantity, 2)
+                                pAdvDCIDataObj.HabQuanUnits = lAdvancedDCIStatsList(k).HabUnits
+                                pAdvDCIDataObj.NodeType = lAdvancedDCIStatsList(k).NodeType
 
-                                    pAdvDCIDataObj.NodeType = lHabStatsList(k).bType
-                                    pAdvDCIDataObj.HabQuantity = Math.Round(lHabStatsList(k).Quantity, 2)
-                                    pAdvDCIDataObj.HabQuanUnits = lHabStatsList(k).Unit
-                                    pAdvDCIDataObj.DownstreamNeighDistance = Math.Round(lHabStatsList(k).Quantity, 2)
-                                    pAdvDCIDataObj.DistanceUnits = lHabStatsList(k).Unit
-
-                                    ' 2020 insert a check for path down distance / length
-
-
-
-
-                                End If
                             End If
                         Next
 
-                        'pCursor = pTable.Insert(True)
-                        'pCursor.InsertRow(pRowBuffer)
-                        'pCursor.Flush()
+                        'For k = 0 To lHabStatsList.Count - 1
+                        '    ' check each of the rows in main statistics object / table
+                        '    ' if it's path and downstream that's what we want. 
+                        '    ' if it's a 'habitat' record then add to ....
 
-                        '2020
+
+                        '    If lHabStatsList(k).bEID = lConnectivity(j).BarrID Then
+                        '        If lHabStatsList(k).TotalImmedPath = "Path" And lHabStatsList(k).Direction = "downstream" Then
+
+                        '            If lHabStatsList(k).LengthOrHabitat = "habitat" Then
+                        '                If bUseHabLength = True Then
+                        '                    If lHabStatsList(k).HabitatDimension = "length" Then
+                        '                        pAdvDCIDataObj.NodeType = lHabStatsList(k).bType
+                        '                        pAdvDCIDataObj.HabQuanUnits = lHabStatsList(k).Unit
+                        '                    End If
+                        '                ElseIf bUseHabArea = True Then
+
+                        '                    If lHabStatsList(k).HabitatDimension = "area" Then
+                        '                        pAdvDCIDataObj.NodeType = lHabStatsList(k).bType
+                        '                        pAdvDCIDataObj.HabQuanUnits = lHabStatsList(k).Unit
+                        '                    End If
+                        '                Else
+                        '                    MsgBox("Debug 2020: there seems to be an issue with user-set length or area habitat option.")
+                        '                End If
+                        '            ElseIf lHabStatsList(k).LengthOrHabitat = "length" Then
+                        '                pAdvDCIDataObj.DistanceUnits = lHabStatsList(k).Unit
+                        '            Else
+                        '                MsgBox("Debug 2020: issue with length or habitat code in lHabtStatsList. FIPEX error e347")
+                        '            End If
+                        '        End If
+                        '    End If
+                        'Next
+
                         lAdv_DCI_Data_Object.Add(pAdvDCIDataObj)
 
                     Next
-
                 End If
 
+                ' ################# FOR GLPK #########################
                 ' DO NOT DELETE!
                 'If bGLPKTables = True Then
                 '    pTabl2e = pFWorkspace.OpenTable(sConnectTabName)
@@ -3096,6 +3117,8 @@ Public Class Analysis
                 '        pCursor.InsertRow(pRowBuffer)
                 '    Next
                 'End If
+                ' ################# END FOR GLPK #########################
+
 
                 If bDCI = True Then
                     ' check if user has hit 'close/cancel'
@@ -3147,7 +3170,8 @@ Public Class Analysis
                     backgroundworker1.ReportProgress(iProgress, "Calculating DCI" & ControlChars.NewLine & _
                                                             "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count))
 
-                    '====== BEGIN DCI CALCULATION ======
+                    ' ######################################################################
+                    ' #################### BEGIN DCI CALCULATION ###########################
                     ' TEMPORARY CHECK - if DCI Table has no rows then the 
                     ' DCI model will fail.  If there are no barriers then 
                     ' in UpdateResultsDCI function the DCIp and DCId will be
@@ -3175,7 +3199,7 @@ Public Class Analysis
                                       bDistanceLim, _
                                       dMaxDist, _
                                       bDistanceDecay, sDDFunction)
-                            UpdateResultsDCI(lAdv_DCI_Data_Object.Count, dDCIp, dDCId, bNaturalY, "out_dd.txt")
+                            UpdateResultsAdvDCI(lAdv_DCI_Data_Object.Count, dDCIp, dDCId, bNaturalY, "out_dd.txt")
                         Else
                             MsgBox("Debug2020: Error 204 in RunAnalysis. There must be more than 1 row in the advanced summary table object. Exiting")
                             Exit Sub
@@ -3183,9 +3207,7 @@ Public Class Analysis
                     Else
                         MsgBox("Debug2020: Error 210 in RunAnalysis. bAdvConnectTab must = True And bDistanceLim must = True to proceed with DCI. Exiting")
                         Exit Sub
-
                     End If
-
 
                 ' Insert a row into the Metrics Object List
                 ' using pair of ID and Type for flag saved earlier
@@ -3224,7 +3246,6 @@ Public Class Analysis
                     Dim iPosit As Integer
                     Dim dDCIs As Double
                     Dim iBarrierEID As Integer
-
                     Dim iLoopCount As Integer = 0
 
                         '2020
@@ -3275,13 +3296,13 @@ Public Class Analysis
                                         ' ##############################################
                                         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
                                         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
-
-                                        ' do not read the same DCI sectional for branch junctions
-                                        ' they are the same as for the next downstream barrier
                                         '
                                         ' if EID = branch junction EID
                                         '  then flag and do not do next step
                                         bBranchJunction = False
+
+                                        ' 2020 I deactivated this because we DO need sectional results
+                                        '      for each segment, which can all be different with distance limits / decay
                                         'If bAdvConnectTab = True Then
                                         '    'MsgBox("Debug2020: filtered branch juncs: " + Str(pFilteredBranchJunctionsList.Count))
 
@@ -3298,20 +3319,20 @@ Public Class Analysis
                                         'End If
 
                                         bSourceJunction = False
-                                        If bAdvConnectTab = True Then
-                                            'MsgBox("Debug2020: filtered branch juncs: " + Str(pFilteredBranchJunctionsList.Count))
+                                        'If bAdvConnectTab = True Then
+                                        '    'MsgBox("Debug2020: filtered branch juncs: " + Str(pFilteredBranchJunctionsList.Count))
 
-                                            pFilteredSourceJunctionsList.Reset()
-                                            For p = 0 To pFilteredSourceJunctionsList.Count - 1
-                                                iEID_p = pFilteredSourceJunctionsList.Next()
-                                                'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iBarrierEID: " + Str(iBarrierEID))
-                                                If iBarrierEID = iEID_p Then
-                                                    bSourceJunction = True
-                                                    'MsgBox("Debug2020: MAtch found")
-                                                    Exit For
-                                                End If
-                                            Next
-                                        End If
+                                        '    pFilteredSourceJunctionsList.Reset()
+                                        '    For p = 0 To pFilteredSourceJunctionsList.Count - 1
+                                        '        iEID_p = pFilteredSourceJunctionsList.Next()
+                                        '        'MsgBox("Debug2020 The iEID_p: " + Str(iEID_p) + " And the iBarrierEID: " + Str(iBarrierEID))
+                                        '        If iBarrierEID = iEID_p Then
+                                        '            bSourceJunction = True
+                                        '            'MsgBox("Debug2020: MAtch found")
+                                        '            Exit For
+                                        '        End If
+                                        '    Next
+                                        'End If
 
                                         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
                                         ' 2020_2020_2020_2020_2020_2020_2020_2020_2020_2020_
@@ -3342,7 +3363,11 @@ Public Class Analysis
 
                 End If ' output to DCI sectional = True
             End If 'output to DCI = True
-            ' ======= END DCI CALCULATION =======
+                ' ======= END DCI CALCULATION =======
+
+
+                ' #############################################################
+                ' #################### FOR GLPK ###############################
 
             ' Insert a randomization check here.  
             Dim bCostRandomization As Boolean '= Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("bCostRandomization"))
@@ -3647,7 +3672,9 @@ Public Class Analysis
 
                 'MsgBox("Debug:58")
             End If ' GLPK is on
-            ' ===== END GLPK CALCULATION =======
+                ' ################### END GLPK CALCULATION ####################
+                ' #############################################################
+
 
 
             End If ' output to dbf = true
@@ -3915,29 +3942,13 @@ Public Class Analysis
         ' =========================== END RESET FLAGS =====================
         ' Bring results form to front
         'pResultsForm.BringToFront()
-        'pResultsForm.txtRichResults.Select(0, 0)
-        EndTime = DateTime.Now
-        'pResultsForm.lblBeginTime.Text = "Begin Time: " & BeginTime
-        'pResultsForm.lblEndTime.Text = "End Time: " & EndTime
 
+        EndTime = DateTime.Now
+      
         Dim TotalTime As TimeSpan
         TotalTime = EndTime - BeginTime
 
-        'pResultsForm.lblTotalTime.Text = "Total Time: " & TotalTime.Hours & "hrs " & TotalTime.Minutes & "minutes " & TotalTime.Seconds & "seconds"
-        'pResultsForm.lblDirection.Text = "Analysis Direction: " + sDirection
-        'If iOrderNum <> 999 Then
-        '    'pResultsForm.lblOrder.Text = "Order of Analysis: " & CStr(iOrderNum)
-        'Else
-        '    'pResultsForm.lblOrder.Text = "Order of Analysis: Max"
-        'End If
-
-        'If Not pAllFlowEndBarriers Is Nothing Then
-        '    If pAllFlowEndBarriers.Count <> 0 Then
-        '        pResultsForm.lblNumBarriers.Text = "Number of Barriers Analysed: " & CStr(pAllFlowEndBarriers.Count + pOriginaljuncFlagsList.Count)
-        '    Else
-        '        pResultsForm.lblNumBarriers.Text = "Number of Barriers Analysed: 1"
-        '    End If
-        'End If
+       
 
         ' ================== BEGIN WRITE TO OUTPUT FORM =================
         'MsgBox("Debug:64")
@@ -4051,18 +4062,18 @@ Public Class Analysis
         ' to do 2020 - this should be a separate sub wrapped in following 'if'
         If bPrintToResultsForm = True Then
 
-            '  column one   - sink ID
-            '  column two   - sink stat label
-            '  column three - sink stat
-            '  column four  - barrier ID
-            '  column five  - trace direction (i.e. upstream:)  (Loop)
-            '  column six   - trace type (i.e. total)
-            '  column six   - habitat layer (i.e. Lines) (Loop) (OMIT)
-            '  column seven - habitat class (i.e. river or stream)(Loop)
+            '  col 1   - sink ID
+            '  col 2   - sink stat label
+            '  col 3 - sink stat
+            '  col 4  - barrier ID
+            '  col 5  - trace direction (i.e. upstream:)  (Loop)
+            '  col 6   - trace type (i.e. total)
+            '  col 7   - habitat layer (i.e. Lines) (Loop) (OMIT)
+            '  col 8 - habitat class (i.e. river or stream)(Loop)
             '                 if there are classes insert a 'total' at the bottom 
             '                 of the list of classes (run totalling function?)
-            '  column eight - the quantity
-            '  column nine  - unit 
+            '  col 9 - the quantity
+            '  col 10  - unit 
 
             ' For each Sink in the master Sinks List
             '   If it's the first iteration of that sink. 
@@ -4075,11 +4086,10 @@ Public Class Analysis
 
 
             ' Set up the table - create columns 
-
             pResultsForm3.DataGridView1.Columns.Add("Sink", "Sink")           '0
             pResultsForm3.DataGridView1.Columns.Add("SinkID", "SinkID")       '1
             pResultsForm3.DataGridView1.Columns.Add("Type", "Type")           '2
-            pResultsForm3.DataGridView1.Columns.Add("Node", "Node")           '3
+            pResultsForm3.DataGridView1.Columns.Add("NodeLabel", "NodeLabel")           '3
             pResultsForm3.DataGridView1.Columns.Add("NodeID", "NodeID")       '4
             pResultsForm3.DataGridView1.Columns.Add("Metric", "Metric")       '5
             pResultsForm3.DataGridView1.Columns.Add("Value", "Value")         '6
@@ -4503,7 +4513,6 @@ Public Class Analysis
 
         backgroundworker1.Dispose()
         backgroundworker1.CancelAsync()
-
 
     End Sub
     Private Sub PrepareZeroBudgetOptionsTable(ByVal sGLPKOptionsTableName As String, _
@@ -5512,23 +5521,13 @@ Public Class Analysis
             Return (_SinkEID = obj.SinkEID And _BarrierEID = obj.BarrEID)
         End Function
     End Class
-    Public Sub IntersectFeatures()
+    Public Sub IntersectFeatures(ByVal pLLayersFields As List(Of LineLayerToAdd), _
+                                 ByVal pPLayersFields As List(Of PolyLayerToAdd))
 
         ' 2020 - note this intersects with polygon layers for habitat
         '        based on any _selected_ line layers 
         '        (i.e., network lines returned by trace)
         '        it does not intersect with more line layers 
-
-        'Read Extension Settings
-        ' ================== READ EXTENSION SETTINGS =================
-
-        Dim bDBF As Boolean = False         ' Include DBF output default 'no'
-        Dim pLLayersFields As List(Of LineLayerToAdd) = New List(Of LineLayerToAdd)
-        Dim pPLayersFields As List(Of PolyLayerToAdd) = New List(Of PolyLayerToAdd)
-        Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
-        Dim iLinesCount As Integer = 0      ' number of lines layers currently using
-
-        Dim HabLayerObj As New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
 
         ' object to hold stats to add to list. 
         Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
@@ -5537,84 +5536,6 @@ Public Class Analysis
         Dim j As Integer = 0
         Dim i As Integer = 0
 
-        If m_FiPEx__1.m_bLoaded = True Then
-
-            ' Populate a list of the layers using and habitat summary fields.
-            ' match any of the polygon layers saved in stream to those in listboxes 
-            iPolysCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numPolys"))
-            If iPolysCount > 0 Then
-                For k = 0 To iPolysCount - 1
-                    'sPolyLayer = m_FiPEX__1.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
-                    HabLayerObj = New PolyLayerToAdd(Nothing, Nothing, Nothing, Nothing)
-                    With HabLayerObj
-                        .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
-                        .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyClassField" + k.ToString))
-                        .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyQuanField" + k.ToString))
-                        .HabUnitField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("PolyUnitField" + k.ToString))
-                    End With
-
-                    ' Load that object into the list
-                    pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
-                Next
-            End If
-
-            ' Need to be sure that quantity field has been assigned for each
-            ' layer using. 
-            Dim iCount1 As Integer = pPLayersFields.Count
-
-            If iCount1 > 0 Then
-                For m = 0 To iCount1 - 1
-                    If pPLayersFields.Item(m).HabQuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for polygon layer. Please choose a field in the options menu. FIPEX Error code 576. ", "Parameter Missing")
-                        Exit Sub
-                    End If
-                Next
-            End If
-
-            iLinesCount = Convert.ToInt32(m_FiPEx__1.pPropset.GetProperty("numLines"))
-            Dim HabLayerObj2 As New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
-
-            ' match any of the line layers saved in stream to those in listboxes
-            If iLinesCount > 0 Then
-                For j = 0 To iLinesCount - 1
-                    'sLineLayer = m_FiPEX__1.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
-                    HabLayerObj2 = New LineLayerToAdd(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
-                    With HabLayerObj2
-                        '.Layer = sLineLayer
-                        .Layer = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("IncLine" + j.ToString))
-
-                        .LengthField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthField" + j.ToString))
-                        .LengthUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineLengthUnits" + j.ToString))
-
-                        .HabClsField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineClassField" + j.ToString))
-                        .HabQuanField = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineQuanField" + j.ToString))
-                        .HabUnits = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("LineHabUnits" + j.ToString))
-                    End With
-                    ' add to the module level list
-                    pLLayersFields.Add(HabLayerObj2)
-                Next
-            End If
-
-            ' Need to be sure that quantity field has been assigned for each
-            ' layer using. 
-            iCount1 = pLLayersFields.Count
-            If iCount1 > 0 Then
-                For m = 0 To iCount1 - 1
-                    If pLLayersFields.Item(m).HabQuanField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
-                        Exit Sub
-                    End If
-                    If pLLayersFields.Item(m).LengthField = "Not set" Then
-                        System.Windows.Forms.MessageBox.Show("No length field is not set for river layer. Please choose a field in the options menu.", "Parameter Missing")
-                        Exit Sub
-                    End If
-                Next
-
-            End If
-        Else
-            System.Windows.Forms.MessageBox.Show("Cannot read extension settings.", "Calculate Stats Error")
-            Exit Sub
-        End If
 
         ' ======================= 1.0 INTERSECT ===========================
         ' This next section checks each of the polygon layers in the focusmap
@@ -5970,7 +5891,8 @@ Public Class Analysis
                                       ByVal sNaturalYN As String, _
                                       ByVal iOrderLoop As Integer, _
                                       ByVal bUseHabLength As Boolean, _
-                                      ByVal bUseHabArea As Boolean)
+                                      ByVal bUseHabArea As Boolean, _
+                                      ByVal sType As String)
 
         ' **************************************************************************************
         ' Subroutine:  Calculate DCI Statistics 
@@ -6004,7 +5926,7 @@ Public Class Analysis
         Dim vTemp As Object
 
         ' object to hold stats to add to list. 
-        Dim pDCIStatsObject As New DCIStatisticsObject(Nothing, Nothing, Nothing, Nothing, Nothing)
+        Dim pDCIStatsObject As New DCIStatisticsObject(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
         Dim dTempQuan, dTempLength As Double
 
         Dim pDoc As IDocument = My.ArcMap.Application.Document
@@ -6022,6 +5944,24 @@ Public Class Analysis
         Dim iLoopCount As Integer = 0
         Dim dTotalHab As Double = 0
         Dim dTotalLength As Double = 0
+
+        ' 2020 - note the units are a problem right now because there's nothing 
+        '        preventing the user from selecting two or more habitat layers for 
+        '        lines or polys that have different units, and I haven't had time to write
+        '        a cross check or way to convert to common units. 
+        '        I put a temporary check in that they are the same
+        Dim sHabUnits, sHabUnits2, sLengthUnits, sLengthUnits2 As String
+        ' initialize
+        sLengthUnits = lLLayersFieldsDCI(0).LengthUnits
+        If bUseHabLength = True Then
+            sHabUnits = lLLayersFieldsDCI(0).HabUnits
+        ElseIf bUseHabArea = True Then
+            If lPLayersFieldsDCI.Count > 0 Then
+                sHabUnits = lPLayersFieldsDCI(0).HabUnitField
+            Else
+                MsgBox("Please choose polygon units for DCI analysis, or use line / segment lengths to quantify habitat.")
+            End If
+        End If
 
         Do While Not pFeatureLayer Is Nothing ' these two lines must be separate
             If pFeatureLayer.Valid = True Then ' or there will be an empty object ref
@@ -6055,12 +5995,24 @@ Public Class Analysis
                                 ' Get the habitat field and add the value to the
                                 ' total for habitat quantity.
                                 If bUseHabLength = True Then
+                                    sHabUnits2 = lLLayersFieldsDCI(j).HabUnits
+                                    If sHabUnits2 <> sHabUnits Then
+                                        MsgBox("Warning: the habitat units are not consistent for the lines layers used in the DCI analysis. Please check and make sure all units are consistent among habitat layers.")
+                                        Exit Sub
+                                    End If
+
                                     Try
                                         iHabField = pFeatureCursor.FindField(lLLayersFieldsDCI(j).HabQuanField)
                                     Catch ex As Exception
                                         MsgBox("Error finding the field in line layer for habitat. FIPEX code 986")
                                         Exit Sub
                                     End Try
+                                End If
+
+                                sLengthUnits2 = lLLayersFieldsDCI(j).LengthUnits
+                                If sLengthUnits2 <> sLengthUnits Then
+                                    MsgBox("Warning: the length units are not consistent for the lines layers used in the DCI analysis. Please check and make sure all units are consistent among habitat layers.")
+                                    Exit Sub
                                 End If
 
                                 Try
@@ -6125,6 +6077,12 @@ Public Class Analysis
 
                                 If pFeatureSelection.SelectionSet.Count <> 0 Then
 
+                                    sHabUnits2 = lPLayersFieldsDCI(j).HabUnitField
+                                    If sHabUnits2 <> sHabUnits Then
+                                        MsgBox("Warning: the habitat units are not consistent for the polygon layers used in the DCI analysis. Please check and make sure all units are consistent among habitat layers.")
+                                        Exit Sub
+                                    End If
+
                                     pFeatureSelection.SelectionSet.Search(Nothing, False, pCursor)
                                     pFeatureCursor = CType(pCursor, IFeatureCursor)
                                     pFeature = pFeatureCursor.NextFeature
@@ -6182,7 +6140,10 @@ Public Class Analysis
             .BarrierPerm = dBarrierPerm
             .BarrierYN = sNaturalYN
             .Length = dTotalLength
+            .LengthUnits = sLengthUnits
             .HabQuantity = dTotalHab
+            .HabUnits = sHabUnits
+            .NodeType = sType
         End With
 
         lDCIStatsList.Add(pDCIStatsObject)
@@ -6212,7 +6173,6 @@ Public Class Analysis
         '
         '
         ' Notes:
-        ' 
         ' 
         '       Aug, 2020    --> Not sure why passing vars by ref other than lHabStatsList.
         '                        Deleted 'sKeyword' arg (checks if flag on barr or nonbarr) - it was unused. 
@@ -6292,9 +6252,6 @@ Public Class Analysis
         ' K REPRESENTS NUMBER OF POSSIBLE HABITAT CLASSES
         '  rows, columns.  ROWS SHOULD BE SET BY NUMBER OF SUMMARY FIELDS
         ' cannot be redimension preserved later
-
-        'Dim mHabClassVals() As Object       'Matrix holds the unique classes and values
-        'ReDim mHabClassVals(0 To 4, 0 To 400)         'temporary dimension statement
         Dim lHabStatsMatrix As New List(Of HabStatisticsObject)
         Dim pHabStatisticsObject As New HabStatisticsObject(Nothing, Nothing)
 
@@ -6318,7 +6275,6 @@ Public Class Analysis
         pMxDoc = CType(pDoc, IMxDocument)
         pMxDocument = CType(pDoc, IMxDocument)
         pMap = pMxDocument.FocusMap
-
 
         ' 2020 - change this two separate objects, lines polygons
         ' layer to hold parameters to send to property
@@ -6420,7 +6376,7 @@ Public Class Analysis
                             sUnit = "n/a"
                         End If
 
-                        MsgBox("Debug 2020: Check for the habitat class field for line layer. Is it <none> or 'not set'?: " & lLineLayersFields(j).HabClsField)
+                        'MsgBox("Debug 2020: Check for the habitat class field for line layer. Is it <none> or 'not set'?: " & lLineLayersFields(j).HabClsField)
 
                         Try
                             iLengthField = pFields.FindField(lLineLayersFields(j).LengthField)
@@ -6433,7 +6389,8 @@ Public Class Analysis
                         ' if we find class field being used then use an intermediate object pHabStatisticsObject
                         ' then use a list of these objects (lHabStatsMatrix) to keep track of total habitat by class
                         iClassCheckTemp = pFields.FindField(lLineLayersFields(j).HabClsField)
-                        If iClassCheckTemp <> -1 Then
+                        If iClassCheckTemp <> -1 And lLineLayersFields(j).HabClsField <> "<None>" _
+                            And lLineLayersFields(j).HabClsField <> "Not set" And lLineLayersFields(j).HabClsField <> "<none>" Then
 
                             ' Reset the stats objects
                             pDataStats = New DataStatistics
@@ -6645,7 +6602,7 @@ Public Class Analysis
                                         ex.Message)
                                         dTempQuan = 0
                                     End Try
-                                  
+
                                     dHabLength = dHabLength + dTempQuan
 
                                     ' 2020 get distance / length field and quantity separetely from habitat (no classes for lengths)
@@ -6763,7 +6720,8 @@ Public Class Analysis
 
                         iClassCheckTemp = pFields.FindField(lPolyLayersFields(j).HabClsField)
                         'If pFields.FindField(lLayersFields(j).ClsField) <> -1 Then
-                        If iClassCheckTemp <> -1 Then
+                        If iClassCheckTemp <> -1 And lPolyLayersFields(j).HabClsField <> "<None>" _
+                            And lPolyLayersFields(j).HabClsField <> "Not set" And lPolyLayersFields(j).HabClsField <> "<none>" Then
 
                             ' Reset the stats objects
                             pDataStats = New DataStatistics
@@ -9839,8 +9797,13 @@ Public Class Analysis
             MsgBox("Issue reading / writing / deleting to FIPEX FIPEX_Advanced_DD_2020 file. Error code: d101" & ex.Message)
         End Try
 
-
-        Dim sw1 As New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_Advanced_DD_2020.csv")
+        Dim sw1 As System.IO.StreamWriter
+        Try
+            sw1 = New System.IO.StreamWriter(sDCIModelDir & "\FIPEX_Advanced_DD_2020.csv")
+        Catch ex As Exception
+            MsgBox("Trouble accessing the FIPEX_Advanced_DD_2020.csv file - file is locked. code 23fj. " & ex.Message)
+            Exit Sub
+        End Try
 
         Try
             sw1.Write("NodeType,NodeEID,NodeLabel,HabQuantity,HabUnits,BarrierPerm,NaturalTF,DownstreamEID,DownstreamNodeLabel,DownstreamNeighDistance,DistanceUnits")
@@ -9888,6 +9851,7 @@ Public Class Analysis
                 sDistanceUnits = Convert.ToString(lAdv_DCI_Data_Object(i).DistanceUnits)
                 'End If
 
+
                 sw1.Write(sNodeType & "," & sNodeEID & "," & sNodeLabel & "," & _
                           sHabQuantity & "," & sHabQuanUnits & "," & _
                           sBarrierPerm & "," & sNaturalTF & "," & _
@@ -9900,7 +9864,6 @@ Public Class Analysis
         End Try
 
         sw1.Close()
-
 
         ' ##############################################################
         ' 2020 Write param file to CSV for R to read for distance decay
@@ -9953,20 +9916,12 @@ Public Class Analysis
 
         ' Read the DCI Model Directory from the document properties
         Dim sDCIModelDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDCIModelDir"))
-        'Dim bDCISectional As Boolean = Convert.ToBoolean(m_FiPEX__1.pPropset.GetProperty("dcisectionalyn"))
 
         ' Read the file and return two values - line one and line two from output
         Dim ErrInfo As String
-
         Dim objReader As StreamReader
         Dim sLine As String
         Dim iPosit As Integer
-
-        ''Select the DCI Output title and set it to bold.  
-        'iPosit = pResultsForm.txtRichResults.Find("DCI OUTPUT")
-        'pResultsForm.txtRichResults.Select(iPosit, 10)
-        'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Bold)
-
         Dim iLoopCount As Integer = 0
 
         Try
@@ -9979,28 +9934,12 @@ Public Class Analysis
                     ' because the first line of a successful DCI will say "Value" - skip.  
                     ' Using FINDME to get to the position at top of results box.  
                     If iLoopCount = 1 Then
-
                         If sLine = "ERROR" Then
-                            'pResultsForm.txtRichResults.SelectedText = "    DCI Stats" + Environment.NewLine + "    FINDME"
-                            'iPosit = pResultsForm.txtRichResults.Find("FINDME")
-                            'pResultsForm.txtRichResults.Select(iPosit, 6)
-                            'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Italic)
-                            'pResultsForm.txtRichResults.SelectedText = sLine + Environment.NewLine + "    R DCI model encountered a problem with FIPEX tables" + _
-                            'Environment.NewLine + "    FINDME"
-
                             dDCIp = 9999
                             dDCId = 9999
-
                             Exit Do
                         End If
                     ElseIf iLoopCount = 2 Then
-
-                        '' Take selected bold DCI OUTPUT, change it to two lines including a findme string
-                        'pResultsForm.txtRichResults.SelectedText = "    DCI Stats" + Environment.NewLine + "    FINDME"
-                        'iPosit = pResultsForm.txtRichResults.Find("FINDME")
-                        'pResultsForm.txtRichResults.Select(iPosit, 6)
-                        'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Italic)
-                        'pResultsForm.txtRichResults.SelectedText = sLine + Environment.NewLine + "    FINDME"
 
                         If bNaturalY = True Then
                             sLine = sLine.Remove(0, 15)
@@ -10010,10 +9949,7 @@ Public Class Analysis
                         dDCIp = Convert.ToDouble(sLine)
 
                     ElseIf iLoopCount = 3 Then
-                        'iPosit = pResultsForm.txtRichResults.Find("FINDME")
-                        'pResultsForm.txtRichResults.Select(iPosit, 6)
-                        'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Italic)
-                        'pResultsForm.txtRichResults.SelectedText = sLine + Environment.NewLine + "    FINDME"
+                       
                         If bNaturalY = True Then
                             sLine = sLine.Remove(0, 15)
                         Else
@@ -10026,18 +9962,7 @@ Public Class Analysis
 
                 objReader.Close()
 
-                '' Clean up - get rid of final FINDME
-                'iPosit = pResultsForm.txtRichResults.Find("FINDME")
-                'pResultsForm.txtRichResults.Select(iPosit, 6)
-                'pResultsForm.txtRichResults.SelectedText = "    "
-
             Else ' if there are no barriers encountered
-
-                'pResultsForm.txtRichResults.SelectedText = "    DCI Stats" + Environment.NewLine + "    FINDME"
-                'iPosit = pResultsForm.txtRichResults.Find("FINDME")
-                'pResultsForm.txtRichResults.Select(iPosit, 6)
-                'pResultsForm.txtRichResults.SelectionFont = New Font("Tahoma", 10, FontStyle.Italic)
-                'pResultsForm.txtRichResults.SelectedText = "    DCIp = 100" + Environment.NewLine + "       DCId = 100"
 
                 dDCId = 100
                 dDCIp = 100
@@ -10051,6 +9976,80 @@ Public Class Analysis
         End Try
 
     End Sub
+
+    Private Sub UpdateResultsAdvDCI(ByRef iBarrierCount As Integer, ByRef dDCIp As Double, _
+                                ByRef dDCId As Double, ByRef bNaturalY As Boolean, _
+                                ByVal sOutFileName As String)
+
+        ' ====================================================================
+        ' SubRoutine:    Update Results Form With DCI
+        ' Description:   read the output file from DCI Model
+        ' ====================================================================
+
+        ' Read the DCI Model Directory from the document properties
+        Dim sDCIModelDir As String = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("sDCIModelDir"))
+
+        ' Read the file and return two values - line one and line two from output
+        Dim ErrInfo As String
+        Dim objReader As StreamReader
+        Dim sLine As String
+        Dim iPosit As Integer
+        Dim iLoopCount As Integer = 0
+
+        Try
+            If iBarrierCount > 1 Then ' TEMP 'if' here in case no barriers - otherwise model fails (always one barrier - the flag)
+                objReader = New StreamReader(sDCIModelDir + "/" + sOutFileName)
+                Do Until objReader.EndOfStream = True
+                    iLoopCount = iLoopCount + 1
+                    sLine = objReader.ReadLine()
+                    ' If the first line says ERROR then write this, otherwise write nothing
+                    ' because the first line of a successful DCI will say "Value" - skip.  
+                    ' Using FINDME to get to the position at top of results box.  
+                    If iLoopCount = 1 Then
+                        If sLine = "ERROR" Then
+                            dDCIp = 9999
+                            dDCId = 9999
+                            Exit Do
+                        End If
+                    ElseIf iLoopCount = 2 Then
+
+                        'If bNaturalY = True Then
+                        ' sLine = sLine.Remove(0, 15)
+                        'Else
+                        sLine = sLine.Remove(0, 6)
+                        'End If
+                        dDCIp = Convert.ToDouble(sLine)
+
+                    ElseIf iLoopCount = 3 Then
+
+                        'If bNaturalY = True Then
+                        'sLine = sLine.Remove(0, 15)
+                        'Else
+                        sLine = sLine.Remove(0, 6)
+                        'End If
+                        dDCId = Convert.ToDouble(sLine)
+
+                    End If
+                Loop
+
+                objReader.Close()
+
+            Else ' if there are no barriers encountered
+
+                dDCId = 100
+                dDCIp = 100
+
+            End If
+
+        Catch Ex As Exception
+            ErrInfo = Ex.Message
+            MsgBox("Error during DCI calculation output file. FIPEX code 7d374. " + ErrInfo)
+            dDCIp = 9999
+            dDCId = 9999
+        End Try
+
+    End Sub
+
     Private Function PrepConnectivityTables(ByVal pFWorkspace As IFeatureWorkspace, ByVal sConnectTabName As String) As String
         ' ==============================================
         ' Function: Prepare Connectivity Table(s)

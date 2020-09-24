@@ -1,6 +1,0 @@
-ObID,BarrierOrFlagID,Downstream_Barrier
-1,84,Sink
-2,94,Sink
-3,100,Sink
-4,98,84
-5,99,98
