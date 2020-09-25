@@ -1,4 +1,5 @@
-# FIPEX_v10x_ArcMap_10.4_up
+# The Fish Passage Extension for ArcMap 10.4+
+# with the Dendritic Connectivity Index
  Created June 2020 to Continue Development of FIPEX for ArcMap 10.4 and above
 
 The Fish Passage Extension for ArcGIS 10.x
