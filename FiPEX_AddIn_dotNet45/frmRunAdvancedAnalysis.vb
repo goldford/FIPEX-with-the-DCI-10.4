@@ -3140,7 +3140,7 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         'MsgBox("chkDCI checked changed 1 triggered")
         If chkDistanceLimit.CheckState = CheckState.Checked Then
             txtMaxDistance.Enabled = True
-            chkDistanceDecay.Enabled = True
+
 
             Dim dMaxdistance As Double = 0.0
             Try
@@ -3149,8 +3149,13 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
                 dMaxdistance = 0.0
             End Try
 
-            If dMaxdistance > 0 And chkDistanceDecay.Checked = True Then
+            If dMaxdistance > 0 And chkDistanceLimit.Checked = True Then
+                chkDistanceDecay.Enabled = True
+            Else
+                chkDistanceDecay.Enabled = False
+            End If
 
+            If dMaxdistance > 0 And chkDistanceDecay.Checked = True And chkDistanceDecay.Enabled = True Then
                 rdoLinear.Enabled = True
                 rdoNatExp1.Enabled = True
                 rdoCircle.Enabled = True
@@ -3167,9 +3172,18 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
                 If rdoLinear.Checked = True Then
                     PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
                 End If
+            Else
+                rdoLinear.Enabled = False
+                rdoNatExp1.Enabled = False
+                rdoCircle.Enabled = False
+                rdoSigmoid.Enabled = False
+                PictureBox7.Image = Nothing
+
             End If
 
-            
+
+
+
         Else
             txtMaxDistance.Enabled = False
             chkDistanceDecay.Enabled = False
@@ -3248,6 +3262,12 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
                 rdoSigmoid.Checked = False Then
                 rdoLinear.Checked = True
             End If
+        Else
+            rdoLinear.Checked = False
+            rdoCircle.Checked = False
+            rdoNatExp1.Checked = False
+            rdoSigmoid.Checked = False
+            rdoLinear.Checked = False
         End If
     End Sub
 
@@ -3269,4 +3289,47 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         End If
     End Sub
 
+    Private Sub txtMaxDistance_TextChanged(sender As Object, e As EventArgs) Handles txtMaxDistance.TextChanged
+        Dim dMaxdistance As Double = 0.0
+        Try
+            dMaxdistance = Convert.ToDouble(txtMaxDistance.Text)
+        Catch ex As Exception
+            dMaxdistance = 0.0
+        End Try
+
+
+        If dMaxdistance > 0 And chkDistanceLimit.Checked = True Then
+            chkDistanceDecay.Enabled = True
+        Else
+            chkDistanceDecay.Enabled = False
+        End If
+
+
+        If dMaxdistance > 0 And chkDistanceDecay.Checked = True And chkDistanceDecay.Enabled = True Then
+            rdoLinear.Enabled = True
+            rdoNatExp1.Enabled = True
+            rdoCircle.Enabled = True
+            rdoSigmoid.Enabled = True
+            If rdoNatExp1.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+            End If
+            If rdoCircle.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+            End If
+            If rdoSigmoid.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+            End If
+            If rdoLinear.Checked = True Then
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+            End If
+        Else
+            rdoLinear.Enabled = False
+            rdoNatExp1.Enabled = False
+            rdoCircle.Enabled = False
+            rdoSigmoid.Enabled = False
+            PictureBox7.Image = Nothing
+
+        End If
+
+    End Sub
 End Class

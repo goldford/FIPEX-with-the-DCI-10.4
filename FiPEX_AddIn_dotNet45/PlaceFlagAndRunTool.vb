@@ -3411,8 +3411,12 @@ Public Class PlaceFlagAndRunTool
         ' Get the pUID of the SelectByLayer command
         'pUID.Value = "{82B9951B-DD63-11D1-AA7F-00C04FA37860}"
 
-        Dim pGp As IGeoProcessor
-        pGp = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
+        'Dim pGp As IGeoProcessor
+        'pGp = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
+
+        Dim pGp2 As IGeoProcessor2
+        pGp2 = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
+
         Dim pParameterArray As IVariantArray
         Dim pMxDocument As IMxDocument
         Dim pMap As IMap
@@ -3488,9 +3492,9 @@ Public Class PlaceFlagAndRunTool
                                                         pParameterArray.Add("ADD_TO_SELECTION")
 
                                                         ' 2020 - turn off history otherwise results and MXD gets huge
-                                                        pGp.LogHistory = False
-
-                                                        pGPResults = pGp.Execute("SelectLayerByLocation_management", pParameterArray, Nothing)
+                                                        pGp2.LogHistory = False
+                                                        pGp2.AddToResults = False
+                                                        pGPResults = pGp2.Execute("SelectLayerByLocation_management", pParameterArray, Nothing)
                                                     End If ' it has a feature selection
                                                 End If ' It's a line
                                             End If ' It's a feature layer

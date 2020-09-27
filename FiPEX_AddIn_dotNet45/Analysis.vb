@@ -3339,14 +3339,28 @@ Public Class Analysis
                                         ' ###############################################
 
                                         If bBranchJunction = False And bSourceJunction = False Then
-                                            ' Insert new metric into metrics object list
-                                            pMetricsObject = New MetricsObject(f_sOutID, _
-                                                                               f_siOutEID, _
-                                                                               sOutID, _
-                                                                               iBarrierEID, _
-                                                                               f_sType, _
-                                                                               "DCI Sectional", _
-                                                                               Math.Round(dDCIs, 2))
+                                           
+
+                                            If bAdvConnectTab = True And bDistanceLim = True Then
+                                                ' Insert new metric into metrics object list
+                                                pMetricsObject = New MetricsObject(f_sOutID, _
+                                                                                   f_siOutEID, _
+                                                                                   sOutID, _
+                                                                                   iBarrierEID, _
+                                                                                   f_sType, _
+                                                                                   "DCI_s (dwnstrm segment)", _
+                                                                                   Math.Round(dDCIs, 2))
+                                            Else
+                                                ' Insert new metric into metrics object list
+                                                pMetricsObject = New MetricsObject(f_sOutID, _
+                                                                                   f_siOutEID, _
+                                                                                   sOutID, _
+                                                                                   iBarrierEID, _
+                                                                                   f_sType, _
+                                                                                   "DCI Sectional", _
+                                                                                   Math.Round(dDCIs, 2))
+                                            End If
+
                                             lMetricsObject.Add(pMetricsObject)
                                         End If
                                     End If
@@ -5560,8 +5574,8 @@ Public Class Analysis
         ' Get the pUID of the SelectByLayer command
         'pUID.Value = "{82B9951B-DD63-11D1-AA7F-00C04FA37860}"
 
-        Dim pGp As IGeoProcessor
-        pGp = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
+        'Dim pGp As IGeoProcessor
+        'pGp = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
 
         Dim pGp2 As IGeoProcessor2
         pGp2 = New ESRI.ArcGIS.Geoprocessing.GeoProcessor
