@@ -39,7 +39,7 @@ Partial Class ChooseLineHabParam
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(37, 111)
+        Me.Label1.Location = New System.Drawing.Point(70, 128)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(162, 20)
         Me.Label1.TabIndex = 0
@@ -48,7 +48,7 @@ Partial Class ChooseLineHabParam
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(268, 111)
+        Me.Label2.Location = New System.Drawing.Point(268, 128)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(165, 20)
         Me.Label2.TabIndex = 1
@@ -57,7 +57,7 @@ Partial Class ChooseLineHabParam
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(37, 173)
+        Me.Label3.Location = New System.Drawing.Point(70, 197)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(142, 20)
         Me.Label3.TabIndex = 2
@@ -65,18 +65,18 @@ Partial Class ChooseLineHabParam
         '
         'cmdSaveLineHabSettings
         '
-        Me.cmdSaveLineHabSettings.Location = New System.Drawing.Point(119, 241)
+        Me.cmdSaveLineHabSettings.Location = New System.Drawing.Point(119, 275)
         Me.cmdSaveLineHabSettings.Name = "cmdSaveLineHabSettings"
-        Me.cmdSaveLineHabSettings.Size = New System.Drawing.Size(80, 35)
+        Me.cmdSaveLineHabSettings.Size = New System.Drawing.Size(93, 35)
         Me.cmdSaveLineHabSettings.TabIndex = 3
         Me.cmdSaveLineHabSettings.Text = "Save"
         Me.cmdSaveLineHabSettings.UseVisualStyleBackColor = True
         '
         'cmdCancel
         '
-        Me.cmdCancel.Location = New System.Drawing.Point(255, 235)
+        Me.cmdCancel.Location = New System.Drawing.Point(272, 275)
         Me.cmdCancel.Name = "cmdCancel"
-        Me.cmdCancel.Size = New System.Drawing.Size(94, 47)
+        Me.cmdCancel.Size = New System.Drawing.Size(91, 35)
         Me.cmdCancel.TabIndex = 4
         Me.cmdCancel.Text = "Cancel"
         Me.cmdCancel.UseVisualStyleBackColor = True
@@ -84,7 +84,7 @@ Partial Class ChooseLineHabParam
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(278, 34)
+        Me.Label4.Location = New System.Drawing.Point(268, 44)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(100, 20)
         Me.Label4.TabIndex = 5
@@ -93,7 +93,7 @@ Partial Class ChooseLineHabParam
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(37, 44)
+        Me.Label5.Location = New System.Drawing.Point(70, 44)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(97, 20)
         Me.Label5.TabIndex = 6
@@ -102,7 +102,7 @@ Partial Class ChooseLineHabParam
         'cboLengthField
         '
         Me.cboLengthField.FormattingEnabled = True
-        Me.cboLengthField.Location = New System.Drawing.Point(41, 67)
+        Me.cboLengthField.Location = New System.Drawing.Point(74, 67)
         Me.cboLengthField.Name = "cboLengthField"
         Me.cboLengthField.Size = New System.Drawing.Size(164, 28)
         Me.cboLengthField.TabIndex = 7
@@ -118,7 +118,7 @@ Partial Class ChooseLineHabParam
         'cmboHabQuanField
         '
         Me.cmboHabQuanField.FormattingEnabled = True
-        Me.cmboHabQuanField.Location = New System.Drawing.Point(41, 142)
+        Me.cmboHabQuanField.Location = New System.Drawing.Point(74, 151)
         Me.cmboHabQuanField.Name = "cmboHabQuanField"
         Me.cmboHabQuanField.Size = New System.Drawing.Size(164, 28)
         Me.cmboHabQuanField.TabIndex = 9
@@ -126,7 +126,7 @@ Partial Class ChooseLineHabParam
         'cboHabUnits
         '
         Me.cboHabUnits.FormattingEnabled = True
-        Me.cboHabUnits.Location = New System.Drawing.Point(272, 142)
+        Me.cboHabUnits.Location = New System.Drawing.Point(272, 151)
         Me.cboHabUnits.Name = "cboHabUnits"
         Me.cboHabUnits.Size = New System.Drawing.Size(161, 28)
         Me.cboHabUnits.TabIndex = 10
@@ -134,7 +134,7 @@ Partial Class ChooseLineHabParam
         'cboHabClassField
         '
         Me.cboHabClassField.FormattingEnabled = True
-        Me.cboHabClassField.Location = New System.Drawing.Point(41, 196)
+        Me.cboHabClassField.Location = New System.Drawing.Point(74, 220)
         Me.cboHabClassField.Name = "cboHabClassField"
         Me.cboHabClassField.Size = New System.Drawing.Size(164, 28)
         Me.cboHabClassField.TabIndex = 11
@@ -143,7 +143,7 @@ Partial Class ChooseLineHabParam
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(516, 290)
+        Me.ClientSize = New System.Drawing.Size(516, 334)
         Me.Controls.Add(Me.cboHabClassField)
         Me.Controls.Add(Me.cboHabUnits)
         Me.Controls.Add(Me.cmboHabQuanField)
