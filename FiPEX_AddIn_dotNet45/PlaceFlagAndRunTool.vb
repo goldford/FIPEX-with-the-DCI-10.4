@@ -384,7 +384,7 @@ Public Class PlaceFlagAndRunTool
         End With
 
         If EID = 0 Then
-            MsgBox("You have to click on a network junction element.")
+            MsgBox("No network junction found here. Please zoom in and click within the 100 map unit tolerance of a network junction.")
             backgroundworker2.CancelAsync()
             backgroundworker2.ReportProgress(100, "Closing")
             Exit Sub

@@ -68,7 +68,7 @@
         </Toolbar>
       </Toolbars>
       <Menus>
-        <Menu id="FIPEX_AddIn_dotNet45_2020_FiPEx_Menu" caption="Menu" isRootMenu="true">
+        <Menu id="FIPEX_AddIn_dotNet45_2020_FiPEx_Menu" caption="FIPEX Menu" isRootMenu="true">
           <Items>
             <Button refID="FIPEX_AddIn_dotNet45_2020_cmdOpenOptions" />
             <Button refID="esriEditorExt.ShowFlowTool" />

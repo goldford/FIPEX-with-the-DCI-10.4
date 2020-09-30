@@ -466,7 +466,7 @@ Public Class Analysis
                 bMaximum = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("maximum"))
                 'If they want the maximum then set ordernum to very large number (haven't found a better way yet)
                 If bMaximum = True Then
-                    iOrderNum = 999
+                    iOrderNum = 99999
                 End If
                 bConnectTab = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("connecttab"))
                 bBarrierPerm = Convert.ToBoolean(m_FiPEx__1.pPropset.GetProperty("barrierperm"))
