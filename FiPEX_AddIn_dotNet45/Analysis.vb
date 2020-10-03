@@ -741,6 +741,7 @@ Public Class Analysis
         If pNetworkAnalysisExtFlags.JunctionFlagCount = 0 Then
             'If pNetworkAnalysisExtFlags.EdgeFlagCount = 0 Then
             MsgBox("There are no flags set on junctions.  Please Set flags only on network junctions.")
+
             Exit Sub
             'End If
         End If
@@ -820,6 +821,10 @@ Public Class Analysis
         If m_bCancel = True Then
             backgroundworker1.CancelAsync()
             backgroundworker1.Dispose()
+            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
             Exit Sub
         End If
         backgroundworker1.ReportProgress(10, "Getting participating layers from the Table of Contents")
@@ -933,6 +938,10 @@ Public Class Analysis
             If pFWorkspace Is Nothing Then
                 System.Windows.Forms.MessageBox.Show("Could not get reference to output workspace.  " _
                 + "Please check output geodatabase in options menu", "Output Workspace Error")
+                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                 Exit Sub
             End If
 
@@ -1087,6 +1096,10 @@ Public Class Analysis
         If m_bCancel = True Then
             backgroundworker1.CancelAsync()
             backgroundworker1.Dispose()
+            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
             Exit Sub
         End If
         backgroundworker1.ReportProgress(10, "Beginning Network Traces")
@@ -1280,6 +1293,10 @@ Public Class Analysis
                 If m_bCancel = True Then
                     backgroundworker1.CancelAsync()
                     backgroundworker1.Dispose()
+                    ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                     Exit Sub
                 End If
                 backgroundworker1.ReportProgress(10, "Performing Network Traces for Advanced Connectivity Analysis Step 1 " & _
@@ -1583,6 +1600,10 @@ Public Class Analysis
             If m_bCancel = True Then
                 backgroundworker1.CancelAsync()
                 backgroundworker1.Dispose()
+                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                 Exit Sub
             End If
             backgroundworker1.ReportProgress(10, "Performing Network Traces " & _
@@ -1632,6 +1653,10 @@ Public Class Analysis
                 If m_bCancel = True Then
                     backgroundworker1.CancelAsync()
                     backgroundworker1.Dispose()
+                    ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                     Exit Sub
                 End If
                 If iProgress < 50 Then
@@ -1761,6 +1786,10 @@ Public Class Analysis
                     If pTraceFlowSolver Is Nothing Then
                         System.Windows.Forms.MessageBox.Show("Could not set up the network. Check that there is a network loaded.", _
                                                              "TraceFlowSolver setup error.")
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
 
@@ -2111,6 +2140,10 @@ Public Class Analysis
                             If m_bCancel = True Then
                                 backgroundworker1.CancelAsync()
                                 backgroundworker1.Dispose()
+                                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                                 Exit Sub
                             End If
                             If iProgress < 50 Then
@@ -2211,6 +2244,10 @@ Public Class Analysis
                             If m_bCancel = True Then
                                 backgroundworker1.CancelAsync()
                                 backgroundworker1.Dispose()
+                                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                                 Exit Sub
                             End If
                             If iProgress < 50 Then
@@ -2272,6 +2309,10 @@ Public Class Analysis
                             If m_bCancel = True Then
                                 backgroundworker1.CancelAsync()
                                 backgroundworker1.Dispose()
+                                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                                 Exit Sub
                             End If
                             If iProgress < 50 Then
@@ -2329,6 +2370,10 @@ Public Class Analysis
                         If m_bCancel = True Then
                             backgroundworker1.CancelAsync()
                             backgroundworker1.Dispose()
+                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                             Exit Sub
                         End If
                         If iProgress < 50 Then
@@ -2382,6 +2427,10 @@ Public Class Analysis
                         If m_bCancel = True Then
                             backgroundworker1.CancelAsync()
                             backgroundworker1.Dispose()
+                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                             Exit Sub
                         End If
                         If iProgress < 50 Then
@@ -2454,6 +2503,10 @@ Public Class Analysis
                         If m_bCancel = True Then
                             backgroundworker1.CancelAsync()
                             backgroundworker1.Dispose()
+                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                             Exit Sub
                         End If
                         If iProgress < 50 Then
@@ -2512,6 +2565,10 @@ Public Class Analysis
                             If m_bCancel = True Then
                                 backgroundworker1.CancelAsync()
                                 backgroundworker1.Dispose()
+                                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                                 Exit Sub
                             End If
                             If iProgress < 50 Then
@@ -2560,6 +2617,10 @@ Public Class Analysis
                             If m_bCancel = True Then
                                 backgroundworker1.CancelAsync()
                                 backgroundworker1.Dispose()
+                                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                                 Exit Sub
                             End If
                             If iProgress < 50 Then
@@ -2661,6 +2722,10 @@ Public Class Analysis
                         If m_bCancel = True Then
                             backgroundworker1.CancelAsync()
                             backgroundworker1.Dispose()
+                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                             Exit Sub
                         End If
                         If iProgress < 50 Then
@@ -2790,6 +2855,10 @@ Public Class Analysis
                 If m_bCancel = True Then
                     backgroundworker1.CancelAsync()
                     backgroundworker1.Dispose()
+                    ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                     Exit Sub
                 End If
                 If iProgress < 70 Then
@@ -2821,6 +2890,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, _
@@ -2843,6 +2916,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
@@ -2855,6 +2932,10 @@ Public Class Analysis
 
                     If sConnectTabName = "Cancel" Then
                         MsgBox("Debug2020 - issue encountered naming output connectivity table")
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     PrepConnectivityTables(pFWorkspace, sConnectTabName)
@@ -2865,6 +2946,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
@@ -2877,6 +2962,10 @@ Public Class Analysis
 
                     If sAdvConnectTabName = "Cancel" Then
                         MsgBox("Debug2020 - issue encountered naming output advanced connect table")
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     'PrepAdvanced2020DCIOutTable(sAdvConnectTabName, pFWorkspace)
@@ -2887,6 +2976,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
@@ -2903,6 +2996,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
@@ -2919,6 +3016,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
@@ -2928,6 +3029,10 @@ Public Class Analysis
                                                     pFWorkspace, _
                                                     sPrefix)
                     If sGLPKConnectTabName = "Cancel" Then
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     'MsgBox("Debug:50")
@@ -2942,6 +3047,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
@@ -2959,6 +3068,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Creating Output Tables" & ControlChars.NewLine & _
@@ -2988,6 +3101,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Writing To Output Tables" & ControlChars.NewLine & _
@@ -3020,6 +3137,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Writing To Output Tables" & ControlChars.NewLine & _
@@ -3125,6 +3246,10 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Writing To Output Tables" & ControlChars.NewLine & _
@@ -3165,7 +3290,12 @@ Public Class Analysis
                     If m_bCancel = True Then
                         backgroundworker1.CancelAsync()
                         backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
                         Exit Sub
+
                     End If
                     backgroundworker1.ReportProgress(iProgress, "Calculating DCI" & ControlChars.NewLine & _
                                                             "User Flag " & (i + 1).ToString & " of " & Convert.ToString(pOriginaljuncFlagsList.Count))
@@ -3189,6 +3319,21 @@ Public Class Analysis
                             UpdateResultsDCI(iDCIRowCountTEMP, dDCIp, dDCId, bNaturalY, "out.txt")
                         Else
                             MsgBox("Debug2020: Error 306 in RunAnalysis. bAdvConnectTab must = True And bDistanceLim must = True to proceed with DCI. Exiting")
+                            ' ========================= RESET BARRIERS & FLAGS ===========================
+                            '               Reset things the way the user had them
+                            ' check if user has hit 'close/cancel'
+                            If m_bCancel = True Then
+                                backgroundworker1.CancelAsync()
+                                backgroundworker1.Dispose()
+                                Exit Sub
+                            End If
+                            backgroundworker1.ReportProgress(iProgress + 10, "Resetting Flags And Barriers")
+
+                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                               bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                               iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                               pOriginaljuncFlagsList)
+                            '' ====================== RESET BARRIERS & FLAGS  ===========================
                             Exit Sub
                         End If
                     ElseIf bAdvConnectTab = True And bDistanceLim = True Then
@@ -3202,10 +3347,41 @@ Public Class Analysis
                             UpdateResultsAdvDCI(lAdv_DCI_Data_Object.Count, dDCIp, dDCId, bNaturalY, "out_dd.txt")
                         Else
                             MsgBox("Debug2020: Error 204 in RunAnalysis. There must be more than 1 row in the advanced summary table object. Exiting")
+                            ' ========================= RESET BARRIERS & FLAGS ===========================
+                            '               Reset things the way the user had them
+                            ' check if user has hit 'close/cancel'
+                            If m_bCancel = True Then
+                                backgroundworker1.CancelAsync()
+                                backgroundworker1.Dispose()
+                                Exit Sub
+                            End If
+                            backgroundworker1.ReportProgress(iProgress + 10, "Resetting Flags And Barriers")
+
+                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                               bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                               iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                               pOriginaljuncFlagsList)
+                            '' ====================== RESET BARRIERS & FLAGS  ===========================
                             Exit Sub
                         End If
                     Else
                         MsgBox("Debug2020: Error 210 in RunAnalysis. bAdvConnectTab must = True And bDistanceLim must = True to proceed with DCI. Exiting")
+                        ' ========================= RESET BARRIERS & FLAGS ===========================
+                        '               Reset things the way the user had them
+                        ' check if user has hit 'close/cancel'
+                        If m_bCancel = True Then
+                            backgroundworker1.CancelAsync()
+                            backgroundworker1.Dispose()
+                            Exit Sub
+                        End If
+                        backgroundworker1.ReportProgress(iProgress + 10, "Resetting Flags And Barriers")
+
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
+
+                        '' ====================== RESET BARRIERS & FLAGS  ===========================
                         Exit Sub
                     End If
 
@@ -3860,7 +4036,7 @@ Public Class Analysis
 
         Dim pEdgeFlagDisplay As IEdgeFlagDisplay
 
-        ' ========================= RESET BARRIERS ===========================
+        ' ========================= RESET BARRIERS & FLAGS ===========================
         '               Reset things the way the user had them
         ' check if user has hit 'close/cancel'
         If m_bCancel = True Then
@@ -3870,92 +4046,21 @@ Public Class Analysis
         End If
         backgroundworker1.ReportProgress(iProgress + 10, "Resetting Flags And Barriers")
 
-        m = 0
-        pOriginalBarriersList.Reset()
-        For m = 0 To pOriginalBarriersList.Count - 1
-            bEID = pOriginalBarriersList.Next()
-            pNetElements.QueryIDs(bEID, esriElementType.esriETJunction, bFCID, bFID, bSubID)
+        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                           pOriginaljuncFlagsList)
 
-            ' Display the barriers as a JunctionFlagDisplay type
-            pFlagDisplay = New JunctionFlagDisplay
-            pSymbol = CType(pBarrierSymbol, ISymbol)
-            With pFlagDisplay
-                .FeatureClassID = bFCID
-                .FID = bFID
-                .Geometry = pGeometricNetwork.GeometryForJunctionEID(bEID)
-                .Symbol = pSymbol
-            End With
+        '' ====================== RESET BARRIERS & FLAGS  ===========================
+      
+       
 
-            ' Add the flags to the logical network
-            pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
-            pNetworkAnalysisExtBarriers.AddJunctionBarrier(pJuncFlagDisplay)
-        Next
-        ' ====================== END RESET BARRIERS ===========================
-        'MsgBox("Debug:62")
-        ' Clear current flags
-        pNetworkAnalysisExtFlags.ClearFlags()
-
-        ' ======================== RESET FLAGS ================================
-        ' restore all EDGE flags
-        m = 0
-        pOriginalEdgeFlagsList.Reset()
-        For m = 0 To pOriginalEdgeFlagsList.Count - 1
-
-            iEID = pOriginalEdgeFlagsList.Next()
-            ' Query the corresponding user ID's to the element ID
-            pNetElements.QueryIDs(iEID, esriElementType.esriETEdge, iFCID, iFID, iSubID)
-
-            ' Display the flags as a JunfctionFlagDisplay type
-            pFlagDisplay = New EdgeFlagDisplay
-            pSymbol = CType(pFlagSymbol, ISymbol)
-            With pFlagDisplay
-                .FeatureClassID = iFCID
-                .FID = iFID
-                .Geometry = pGeometricNetwork.GeometryForEdgeEID(iEID)
-                .Symbol = pSymbol
-            End With
-
-            ' Add the flags to the logical network
-            pEdgeFlagDisplay = CType(pFlagDisplay, IEdgeFlagDisplay)
-            pNetworkAnalysisExtFlags.AddEdgeFlag(pEdgeFlagDisplay)
-        Next
-
-        ' restore all JUNCTION Flags
-        m = 0
-        pOriginaljuncFlagsList.Reset()
-        For m = 0 To pOriginaljuncFlagsList.Count - 1
-
-            iEID = pOriginaljuncFlagsList.Next()
-            ' Query the corresponding user ID's to the element ID
-            pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, iFCID, iFID, iSubID)
-
-            ' Display the flags as a JunfctionFlagDisplay type
-            pFlagDisplay = New JunctionFlagDisplay
-            pSymbol = CType(pFlagSymbol, ISymbol)
-            With pFlagDisplay
-                .FeatureClassID = iFCID
-                .FID = iFID
-                .Geometry = pGeometricNetwork.GeometryForJunctionEID(iEID)
-                .Symbol = pSymbol
-            End With
-
-            ' Add the flags to the logical network
-            pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
-            pNetworkAnalysisExtFlags.AddJunctionFlag(pJuncFlagDisplay)
-
-        Next
-
-        'MsgBox("Debug:63")
         ' Create a result highlight of all areas traced
         pTotalResultsEdges = CType(pTotalResultsEdgesGEN, IEnumNetEID)
         pTotalResultsJunctions = CType(pTotalResultsJunctionsGEN, IEnumNetEID)
         pNetworkAnalysisExtResults.ResultsAsSelection = False
         pNetworkAnalysisExtResults.SetResults(pTotalResultsJunctions, pTotalResultsEdges)
         pNetworkAnalysisExtResults.ResultsAsSelection = True
-
-        ' =========================== END RESET FLAGS =====================
-        ' Bring results form to front
-        'pResultsForm.BringToFront()
 
         EndTime = DateTime.Now
       
@@ -4528,7 +4633,118 @@ Public Class Analysis
         backgroundworker1.Dispose()
         backgroundworker1.CancelAsync()
 
+        ' Bring results form to front
+        pResultsForm3.BringToFront()
+
     End Sub
+    Private Sub ResetFlagsBarriers(ByRef pNetworkAnalysisExtBarriers As INetworkAnalysisExtBarriers, _
+                                   ByRef pOriginalBarriersList As IEnumNetEID, _
+                                   ByRef pNetElements As INetElements, _
+                                   ByVal bFCID As Integer, _
+                                   ByVal bFID As Integer, _
+                                   ByVal bSubID As Integer, _
+                                   ByRef pBarrierSymbol As ISimpleMarkerSymbol, _
+                                   ByRef pGeometricNetwork As IGeometricNetwork, _
+                                   ByVal iFCID As Integer, _
+                                   ByVal iFID As Integer, _
+                                   ByVal iSubID As Integer, _
+                                   ByRef pNetworkAnalysisExtFlags As INetworkAnalysisExtFlags, _
+                                   ByRef pOriginalEdgeFlagsList As IEnumNetEID, _
+                                   ByRef pFlagSymbol As ISimpleMarkerSymbol, _
+                                   ByRef pOriginaljuncFlagsList As IEnumNetEID
+                                   )
+        ' created 2020 by G Oldford
+
+        Dim bEID, iEID, m As Integer
+        Dim pFlagDisplay As IFlagDisplay
+        Dim pSymbol As ISymbol
+        Dim pJuncFlagDisplay As IJunctionFlagDisplay
+        Dim pEdgeFlagDisplay As IEdgeFlagDisplay
+
+        pNetworkAnalysisExtBarriers.ClearBarriers()
+
+        ' ========================= RESET BARRIERS ===========================
+        '               Reset things the way the user had them
+
+        m = 0
+        pOriginalBarriersList.Reset()
+        For m = 0 To pOriginalBarriersList.Count - 1
+            bEID = pOriginalBarriersList.Next()
+            pNetElements.QueryIDs(bEID, esriElementType.esriETJunction, bFCID, bFID, bSubID)
+
+            ' Display the barriers as a JunctionFlagDisplay type
+            pFlagDisplay = New JunctionFlagDisplay
+            pSymbol = CType(pBarrierSymbol, ISymbol)
+            With pFlagDisplay
+                .FeatureClassID = bFCID
+                .FID = bFID
+                .Geometry = pGeometricNetwork.GeometryForJunctionEID(bEID)
+                .Symbol = pSymbol
+            End With
+
+            ' Add the flags to the logical network
+            pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
+            pNetworkAnalysisExtBarriers.AddJunctionBarrier(pJuncFlagDisplay)
+        Next
+        ' ====================== END RESET BARRIERS ===========================
+        'MsgBox("Debug:62")
+        ' Clear current flags
+        pNetworkAnalysisExtFlags.ClearFlags()
+
+        ' ======================== RESET FLAGS ================================
+        ' restore all EDGE flags
+        m = 0
+        pOriginalEdgeFlagsList.Reset()
+        For m = 0 To pOriginalEdgeFlagsList.Count - 1
+
+            iEID = pOriginalEdgeFlagsList.Next()
+            ' Query the corresponding user ID's to the element ID
+            pNetElements.QueryIDs(iEID, esriElementType.esriETEdge, iFCID, iFID, iSubID)
+
+            ' Display the flags as a JunfctionFlagDisplay type
+            pFlagDisplay = New EdgeFlagDisplay
+            pSymbol = CType(pFlagSymbol, ISymbol)
+            With pFlagDisplay
+                .FeatureClassID = iFCID
+                .FID = iFID
+                .Geometry = pGeometricNetwork.GeometryForEdgeEID(iEID)
+                .Symbol = pSymbol
+            End With
+
+            ' Add the flags to the logical network
+            pEdgeFlagDisplay = CType(pFlagDisplay, IEdgeFlagDisplay)
+            pNetworkAnalysisExtFlags.AddEdgeFlag(pEdgeFlagDisplay)
+        Next
+
+        ' restore all JUNCTION Flags
+        m = 0
+        pOriginaljuncFlagsList.Reset()
+        For m = 0 To pOriginaljuncFlagsList.Count - 1
+
+            iEID = pOriginaljuncFlagsList.Next()
+            ' Query the corresponding user ID's to the element ID
+            pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, iFCID, iFID, iSubID)
+
+            ' Display the flags as a JunfctionFlagDisplay type
+            pFlagDisplay = New JunctionFlagDisplay
+            pSymbol = CType(pFlagSymbol, ISymbol)
+            With pFlagDisplay
+                .FeatureClassID = iFCID
+                .FID = iFID
+                .Geometry = pGeometricNetwork.GeometryForJunctionEID(iEID)
+                .Symbol = pSymbol
+            End With
+
+            ' Add the flags to the logical network
+            pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
+            pNetworkAnalysisExtFlags.AddJunctionFlag(pJuncFlagDisplay)
+
+        Next
+
+
+        ' =========================== END RESET FLAGS =====================
+    End Sub
+
     Private Sub PrepareZeroBudgetOptionsTable(ByVal sGLPKOptionsTableName As String, _
                                               ByRef pFWorkspace As IFeatureWorkspace, _
                                               ByVal lGLPKOptionsList As List(Of GLPKOptionsObject))
