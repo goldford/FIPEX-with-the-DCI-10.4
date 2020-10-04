@@ -3338,13 +3338,25 @@ Public Class Analysis
                         End If
                     ElseIf bAdvConnectTab = True And bDistanceLim = True Then
                         If lAdv_DCI_Data_Object.Count > 1 Then
-                            DCI_ADV2020_ShellCall(pFWorkspace, _
+                            If lAdv_DCI_Data_Object.Count > 100 Then
+                                MsgBox("River network too large for computation. Regrettably, the DCI with distance limits / decay cannot be computed for rivers or river sections this large. Please turn off distance limits / decay to and re-run. FIPEX code error 3f483. ")
+                                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                               bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                               iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                               pOriginaljuncFlagsList)
+                                Exit Sub
+                            Else
+                                DCI_ADV2020_ShellCall(pFWorkspace, _
                                       lAdv_DCI_Data_Object, _
                                       bDCISectional, _
                                       bDistanceLim, _
                                       dMaxDist, _
                                       bDistanceDecay, sDDFunction)
-                            UpdateResultsAdvDCI(lAdv_DCI_Data_Object.Count, dDCIp, dDCId, bNaturalY, "out_dd.txt")
+
+                                UpdateResultsAdvDCI(lAdv_DCI_Data_Object.Count, dDCIp, dDCId, bNaturalY, "out_dd.txt")
+
+                            End If
+                            
                         Else
                             MsgBox("Debug2020: Error 204 in RunAnalysis. There must be more than 1 row in the advanced summary table object. Exiting")
                             ' ========================= RESET BARRIERS & FLAGS ===========================
