@@ -821,10 +821,7 @@ Public Class Analysis
         If m_bCancel = True Then
             backgroundworker1.CancelAsync()
             backgroundworker1.Dispose()
-            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
-                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
-                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
-                                           pOriginaljuncFlagsList)
+            
             Exit Sub
         End If
         backgroundworker1.ReportProgress(10, "Getting participating layers from the Table of Contents")
@@ -938,10 +935,7 @@ Public Class Analysis
             If pFWorkspace Is Nothing Then
                 System.Windows.Forms.MessageBox.Show("Could not get reference to output workspace.  " _
                 + "Please check output geodatabase in options menu", "Output Workspace Error")
-                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
-                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
-                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
-                                           pOriginaljuncFlagsList)
+
                 Exit Sub
             End If
 
@@ -1096,10 +1090,7 @@ Public Class Analysis
         If m_bCancel = True Then
             backgroundworker1.CancelAsync()
             backgroundworker1.Dispose()
-            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
-                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
-                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
-                                           pOriginaljuncFlagsList)
+           
             Exit Sub
         End If
         backgroundworker1.ReportProgress(10, "Beginning Network Traces")
