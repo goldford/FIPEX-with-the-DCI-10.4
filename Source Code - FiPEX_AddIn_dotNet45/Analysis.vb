@@ -6614,6 +6614,8 @@ Public Class Analysis
                             sUnit = "dm"
                         ElseIf sUnit = "Square Kilometres" Then
                             sUnit = "km^2"
+                        ElseIf sUnit = "None" Then
+                            sUnit = "none"
                         Else
                             sUnit = "n/a"
                         End If
@@ -6839,8 +6841,9 @@ Public Class Analysis
                                     Try
                                         dTempQuan = Convert.ToDouble(vTemp)
                                     Catch ex As Exception
-                                        MsgBox("Could not convert the habitat quantity value found in the" + _
-                                        lLineLayersFields(j).Layer.ToString + ". Was not convertable to type 'double'." + _
+                                        MsgBox("Could not convert the habitat quantity value found in the " + _
+                                        lLineLayersFields(j).Layer.ToString + ". The values in the " + _
+                                        lLineLayersFields(j).HabQuanField.ToString + " was not convertable to type 'double'." + _
                                         ex.Message)
                                         dTempQuan = 0
                                     End Try
@@ -6956,6 +6959,8 @@ Public Class Analysis
                             sUnit = "dm"
                         ElseIf sUnit = "Square Kilometres" Then
                             sUnit = "km^2"
+                        ElseIf sUnit = "None" Then
+                            sUnit = "none"
                         Else
                             sUnit = "n/a"
                         End If
@@ -7129,9 +7134,11 @@ Public Class Analysis
                                     Try
                                         dTempQuan = Convert.ToDouble(vTemp)
                                     Catch ex As Exception
-                                        MsgBox("Could not convert the habitat quantity value found in the" + _
-                                        lPolyLayersFields(j).Layer.ToString + ". Was not convertable to type 'double'." + _
+                                        MsgBox("Could not convert the habitat quantity value found in the " + _
+                                        lPolyLayersFields(j).Layer.ToString + "layer. The " + _
+                                        +lPolyLayersFields(j).HabQuanField.ToString + " field was not convertable to type 'double'." + _
                                         ex.Message)
+
                                         dTempQuan = 0
                                     End Try
                                     ' Insert into the corresponding column of the second

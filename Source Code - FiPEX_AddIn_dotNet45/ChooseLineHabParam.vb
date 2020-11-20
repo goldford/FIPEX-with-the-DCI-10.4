@@ -92,6 +92,7 @@ Public Class ChooseLineHabParam
         cboLengthUnits.Items.Add("Miles")
         cboLengthUnits.Items.Add("Hectometres")
         cboLengthUnits.Items.Add("Dekametres")
+        cboLengthUnits.Items.Add("None")
 
         For i As Integer = 0 To cboLengthUnits.Items.Count - 1
             If cboLengthUnits.Items.Item(i).ToString = m_LayerToAdd.LengthUnits Then
@@ -110,6 +111,7 @@ Public Class ChooseLineHabParam
         cboHabUnits.Items.Add("Square Kilometres")
         cboHabUnits.Items.Add("Hectometres")
         cboHabUnits.Items.Add("Dekametres")
+        cboHabUnits.Items.Add("None")
 
         For i As Integer = 0 To cboHabUnits.Items.Count - 1
             If cboHabUnits.Items.Item(i).ToString = m_LayerToAdd.HabUnits Then

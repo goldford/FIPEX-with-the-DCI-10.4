@@ -6,56 +6,7 @@ FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020
 </name>
 </assembly>
 <members>
-<member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.ResourceManager">
-	<summary>
-  Returns the cached ResourceManager instance used by this class.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.Culture">
-	<summary>
-  Overrides the current thread's CurrentUICulture property for all
-  resource lookups using this strongly typed resource class.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPex_LOGOv2_90">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPex_LOGOv3b_180x180">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPEx_LOGOv3b_90x90">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.orderdiagram">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD">
-	<summary>
-  Looks up a localized resource of type System.Drawing.Bitmap.
-</summary>
-</member><member name="T:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources">
-	<summary>
-  A strongly-typed resource class, for looking up localized strings, etc.
-</summary>
-</member><member name="M:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.cmdBulkSnap.snapFeature(ESRI.ArcGIS.Geodatabase.IFeature,ESRI.ArcGIS.Editor.ISnapEnvironment)">
+<member name="M:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.cmdBulkSnap.snapFeature(ESRI.ArcGIS.Geodatabase.IFeature,ESRI.ArcGIS.Editor.ISnapEnvironment)">
 	<summary>
  This method stores all the features points in a collection 
  and attempts to snap each point.
@@ -142,6 +93,55 @@ A class for looking up declarative information in the associated configuration x
 	<summary>
  Expose this instance of Add-in class externally
  </summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPex_LOGOv2_90">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPex_LOGOv3b_180x180">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPEx_LOGOv3b_90x90">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.orderdiagram">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="T:FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
 </member>
 </members>
 </doc>

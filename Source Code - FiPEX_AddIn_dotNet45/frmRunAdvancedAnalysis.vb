@@ -691,6 +691,8 @@ Public Class frmRunAdvancedAnalysis
         rdoNatExp1.Enabled = False
         rdoCircle.Enabled = False
         rdoSigmoid.Enabled = False
+        ' lstLineHabQuan.Enabled = False
+        ' lstLineHabUnits.Enabled = False
 
 
         ' obtain reference to current geometric network

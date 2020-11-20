@@ -4278,6 +4278,8 @@ Public Class PlaceFlagAndRunTool
                             sUnit = "dm"
                         ElseIf sUnit = "Square Kilometres" Then
                             sUnit = "km^2"
+                        ElseIf sUnit = "None" Then
+                            sUnit = "none"
                         Else
                             sUnit = "n/a"
                         End If
@@ -4443,14 +4445,16 @@ Public Class PlaceFlagAndRunTool
                                         vTemp = pFeature.Value(iFieldVal)
                                     Catch ex As Exception
                                         MsgBox("Could not convert quantity field found in " + lLineLayersFields(j).Layer.ToString + _
-                                               " was not convertible to type 'double'.  Null values in field may be responsible. " & ex.Message)
+                                               " layer " + lLineLayersFields(j).HabQuanField.ToString + _
+                                               " field was not convertible to type 'double'.  Null values in field may be responsible. " & ex.Message)
                                         vTemp = 0
                                     End Try
                                     Try
                                         dTempQuan = Convert.ToDouble(vTemp)
                                     Catch ex As Exception
                                         MsgBox("Could not convert the habitat quantity value found in the" + _
-                                        lLineLayersFields(j).Layer.ToString + ". Was not convertable to type 'double'." + _
+                                        lLineLayersFields(j).Layer.ToString + " layer " + lLineLayersFields(j).HabQuanField.ToString + _
+                                        " field was not convertable to type 'double'. Null values in field may be responsible." + _
                                         ex.Message)
                                         dTempQuan = 0
                                     End Try
@@ -4534,6 +4538,8 @@ Public Class PlaceFlagAndRunTool
                             sUnit = "dm"
                         ElseIf sUnit = "Square Kilometres" Then
                             sUnit = "km^2"
+                        ElseIf sUnit = "None" Then
+                            sUnit = "none"
                         Else
                             sUnit = "n/a"
                         End If

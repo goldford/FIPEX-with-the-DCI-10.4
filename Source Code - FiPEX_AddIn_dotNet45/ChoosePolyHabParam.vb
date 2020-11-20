@@ -111,6 +111,7 @@ Public Class ChoosePolyHabParam
         cboUnits.Items.Add("Square Kilometres")
         cboUnits.Items.Add("Hectometres")
         cboUnits.Items.Add("Dekametres")
+        cboUnits.Items.Add("None")
 
         For i As Integer = 0 To cboUnits.Items.Count - 1
             If cboUnits.Items.Item(i).ToString = m_LayerToAdd.HabUnitField Then
