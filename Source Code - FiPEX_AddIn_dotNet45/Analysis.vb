@@ -3522,19 +3522,15 @@ Public Class Analysis
 
                                             If bAdvConnectTab = True And bDistanceLim = True Then
                                                 ' Insert new metric into metrics object list
-                                                pMetricsObject = New MetricsObject(f_sOutID, _
-                                                                                   f_siOutEID, _
-                                                                                   sOutID, _
-                                                                                   iBarrierEID, _
+                                                pMetricsObject = New MetricsObject(f_sOutID, f_siOutEID, _
+                                                                                   sOutID, iBarrierEID, _
                                                                                    f_sType, _
                                                                                    "DCI_s (dwnstrm segment)", _
                                                                                    Math.Round(dDCIs, 2))
                                             Else
                                                 ' Insert new metric into metrics object list
-                                                pMetricsObject = New MetricsObject(f_sOutID, _
-                                                                                   f_siOutEID, _
-                                                                                   sOutID, _
-                                                                                   iBarrierEID, _
+                                                pMetricsObject = New MetricsObject(f_sOutID, f_siOutEID, _
+                                                                                   sOutID, iBarrierEID, _
                                                                                    f_sType, _
                                                                                    "DCI Sectional", _
                                                                                    Math.Round(dDCIs, 2))
@@ -3604,7 +3600,6 @@ Public Class Analysis
                     pCursor.InsertRow(pRowBuffer)
                     pCursor.Flush()
                 Next
-
 
                 pTable = pFWorkspace.OpenTable(sGLPKConnectTabName)
                 j = 0
@@ -3685,16 +3680,9 @@ Public Class Analysis
                                                  "User Flag " & (i + 1).ToString & " of " & (pOriginaljuncFlagsList.Count).ToString)
 
                     If bDirected = True Then
-                        GLPKShellCall(sGLPKHabitatTableName, _
-                                      sGLPKOptionsTableName, _
-                                      sGLPKConnectTabName, _
-                                      iMaxOptionNum, _
-                                      f_siOutEID, _
-                                      pFWorkspace, _
-                                      iProgress, _
-                                      sAnalysisCode, _
-                                      "DIR", _
-                                      False)
+                            GLPKShellCall(sGLPKHabitatTableName, sGLPKOptionsTableName, sGLPKConnectTabName, _
+                                      iMaxOptionNum, f_siOutEID, pFWorkspace, iProgress, sAnalysisCode, _
+                                      "DIR", False)
                         ' run once to get 'initial state' of network
                         ' measured in permeability weighted accessible network
                         ' Need to eliminate all other options in 'options' table
@@ -3717,16 +3705,9 @@ Public Class Analysis
 
                     If bUndirected = True Then
 
-                        GLPKShellCall(sGLPKHabitatTableName, _
-                                      sGLPKOptionsTableName, _
-                                      sGLPKConnectTabName, _
-                                   iMaxOptionNum, _
-                                    f_siOutEID, _
-                                 pFWorkspace, _
-                                 iProgress, _
-                                sAnalysisCode, _
-                               "UNDIR", _
-                               False)
+                            GLPKShellCall(sGLPKHabitatTableName, sGLPKOptionsTableName, _
+                                      sGLPKConnectTabName, iMaxOptionNum, f_siOutEID, pFWorkspace, iProgress, _
+                                      sAnalysisCode, "UNDIR", False)
 
                         ' run once to get 'initial state' of network
                         ' measured in permeability weighted accessible network
@@ -4085,54 +4066,6 @@ Public Class Analysis
         Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3
         pResultsForm3.Show()
 
-        'Dim table As DataTable = New DataTable("Summary Results")
-        'Dim column As DataColumn = New DataColumn("Sink ID", GetType(System.String))
-        'Table.Columns.Add(column)
-
-        'column = New DataColumn("bID", GetType(System.String))
-        'table.Columns.Add(column)
-        'column = New DataColumn("Type", GetType(System.String))
-        'table.Columns.Add(column)
-
-        ' the habitat stats list contains quantities for each class used
-        ' if classes are used.  Otherwise they contain totals.  
-        ' will need to re-read user settings in order to determine what CAN go into 
-        ' the output.
-
-        ' Logic - check our settings and what traces are being done. 
-        ' give the user the available options
-        ' given their choice determine how the summary table is made.  
-
-        ' If ANY of the habitat trace types are checked, then the Habstatslist will have content. 
-        ' Otherwise just the MetricsStatsObject will no matter what
-
-        ' CASE 1: User wants classes, user wants totals.  
-        ' So if the user wants to include classes in their output summary table
-        ' then the classes can be taken from lHabStatsList and 
-        ' IF the user is calculating DCI then 
-        ' the total value can be grabbed from the lDCIStatList object. 
-        ' However, in this case (user WANTS classes included in output) the 
-        '  can be taken from the DCI hab list and probably SHOULD be because
-        ' it's being looped through anyway - why loop through a second list? just
-        ' grab a running total/tally from the first list as we move through.
-
-        ' Hab stats will NOT be used if no traces are checked, but at least one always should be 
-
-        ' Need to check IF there are HABITAT CLASSES set.
-        '  YES
-        '     LOOP through all columns
-        '       check IF HAB CLASS is there
-        '         NO
-        '           ADD it as a COLUMN
-        '       
-        ' For now, only the total habitat will be included in the output
-        ' for area and length. 
-        '  If the user is using classes then they will have to be summed
-        ' no matter what, it will have to be summed for each trace type done.  
-
-        ' The easiest way to is to check the length of each object
-        ' if it's not empty, then use it. 
-
         Dim pSinkAndDCIS As New SinkandDCIs(Nothing, Nothing, Nothing, Nothing)
         Dim lSinkAndDCIS As New List(Of SinkandDCIs)
         Dim pSinkIDAndTypes As New SinkandTypes(Nothing, Nothing, Nothing)
@@ -4439,6 +4372,7 @@ Public Class Analysis
                     Else
                         pDataGridViewCellStyle.BackColor = Color.Lavender
                     End If
+
                     pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
                     pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Style = pDataGridViewCellStyle
                     pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
@@ -4639,7 +4573,42 @@ Public Class Analysis
         ' Bring results form to front
         pResultsForm3.BringToFront()
 
+        ResultsForm2020(lHabStatsList)
+
     End Sub
+    Private Sub ResultsForm2020(ByRef lRefinedHabStatsList As List(Of StatisticsObject_2))
+        ' col 0 - sink ID
+        ' col 1 - sink EID
+        ' col 2 - barrier ID
+        ' col 3 - barrier EID
+        ' col 4 - stat (e.g., perm, DCI)
+        ' col 5 - trace type (e.g. upstream)
+        ' col 6 - trace subtype (e.g., immediate)
+        ' col 7 - class
+        ' col 8 - value
+        ' col 9 - units
+
+        ' Output Form (will replace dockable window)
+        Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3
+        pResultsForm3.Show()
+
+        ' Set up the table - create columns 
+        pResultsForm3.DataGridView1.Columns.Add("SinkID", "SinkID")             '0
+        pResultsForm3.DataGridView1.Columns.Add("SinkEID", "SinkEID")           '1
+        pResultsForm3.DataGridView1.Columns.Add("BarrierID", "BarrierID")       '2
+        pResultsForm3.DataGridView1.Columns.Add("BarrierEID", "BarrierEID")     '3
+        pResultsForm3.DataGridView1.Columns.Add("Stat", "Stat")                 '4
+        pResultsForm3.DataGridView1.Columns.Add("TraceType", "TraceType")       '5
+        pResultsForm3.DataGridView1.Columns.Add("TraceSubtype", "TraceSubtype") '6
+        pResultsForm3.DataGridView1.Columns.Add("class", "class")               '7
+        pResultsForm3.DataGridView1.Columns.Add("value", "value")               '8
+        pResultsForm3.DataGridView1.Columns.Add("units", "units")               '9
+
+        pResultsForm3.BringToFront()
+
+    End Sub
+
+
     Private Sub ResetFlagsBarriers(ByRef pNetworkAnalysisExtBarriers As INetworkAnalysisExtBarriers, _
                                    ByRef pOriginalBarriersList As IEnumNetEID, _
                                    ByRef pNetElements As INetElements, _
