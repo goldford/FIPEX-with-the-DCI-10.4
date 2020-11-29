@@ -7,7 +7,7 @@ Imports System.Linq
 
 
 Public Class frmResults_3
-
+    Public b_passCancel As Boolean = False
     Private Sub cmdExportCSV_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdExportXLS.Click
 
         ' Prompt the user for directory
@@ -214,4 +214,8 @@ Public Class frmResults_3
         End Try
 
     End Function
+
+    Private Sub cmdCancel_Click(sender As Object, e As EventArgs) Handles cmdCancel.Click
+        b_passCancel = True
+    End Sub
 End Class

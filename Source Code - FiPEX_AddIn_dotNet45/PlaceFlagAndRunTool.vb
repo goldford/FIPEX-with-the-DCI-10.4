@@ -1851,10 +1851,6 @@ Public Class PlaceFlagAndRunTool
         m_iProgress = 60
         backgroundworker2.ReportProgress(m_iProgress, "Preparing Output Form.")
 
-        ' Output Form (will replace dockable window)
-        Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3
-        pResultsForm3.Show()
-
         Dim pSinkAndDCIS As New SinkandDCIs(Nothing, Nothing, Nothing, Nothing)
         Dim lSinkAndDCIS As New List(Of SinkandDCIs)
         Dim pSinkIDAndTypes As New SinkandTypes(Nothing, Nothing, Nothing)
@@ -1864,9 +1860,6 @@ Public Class PlaceFlagAndRunTool
         Dim bSinkThere, bDCIpMatch, bDCIdMatch, bEntered As Boolean
         Dim row As DataRow
 
-        ' this bit gets a list of the unique sinks from the 
-        ' metrics object list
-        ' and it populates a datatable with unique sinks list
         For i = 0 To lMetricsObject.Count - 1
             j = 0
             bSinkThere = False
@@ -1878,355 +1871,362 @@ Public Class PlaceFlagAndRunTool
             If bSinkThere = False Then
                 pSinkIDAndTypes = New SinkandTypes(lMetricsObject(i).SinkEID, lMetricsObject(i).Sink, lMetricsObject(i).Type)
                 lSinkIDandTypes.Add(pSinkIDAndTypes)
-                'row = pSinkTable.NewRow()
-                'row.ItemArray = New Object() {lMetricsObject(i).SinkEID, lMetricsObject(i).Type}
-                'pSinkTable.Rows.Add(row)
             End If
         Next
 
+        ' 2020 - replaced the code below with new output form code in sharedsubs.vb
         ' ============ BEGIN WRITE TO DATAGRID OUTPUT SUMMARY TABLE =============
-        ' Set up the table - create columns if needed
+        '' Set up the table - create columns if needed
 
-        pResultsForm3.DataGridView1.Columns.Add("Flag", "Flag")           '0
-        pResultsForm3.DataGridView1.Columns.Add("FlagEID", "FlagEID")       '1
-        pResultsForm3.DataGridView1.Columns.Add("Type", "Type")           '2
-        pResultsForm3.DataGridView1.Columns.Add("Metric", "Metric")       '3
-        pResultsForm3.DataGridView1.Columns.Add("Value", "Value")         '4
+        'pResultsForm3.DataGridView1.Columns.Add("Flag", "Flag")           '0
+        'pResultsForm3.DataGridView1.Columns.Add("FlagEID", "FlagEID")       '1
+        'pResultsForm3.DataGridView1.Columns.Add("Type", "Type")           '2
+        'pResultsForm3.DataGridView1.Columns.Add("Metric", "Metric")       '3
+        'pResultsForm3.DataGridView1.Columns.Add("Value", "Value")         '4
 
-        ' If there are habitat statistics then add the proper columns
-        If lHabStatsList.Count > 0 Then
-            pResultsForm3.DataGridView1.Columns.Add("Layer", "Layer")                 '5
-            pResultsForm3.DataGridView1.Columns.Add("Direction", "Direction")         '6
-            pResultsForm3.DataGridView1.Columns.Add("Type", "Type")                   '7
-            pResultsForm3.DataGridView1.Columns.Add("HabitatClass", "Habitat_Class")  '8
-            pResultsForm3.DataGridView1.Columns.Add("Quantity", "Quantity")           '9
-            pResultsForm3.DataGridView1.Columns.Add("Unit", "Unit")                   '10
-        End If
-
-        i = 0
-        For i = 0 To pResultsForm3.DataGridView1.Columns.Count - 1
-            pResultsForm3.DataGridView1.Columns.Item(i).SortMode = DataGridViewColumnSortMode.Programmatic
-        Next i
-
-        i = 0
-        Dim iMaxRowIndex, iSinkRowIndex, iSinkRowCount, iHabRowIndex, iHabRowcount, iBarrRowIndex, iBarrRowCount As Integer ' loop counters and grid indices
-        Dim iMetricRowIndex, iMetricRowCount, iThisHabRowIndex, iThisHabRowCount As Integer
-        Dim iSinkEID, iBarrEID As Integer
-        Dim dTotalHab As Double 'running total of habitat for table
-        Dim sLayer, sDirection2, sTraceType As String
-        Dim bTrigger As Boolean = False
-        Dim bTrigger2 As Boolean = False
-        Dim bColorSwitcher = False
-        Dim bSinkVisit As Boolean = True
-        Dim t As Integer = 0
-        i = 0
-        iMaxRowIndex = 0
-        j = 0
-
-        Dim sinkBarrierLayerComparer As FindLayerAndBarrEIDAndSinkEIDPredicate ' for refining large stats object, reduce looping
-        Dim sinkcomparer As FindBarriersBySinkEIDPredicate
-        Dim barriercomparer As FindBarriersBySinkEIDPredicate ' used for refining habitat stats list 
-        Dim barriermetriccomparer As FindBarrierMetricsBySinkEIDPredicate  ' used for refining barrier metrics stats list
-
-        Dim refinedHabitatList As List(Of StatisticsObject_2)           ' for refining habitat stats list
-        Dim refinedBarrierEIDList As List(Of BarrAndBarrEIDAndSinkEIDs) ' for refining barrier list
-        Dim refinedBarrierMetricsList As List(Of MetricsObject)
-
-        Dim HabStatsComparer As RefineHabStatsListPredicate
-
-
-        Dim pDataGridViewCellStyle As System.Windows.Forms.DataGridViewCellStyle
-        ' For each sink
-        ' 1. for each sink in the master sinks object list
-        ' 2. for each barrier associated with the sink in the master barriers list.  
-        ' 2a add the metrics.
-
-        ' notes: -the maxrow index keeps track of which row we're at,
-        '        it's needed if there are multiple sinks
-        '        -the isinkrow count keeps track of which row for this
-        '        sink we're at so that the first row can be found
-        '        -results form is populated with sinkID, not EID
-        For i = 0 To lSinkIDandTypes.Count - 1
-
-            iSinkRowCount = 0
-            iBarrRowCount = 0
-            j = 0
-            k = 0
-            iSinkRowIndex = pResultsForm3.DataGridView1.Rows.Add()
-            iMaxRowIndex = iSinkRowIndex ' the new maximum row count
-            iSinkEID = lSinkIDandTypes(i).SinkEID
-
-            ' Add the sink ID to the table
-            '    record the row number
-            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Style
-            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(1).Style
-            'pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
-            pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, 14, FontStyle.Bold)
-            pDataGridViewCellStyle.ForeColor = Color.DarkGreen
-            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Style = pDataGridViewCellStyle
-
-            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Value = lSinkIDandTypes(i).SinkID
-            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(1).Value = lSinkIDandTypes(i).SinkEID
-            pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lSinkIDandTypes(i).Type
-
-            ' post up the sink-specific metrics and stats. 
-            '    For each of the records in the metrics list
-            '     add the values associated with this sink
-            '     keep track of the number of rows added
-            '     and the max row count of the table.  
-
-            For k = 0 To lMetricsObject.Count - 1
-                ' matching the 'barrier' EID - which is redundant
-                ' and includes 'sink' metrics, too.  
-                If lMetricsObject(k).BarrEID = iSinkEID Then
-                    If iSinkRowCount = 0 Then
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Value = lMetricsObject(k).MetricName
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Value = Math.Round(lMetricsObject(k).Metric, 2)
-                    ElseIf iSinkRowCount > 0 Then
-                        pResultsForm3.DataGridView1.Rows.Add()
-                        ' keep track of the maximum number of rows in the table
-                        iMaxRowIndex = iMaxRowIndex + 1 ' Row tracker
-                        'pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lMetricsObject(j).ID
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Value = lMetricsObject(k).MetricName
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Value = Math.Round(lMetricsObject(k).Metric, 2)
-
-                    End If
-                    iSinkRowCount += 1
-                End If
-            Next 'Metric Object
-
-            t = 0
-            iHabRowIndex = iSinkRowIndex
-            iBarrRowIndex = iSinkRowIndex
-            iHabRowcount = 0
-            bSinkVisit = True ' to pass to Sub to tell it whether to increment the barrier loop counter
-            For t = 0 To lAllFCIDs.Count - 1
-
-                Dim iTemp As Integer
-                'bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab
-                iTemp = lAllFCIDs(t).FCID
-
-                If bUpHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "upstream", "Immediate")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bTotalUpHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "upstream", "Total")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bDownHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Immediate")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bTotalDownHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Total")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bPathDownHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Path")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-                If bTotalPathDownHab = True Then
-                    HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Total Path")
-                    refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                    UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                End If
-            Next ' layer included (t)
-
-            If bColorSwitcher = True Then
-                bColorSwitcher = False
-            Else
-                bColorSwitcher = True
-            End If
-
-            iHabRowcount = 0
-            iBarrRowIndex = 0
-            iBarrRowCount = 0
-            bTrigger = False 'indicates if the there's been another row added beyond the sink (any barriers)
-            dTotalHab = 0
-            bColorSwitcher = True
-
-            ' 1. a refined list of all barriers for the sink
-            ' use a comparer to get all the records from the barriers and sinks list that match the sink
-            barriercomparer = New FindBarriersBySinkEIDPredicate(iSinkEID)
-            refinedBarrierEIDList = lBarrierAndSinkEIDs.FindAll(AddressOf barriercomparer.CompareEID)
-
-            ' For each barrier
-            '  1. a refined list of all habitat stats for this barrier 
-            '     and sink and layer
-            '  2. for each layer get a refined list of habitat metrics 
-            '     associated with each layer, sink, barrier combo
-            k = 0
-            For k = 0 To refinedBarrierEIDList.Count - 1
-
-
-                If m_bCancel = True Then
-                    backgroundworker2.CancelAsync()
-                    backgroundworker2.ReportProgress(100, "Closing")
-                    Exit Sub
-                End If
-                m_iProgress = m_iProgress + 1
-                backgroundworker2.ReportProgress(m_iProgress, "Writing to Output Form." & ControlChars.NewLine & _
-                                                 "Writing for Barrier " & (k + 1).ToString & " of " & (refinedBarrierEIDList.Count).ToString)
-
-                iBarrRowIndex = pResultsForm3.DataGridView1.Rows.Add()
-                iMaxRowIndex = iBarrRowIndex
-                iBarrRowCount = 0
-                iSinkRowCount += 1
-                iBarrRowCount += 1
-                bTrigger = False
-
-                ' attempt at a border
-                ' border control not available as of 2005 and .net 2.0
-                'Dim pPainter As Windows.Forms.DataGridViewRowPrePaintEventArgs
-                'pPainter = pResultsForm3.DataGridView1..Rows(iMaxRowIndex).
-                '' add barrier ID to the datagrid
-                '    record the row number
-                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style
-                If bColorSwitcher = False Then
-                    pDataGridViewCellStyle.BackColor = Color.PowderBlue
-                Else
-                    pDataGridViewCellStyle.BackColor = Color.Lavender
-                End If
-                pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
-                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Value = refinedBarrierEIDList(k).BarrLabel
-                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Value = refinedBarrierEIDList(k).BarrEID
-
-                ' get refined list of barrier/sink metrics
-                barriermetriccomparer = New FindBarrierMetricsBySinkEIDPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID)
-                refinedBarrierMetricsList = lMetricsObject.FindAll(AddressOf barriermetriccomparer.CompareEID)
-
-                ' For each metric in the refined list
-                ' insert a new row if necessary
-                ' add the metric to the table
-                t = 0
-                iMetricRowCount = 0
-                iMetricRowIndex = iMaxRowIndex
-                For t = 0 To refinedBarrierMetricsList.Count - 1
-
-
-                    If iMetricRowCount = 0 Then
-                        'pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lMetricsObject(j).ID
-                        If bColorSwitcher = True Then
-                            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
-                            pDataGridViewCellStyle.BackColor = Color.Lavender
-                        Else
-                            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
-                            pDataGridViewCellStyle.BackColor = Color.PowderBlue
-                        End If
-                        pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(5).Style = pDataGridViewCellStyle
-                        pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(6).Style = pDataGridViewCellStyle
-
-                        pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(5).Value = refinedBarrierMetricsList(t).MetricName
-                        pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(6).Value = Math.Round(refinedBarrierMetricsList(t).Metric, 2)
-                        iMetricRowCount += 1
-                    ElseIf iMetricRowCount > 0 Then
-                        If iMaxRowIndex <= (iBarrRowIndex + iMetricRowCount) Then
-                            iMetricRowIndex = pResultsForm3.DataGridView1.Rows.Add()
-                            'iBarrRowIndex = iMetricRowIndex
-                            iBarrRowCount += 1
-                            iMetricRowCount += 1
-                            iMaxRowIndex += 1 ' Row tracker
-                            iSinkRowCount += 1
-                        End If
-                        If bColorSwitcher = True Then
-                            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
-                            pDataGridViewCellStyle.BackColor = Color.Lavender
-                        Else
-                            pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
-                            pDataGridViewCellStyle.BackColor = Color.PowderBlue
-                        End If
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style = pDataGridViewCellStyle
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style = pDataGridViewCellStyle
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Style = pDataGridViewCellStyle
-
-
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Value = refinedBarrierMetricsList(t).MetricName
-                        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Value = Math.Round(refinedBarrierMetricsList(t).Metric, 2)
-                    End If
-                Next ' refined metric (t)
-
-                t = 0
-                iHabRowIndex = iBarrRowIndex
-                iHabRowcount = 0
-                bSinkVisit = False
-                For t = 0 To lAllFCIDs.Count - 1
-
-                    Dim iTemp As Integer
-                    'bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab
-                    iTemp = lAllFCIDs(t).FCID
-
-                    If bUpHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "upstream", "Immediate")
-                        refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                        UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                    End If
-                    If bTotalUpHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "upstream", "Total")
-                        refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                        UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                    End If
-                    If bDownHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Immediate")
-                        refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                        UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                    End If
-                    If bTotalDownHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Total")
-                        refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                        UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                    End If
-                    If bPathDownHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Path")
-                        refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                        UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                    End If
-                    If bTotalPathDownHab = True Then
-                        HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Total Path")
-                        refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
-                        UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
-                    End If
-                Next ' layer included (t)
-
-                If bColorSwitcher = True Then
-                    bColorSwitcher = False
-                Else
-                    bColorSwitcher = True
-                End If
-            Next ' barrier for this sink (k)
-        Next ' sink 
-
-        pResultsForm3.DataGridView1.AutoResizeColumns()
-        EndTime = DateTime.Now
-        pResultsForm3.lblBeginTime.Text = "Begin Time: " & BeginTime
-        pResultsForm3.lblEndtime.Text = "End Time: " & EndTime
-
-        TotalTime = EndTime - BeginTime
-        pResultsForm3.lblTotalTime.Text = "Total Time: " & TotalTime.Hours & "hrs " & TotalTime.Minutes & "minutes " & TotalTime.Seconds & "seconds"
-        pResultsForm3.lblDirection.Text = "Analysis Direction: " + sDirection
-        If iOrderNum <> 999 Then
-            pResultsForm3.lblOrder.Text = "Order of Analysis: " & CStr(iOrderNum)
-        Else
-            pResultsForm3.lblOrder.Text = "Order of Analysis: Max"
-        End If
-
-        'If Not pAllFlowEndBarriers Is Nothing Then
-        '    If pAllFlowEndBarriers.Count <> 0 Then
-        '        pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: " & CStr(pAllFlowEndBarriers.Count + pOriginaljuncFlagsList.Count)
-        '    Else
-        '        pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: 1"
-        '    End If
+        '' If there are habitat statistics then add the proper columns
+        'If lHabStatsList.Count > 0 Then
+        '    pResultsForm3.DataGridView1.Columns.Add("Layer", "Layer")                 '5
+        '    pResultsForm3.DataGridView1.Columns.Add("Direction", "Direction")         '6
+        '    pResultsForm3.DataGridView1.Columns.Add("Type", "Type")                   '7
+        '    pResultsForm3.DataGridView1.Columns.Add("HabitatClass", "Habitat_Class")  '8
+        '    pResultsForm3.DataGridView1.Columns.Add("Quantity", "Quantity")           '9
+        '    pResultsForm3.DataGridView1.Columns.Add("Unit", "Unit")                   '10
         'End If
 
+        'i = 0
+        'For i = 0 To pResultsForm3.DataGridView1.Columns.Count - 1
+        '    pResultsForm3.DataGridView1.Columns.Item(i).SortMode = DataGridViewColumnSortMode.Programmatic
+        'Next i
+
+        'i = 0
+        'Dim iMaxRowIndex, iSinkRowIndex, iSinkRowCount, iHabRowIndex, iHabRowcount, iBarrRowIndex, iBarrRowCount As Integer ' loop counters and grid indices
+        'Dim iMetricRowIndex, iMetricRowCount, iThisHabRowIndex, iThisHabRowCount As Integer
+        'Dim iSinkEID, iBarrEID As Integer
+        'Dim dTotalHab As Double 'running total of habitat for table
+        'Dim sLayer, sDirection2, sTraceType As String
+        'Dim bTrigger As Boolean = False
+        'Dim bTrigger2 As Boolean = False
+        'Dim bColorSwitcher = False
+        'Dim bSinkVisit As Boolean = True
+        'Dim t As Integer = 0
+        'i = 0
+        'iMaxRowIndex = 0
+        'j = 0
+
+        'Dim sinkBarrierLayerComparer As FindLayerAndBarrEIDAndSinkEIDPredicate ' for refining large stats object, reduce looping
+        'Dim sinkcomparer As FindBarriersBySinkEIDPredicate
+        'Dim barriercomparer As FindBarriersBySinkEIDPredicate ' used for refining habitat stats list 
+        'Dim barriermetriccomparer As FindBarrierMetricsBySinkEIDPredicate  ' used for refining barrier metrics stats list
+
+        'Dim refinedHabitatList As List(Of StatisticsObject_2)           ' for refining habitat stats list
+        'Dim refinedBarrierEIDList As List(Of BarrAndBarrEIDAndSinkEIDs) ' for refining barrier list
+        'Dim refinedBarrierMetricsList As List(Of MetricsObject)
+
+        'Dim HabStatsComparer As RefineHabStatsListPredicate
+
+
+        'Dim pDataGridViewCellStyle As System.Windows.Forms.DataGridViewCellStyle
+        '' For each sink
+        '' 1. for each sink in the master sinks object list
+        '' 2. for each barrier associated with the sink in the master barriers list.  
+        '' 2a add the metrics.
+
+        '' notes: -the maxrow index keeps track of which row we're at,
+        ''        it's needed if there are multiple sinks
+        ''        -the isinkrow count keeps track of which row for this
+        ''        sink we're at so that the first row can be found
+        ''        -results form is populated with sinkID, not EID
+        'For i = 0 To lSinkIDandTypes.Count - 1
+
+        '    iSinkRowCount = 0
+        '    iBarrRowCount = 0
+        '    j = 0
+        '    k = 0
+        '    iSinkRowIndex = pResultsForm3.DataGridView1.Rows.Add()
+        '    iMaxRowIndex = iSinkRowIndex ' the new maximum row count
+        '    iSinkEID = lSinkIDandTypes(i).SinkEID
+
+        '    ' Add the sink ID to the table
+        '    '    record the row number
+        '    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Style
+        '    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(1).Style
+        '    'pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
+        '    pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, 14, FontStyle.Bold)
+        '    pDataGridViewCellStyle.ForeColor = Color.DarkGreen
+        '    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Style = pDataGridViewCellStyle
+
+        '    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(0).Value = lSinkIDandTypes(i).SinkID
+        '    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(1).Value = lSinkIDandTypes(i).SinkEID
+        '    pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lSinkIDandTypes(i).Type
+
+        '    ' post up the sink-specific metrics and stats. 
+        '    '    For each of the records in the metrics list
+        '    '     add the values associated with this sink
+        '    '     keep track of the number of rows added
+        '    '     and the max row count of the table.  
+
+        '    For k = 0 To lMetricsObject.Count - 1
+        '        ' matching the 'barrier' EID - which is redundant
+        '        ' and includes 'sink' metrics, too.  
+        '        If lMetricsObject(k).BarrEID = iSinkEID Then
+        '            If iSinkRowCount = 0 Then
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Value = lMetricsObject(k).MetricName
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Value = Math.Round(lMetricsObject(k).Metric, 2)
+        '            ElseIf iSinkRowCount > 0 Then
+        '                pResultsForm3.DataGridView1.Rows.Add()
+        '                ' keep track of the maximum number of rows in the table
+        '                iMaxRowIndex = iMaxRowIndex + 1 ' Row tracker
+        '                'pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lMetricsObject(j).ID
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Value = lMetricsObject(k).MetricName
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Value = Math.Round(lMetricsObject(k).Metric, 2)
+
+        '            End If
+        '            iSinkRowCount += 1
+        '        End If
+        '    Next 'Metric Object
+
+        '    t = 0
+        '    iHabRowIndex = iSinkRowIndex
+        '    iBarrRowIndex = iSinkRowIndex
+        '    iHabRowcount = 0
+        '    bSinkVisit = True ' to pass to Sub to tell it whether to increment the barrier loop counter
+        '    For t = 0 To lAllFCIDs.Count - 1
+
+        '        Dim iTemp As Integer
+        '        'bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab
+        '        iTemp = lAllFCIDs(t).FCID
+
+        '        If bUpHab = True Then
+        '            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "upstream", "Immediate")
+        '            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '        End If
+        '        If bTotalUpHab = True Then
+        '            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "upstream", "Total")
+        '            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '        End If
+        '        If bDownHab = True Then
+        '            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Immediate")
+        '            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '        End If
+        '        If bTotalDownHab = True Then
+        '            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Total")
+        '            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '        End If
+        '        If bPathDownHab = True Then
+        '            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Path")
+        '            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '        End If
+        '        If bTotalPathDownHab = True Then
+        '            HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, iSinkEID, lAllFCIDs(t).FCID, "downstream", "Total Path")
+        '            refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '            UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '        End If
+        '    Next ' layer included (t)
+
+        '    If bColorSwitcher = True Then
+        '        bColorSwitcher = False
+        '    Else
+        '        bColorSwitcher = True
+        '    End If
+
+        '    iHabRowcount = 0
+        '    iBarrRowIndex = 0
+        '    iBarrRowCount = 0
+        '    bTrigger = False 'indicates if the there's been another row added beyond the sink (any barriers)
+        '    dTotalHab = 0
+        '    bColorSwitcher = True
+
+        '    ' 1. a refined list of all barriers for the sink
+        '    ' use a comparer to get all the records from the barriers and sinks list that match the sink
+        '    barriercomparer = New FindBarriersBySinkEIDPredicate(iSinkEID)
+        '    refinedBarrierEIDList = lBarrierAndSinkEIDs.FindAll(AddressOf barriercomparer.CompareEID)
+
+        '    ' For each barrier
+        '    '  1. a refined list of all habitat stats for this barrier 
+        '    '     and sink and layer
+        '    '  2. for each layer get a refined list of habitat metrics 
+        '    '     associated with each layer, sink, barrier combo
+        '    k = 0
+        '    For k = 0 To refinedBarrierEIDList.Count - 1
+
+
+        '        If m_bCancel = True Then
+        '            backgroundworker2.CancelAsync()
+        '            backgroundworker2.ReportProgress(100, "Closing")
+        '            Exit Sub
+        '        End If
+        '        m_iProgress = m_iProgress + 1
+        '        backgroundworker2.ReportProgress(m_iProgress, "Writing to Output Form." & ControlChars.NewLine & _
+        '                                         "Writing for Barrier " & (k + 1).ToString & " of " & (refinedBarrierEIDList.Count).ToString)
+
+        '        iBarrRowIndex = pResultsForm3.DataGridView1.Rows.Add()
+        '        iMaxRowIndex = iBarrRowIndex
+        '        iBarrRowCount = 0
+        '        iSinkRowCount += 1
+        '        iBarrRowCount += 1
+        '        bTrigger = False
+
+        '        ' attempt at a border
+        '        ' border control not available as of 2005 and .net 2.0
+        '        'Dim pPainter As Windows.Forms.DataGridViewRowPrePaintEventArgs
+        '        'pPainter = pResultsForm3.DataGridView1..Rows(iMaxRowIndex).
+        '        '' add barrier ID to the datagrid
+        '        '    record the row number
+        '        pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style
+        '        If bColorSwitcher = False Then
+        '            pDataGridViewCellStyle.BackColor = Color.PowderBlue
+        '        Else
+        '            pDataGridViewCellStyle.BackColor = Color.Lavender
+        '        End If
+        '        pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
+        '        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
+        '        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style = pDataGridViewCellStyle
+        '        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Value = refinedBarrierEIDList(k).BarrLabel
+        '        pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Value = refinedBarrierEIDList(k).BarrEID
+
+        '        ' get refined list of barrier/sink metrics
+        '        barriermetriccomparer = New FindBarrierMetricsBySinkEIDPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID)
+        '        refinedBarrierMetricsList = lMetricsObject.FindAll(AddressOf barriermetriccomparer.CompareEID)
+
+        '        ' For each metric in the refined list
+        '        ' insert a new row if necessary
+        '        ' add the metric to the table
+        '        t = 0
+        '        iMetricRowCount = 0
+        '        iMetricRowIndex = iMaxRowIndex
+        '        For t = 0 To refinedBarrierMetricsList.Count - 1
+
+
+        '            If iMetricRowCount = 0 Then
+        '                'pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(2).Value = lMetricsObject(j).ID
+        '                If bColorSwitcher = True Then
+        '                    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
+        '                    pDataGridViewCellStyle.BackColor = Color.Lavender
+        '                Else
+        '                    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
+        '                    pDataGridViewCellStyle.BackColor = Color.PowderBlue
+        '                End If
+        '                pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(5).Style = pDataGridViewCellStyle
+        '                pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(6).Style = pDataGridViewCellStyle
+
+        '                pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(5).Value = refinedBarrierMetricsList(t).MetricName
+        '                pResultsForm3.DataGridView1.Rows(iMetricRowIndex).Cells(6).Value = Math.Round(refinedBarrierMetricsList(t).Metric, 2)
+        '                iMetricRowCount += 1
+        '            ElseIf iMetricRowCount > 0 Then
+        '                If iMaxRowIndex <= (iBarrRowIndex + iMetricRowCount) Then
+        '                    iMetricRowIndex = pResultsForm3.DataGridView1.Rows.Add()
+        '                    'iBarrRowIndex = iMetricRowIndex
+        '                    iBarrRowCount += 1
+        '                    iMetricRowCount += 1
+        '                    iMaxRowIndex += 1 ' Row tracker
+        '                    iSinkRowCount += 1
+        '                End If
+        '                If bColorSwitcher = True Then
+        '                    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
+        '                    pDataGridViewCellStyle.BackColor = Color.Lavender
+        '                Else
+        '                    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style
+        '                    pDataGridViewCellStyle.BackColor = Color.PowderBlue
+        '                End If
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(3).Style = pDataGridViewCellStyle
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(4).Style = pDataGridViewCellStyle
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Style = pDataGridViewCellStyle
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Style = pDataGridViewCellStyle
+
+
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(5).Value = refinedBarrierMetricsList(t).MetricName
+        '                pResultsForm3.DataGridView1.Rows(iMaxRowIndex).Cells(6).Value = Math.Round(refinedBarrierMetricsList(t).Metric, 2)
+        '            End If
+        '        Next ' refined metric (t)
+
+        '        t = 0
+        '        iHabRowIndex = iBarrRowIndex
+        '        iHabRowcount = 0
+        '        bSinkVisit = False
+        '        For t = 0 To lAllFCIDs.Count - 1
+
+        '            Dim iTemp As Integer
+        '            'bUpHab, bTotalUpHab, bDownHab, bTotalDownHab, bPathDownHab, bTotalPathDownHab
+        '            iTemp = lAllFCIDs(t).FCID
+
+        '            If bUpHab = True Then
+        '                HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "upstream", "Immediate")
+        '                refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '                UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '            End If
+        '            If bTotalUpHab = True Then
+        '                HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "upstream", "Total")
+        '                refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '                UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '            End If
+        '            If bDownHab = True Then
+        '                HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Immediate")
+        '                refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '                UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '            End If
+        '            If bTotalDownHab = True Then
+        '                HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Total")
+        '                refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '                UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '            End If
+        '            If bPathDownHab = True Then
+        '                HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Path")
+        '                refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '                UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '            End If
+        '            If bTotalPathDownHab = True Then
+        '                HabStatsComparer = New RefineHabStatsListPredicate(iSinkEID, refinedBarrierEIDList(k).BarrEID, lAllFCIDs(t).FCID, "downstream", "Total Path")
+        '                refinedHabitatList = lHabStatsList.FindAll(AddressOf HabStatsComparer.CompareHabStuff)
+        '                UpdateSummaryTable(refinedHabitatList, iHabRowcount, pResultsForm3, iMaxRowIndex, iBarrRowIndex, bColorSwitcher, iSinkRowCount, iBarrRowCount, bSinkVisit)
+        '            End If
+        '        Next ' layer included (t)
+
+        '        If bColorSwitcher = True Then
+        '            bColorSwitcher = False
+        '        Else
+        '            bColorSwitcher = True
+        '        End If
+        '    Next ' barrier for this sink (k)
+        'Next ' sink 
+
+        'pResultsForm3.DataGridView1.AutoResizeColumns()
+        'EndTime = DateTime.Now
+        'pResultsForm3.lblBeginTime.Text = "Begin Time: " & BeginTime
+        'pResultsForm3.lblEndtime.Text = "End Time: " & EndTime
+
+        'TotalTime = EndTime - BeginTime
+        'pResultsForm3.lblTotalTime.Text = "Total Time: " & TotalTime.Hours & "hrs " & TotalTime.Minutes & "minutes " & TotalTime.Seconds & "seconds"
+        'pResultsForm3.lblDirection.Text = "Analysis Direction: " + sDirection
+        'If iOrderNum <> 999 Then
+        '    pResultsForm3.lblOrder.Text = "Order of Analysis: " & CStr(iOrderNum)
+        'Else
+        '    pResultsForm3.lblOrder.Text = "Order of Analysis: Max"
+        'End If
+
+        ''If Not pAllFlowEndBarriers Is Nothing Then
+        ''    If pAllFlowEndBarriers.Count <> 0 Then
+        ''        pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: " & CStr(pAllFlowEndBarriers.Count + pOriginaljuncFlagsList.Count)
+        ''    Else
+        ''        pResultsForm3.lblNumBarriers.Text = "Number of Barriers Analysed: 1"
+        ''    End If
+        ''End If
+        ' refresh the view
+        pActiveView.Refresh()
+
+        Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3
+        pResultsForm3.Show()
+        Dim numbarrsnodes As String = CStr(pOriginaljuncFlagsList.Count)
+        SharedSubs.ResultsForm2020(pResultsForm3, lSinkIDandTypes, lHabStatsList, lMetricsObject,
+                                       BeginTime, numbarrsnodes, iOrderNum, sDirection)
         ' ============== END WRITE TO OUTPUT SUMMARY TABLE =================
+
+
 
         ' check if user has hit 'close/cancel'
         If m_bCancel = True Then
@@ -2244,8 +2244,7 @@ Public Class PlaceFlagAndRunTool
 
         backgroundworker2.Dispose()
         backgroundworker2.CancelAsync()
-        ' refresh the view
-        pActiveView.Refresh()
+        
 
     End Sub
     Private Sub LabelFlag(ByVal iFCID As Integer, ByVal iFID As Integer)
@@ -4412,7 +4411,7 @@ Public Class PlaceFlagAndRunTool
                                     .LengthOrHabitat = "habitat"
                                     .HabitatDimension = "length"
                                     .TotalImmedPath = sHabTypeKeyword
-                                    .UniqueClass = "none"
+                                    .UniqueClass = "not set"
                                     .ClassName = CStr(lLineLayersFields(j).HabClsField)
                                     .Quantity = 0.0
                                     .Unit = sUnit
@@ -4484,7 +4483,7 @@ Public Class PlaceFlagAndRunTool
                                 .LengthOrHabitat = "habitat"
                                 .HabitatDimension = "length"
                                 .TotalImmedPath = sHabTypeKeyword
-                                .UniqueClass = "none"
+                                .UniqueClass = "not set"
                                 .ClassName = CStr(lLineLayersFields(j).HabClsField)
                                 .Quantity = dTotalArea
                                 .Unit = sUnit
@@ -4680,7 +4679,7 @@ Public Class PlaceFlagAndRunTool
                                     .LengthOrHabitat = "habitat"
                                     .HabitatDimension = "area"
                                     .TotalImmedPath = sHabTypeKeyword
-                                    .UniqueClass = "none"
+                                    .UniqueClass = "not set"
                                     .ClassName = CStr(lPolyLayersFields(j).HabClsField)
                                     .Quantity = 0.0
                                     .Unit = sUnit
@@ -4760,7 +4759,7 @@ Public Class PlaceFlagAndRunTool
                                 .LengthOrHabitat = "habitat"
                                 .HabitatDimension = "area"
                                 .TotalImmedPath = sHabTypeKeyword
-                                .UniqueClass = "none"
+                                .UniqueClass = "not set"
                                 .ClassName = CStr(lPolyLayersFields(j).HabClsField)
                                 .Quantity = dTotalArea
                                 .Unit = sUnit
@@ -5850,144 +5849,6 @@ Public Class PlaceFlagAndRunTool
             And _Direction = obj.Direction And _Type = obj.TotalImmedPath)
         End Function
     End Class
-    Private Sub UpdateSummaryTable(ByRef lRefinedHabStatsList As List(Of StatisticsObject_2), ByRef iHabRowCount As Integer, _
-     ByRef pResultsForm3 As FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3, ByRef iMaxRowIndex As Integer, ByRef iBarrIndex As Integer, _
-     ByRef bColorSwitcher As Boolean, ByRef iSinkRowCount As Integer, ByRef iBarrRowCount As Integer, ByVal bSinkVisit As Boolean)
-
-        Dim m As Integer = 0
-        Dim iThisRowIndex As Integer
-        Dim pDataGridViewCellStyle As System.Windows.Forms.DataGridViewCellStyle
-        Dim bTrigger As Boolean = False
-        Dim sLayer, sDirection, sTraceType, sClass, sUnit As String
-        Dim dTotalHab, dQuantity As Double
-
-        ' For each habitat stat in the refined list
-        For m = 0 To lRefinedHabStatsList.Count - 1
-
-            ' if it's the first habitat item in the list
-            ' then it's going on the barrierindex line
-            ' otherwise it's habrowindex + habrowcount
-            ' if that number exceeds the Max row index
-            ' then a new row will need to be inserted
-            If (iBarrIndex + iHabRowCount) > iMaxRowIndex Then
-                iMaxRowIndex = pResultsForm3.DataGridView1.Rows.Add()
-                iThisRowIndex = iMaxRowIndex
-                iSinkRowCount += 1
-                If bSinkVisit = False Then
-                    iBarrRowCount += 1
-                End If
-                bTrigger = True
-            Else
-                iThisRowIndex = iBarrIndex + iHabRowCount
-            End If
-
-            If bColorSwitcher = True Then
-                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(5).Style
-                pDataGridViewCellStyle.BackColor = Color.Lavender
-            Else
-                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(5).Style
-                pDataGridViewCellStyle.BackColor = Color.PowderBlue
-            End If
-            pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(5).Style = pDataGridViewCellStyle
-            pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(6).Style = pDataGridViewCellStyle
-            pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(7).Style = pDataGridViewCellStyle
-            pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(8).Style = pDataGridViewCellStyle
-            pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(9).Style = pDataGridViewCellStyle
-            pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(10).Style = pDataGridViewCellStyle
-
-            ' if the row count of the habitat metrics exceeds the 
-            ' statistics metrics then the colors of cells below the metrics
-            ' will also have to be changed
-            If bTrigger = True Then
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(1).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(2).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(3).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(4).Style = pDataGridViewCellStyle
-            End If
-            'End If
-
-            If m = 0 Then
-                sLayer = lRefinedHabStatsList(m).Layer
-                sDirection = lRefinedHabStatsList(m).Direction
-                sTraceType = lRefinedHabStatsList(m).TotalImmedPath
-                sUnit = lRefinedHabStatsList(m).Unit
-
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(5).Value = sLayer
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(6).Value = sDirection
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(7).Value = sTraceType
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(10).Value = sUnit
-            End If
-
-            sClass = lRefinedHabStatsList(m).UniqueClass
-            dQuantity = Math.Round(lRefinedHabStatsList(m).Quantity, 2)
-            pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(8).Value = sClass
-            pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(9).Value = dQuantity
-
-            dTotalHab = dTotalHab + lRefinedHabStatsList(m).Quantity
-            iHabRowCount += 1
-
-            ' Add the total field if necessary
-            If m = lRefinedHabStatsList.Count - 1 Then
-
-                If (iBarrIndex + iHabRowCount) > iMaxRowIndex Then
-                    iMaxRowIndex = pResultsForm3.DataGridView1.Rows.Add()
-                    iThisRowIndex = iMaxRowIndex
-                    iSinkRowCount += 1
-                    If bSinkVisit = False Then
-                        iBarrRowCount += 1
-                    End If
-                    bTrigger = True
-                Else
-                    iThisRowIndex = iBarrIndex + iHabRowCount
-                End If
-
-                pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(9).Style
-                pDataGridViewCellStyle.Font = New Font(pResultsForm3.DataGridView1.Font.FontFamily, pResultsForm3.DataGridView1.Font.Size, FontStyle.Bold)
-                pDataGridViewCellStyle.BackColor = Color.SlateGray
-                'pDataGridViewCellStyle.ForeColor = Color.White
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(10).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(9).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(8).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(7).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(6).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(5).Style = pDataGridViewCellStyle
-
-                ' If the habitat row exceeds maximum metric row then 
-                ' color the cells below the metric row appropriately
-                If bTrigger = True And bColorSwitcher = True Then
-                    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(3).Style
-                    pDataGridViewCellStyle.BackColor = Color.Lavender
-                ElseIf bTrigger = True And bColorSwitcher = False Then
-                    pDataGridViewCellStyle = pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(3).Style
-                    pDataGridViewCellStyle.BackColor = Color.PowderBlue
-                End If
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(1).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(2).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(3).Style = pDataGridViewCellStyle
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(4).Style = pDataGridViewCellStyle
-                ' for border adjustment
-                'dataGridViewAdvancedBorderStyleInput = pResultsForm3.DataGridView1.Rows(iHabRowIndex).DefaultCellStyle(8).
-                'dataGridViewAdvancedBorderStylePlaceHolder = dataGridViewAdvancedBorderStyleInput
-                'dataGridViewAdvancedBorderStylePlaceHolder.Top = System.Windows.Forms.DataGridViewAdvancedCellBorderStyle.InsetDouble
-
-                'pResultsForm3.DataGridView1.Rows(iHabRowIndex).Cells(8).AdjustCellBorderStyle(dataGridViewAdvancedBorderStyleInput, dataGridViewAdvancedBorderStylePlaceHolder, False, False, False, False)
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(8).Value = "Total"
-                pResultsForm3.DataGridView1.Rows(iThisRowIndex).Cells(9).Value = Math.Round(dTotalHab, 2)
-
-                iHabRowCount += 1
-
-            End If
-        Next
-
-        '' Switch the color switcher
-        'If bColorSwitcher = True Then
-        '    bColorSwitcher = False
-        'Else
-        '    bColorSwitcher = True
-        'End If
-
-
-    End Sub
     Private Class FindBarrierMetricsBySinkEIDPredicate
         ' this class should help return a double-check 
         ' list object of Statistics where the layer matches 
