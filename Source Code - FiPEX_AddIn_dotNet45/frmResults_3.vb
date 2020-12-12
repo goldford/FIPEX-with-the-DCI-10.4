@@ -215,7 +215,9 @@ Public Class frmResults_3
 
     End Function
 
-    Private Sub cmdCancel_Click(sender As Object, e As EventArgs) Handles cmdCancel.Click
+    Private Sub cmdCancel_Click(sender As Object, e As EventArgs)
         b_passCancel = True
     End Sub
+
+   
 End Class

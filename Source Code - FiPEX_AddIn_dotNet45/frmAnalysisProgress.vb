@@ -1,7 +1,9 @@
-﻿
+﻿Imports System.Drawing
+
 Public Class frmAnalysisProgress
 
     Friend m_bCloseMe As Boolean = False
+    Friend m_bPauseMe As Boolean = False
     Private Delegate Sub ChangeLabelCallback(ByVal item As String)
     Private Delegate Sub ChangeProgressBarCallback(ByVal value1 As Integer)
 
@@ -18,6 +20,7 @@ Public Class frmAnalysisProgress
         Else
             'Guaranteed to run on the main UI thread. 
             Me.lblProgress.Text = item
+            
         End If
     End Sub
 
@@ -53,7 +56,7 @@ Public Class frmAnalysisProgress
             Return False
         End Try
     End Function
-  
+
     Private Sub cmdCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdCancel.Click
         m_bCloseMe = True
         Me.Close()
@@ -70,4 +73,8 @@ Public Class frmAnalysisProgress
         Me.Dispose()
     End Sub
 
+   
+    Private Sub cmdPause_Click(sender As Object, e As EventArgs) Handles cmdPause.Click
+        If m_bPauseMe = False Then m_bPauseMe = True Else m_bPauseMe = False
+    End Sub
 End Class

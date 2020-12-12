@@ -119,9 +119,11 @@
   </resheader>
   <data name="Label28.Text" xml:space="preserve">
     <value>Exclusion options determine which features are included in the 
-calculations of segment length, habitat quantity, or habitat quality.
+calculations habitat quantity or habitat quality.
 Features with listed attribute values will be de-selected during 
-network tracing.</value>
+network tracing. Note that exclusions settings do not apply to 
+summary stats drawn from distance / length features within line 
+layers. </value>
   </data>
   <data name="Label29.Text" xml:space="preserve">
     <value>Barrier options are used to set the label that appears when the 'add / 
