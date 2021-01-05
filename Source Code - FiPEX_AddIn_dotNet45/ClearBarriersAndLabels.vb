@@ -112,17 +112,17 @@ Public Class ClearBarriersAndLabels
         ' 4. Make list of non-overlappping barriers
         ' 5. Clear those labels
 
-        ' ============== UnLABEL FLAGS ===================
+        ' ============== UnLABEL ===================
         Dim sFlagCheck As String
         Dim iFlagEID, m, FCID, FID, subID As Integer
         Dim flagBarrier As Boolean
 
-        ' Check if flag is on a barrier
+        ' Check if barrier has flag
         pOriginalBarriersList.Reset()
         For i = 0 To pOriginalBarriersList.Count - 1
 
             iFlagEID = pOriginalBarriersList.Next
-            flagBarrier = False     ' assume flag is not on barrier
+            flagBarrier = False
             m = 0
 
             pOriginaljuncFlagsList.Reset()
@@ -160,18 +160,17 @@ Public Class ClearBarriersAndLabels
 
         ' Created By: Greig Oldford
         ' Date: July 5, 2009
+        ' Last Modfied: Jan 2, 2021
         ' Purpose: Label barriers or flags if no label is present
         '          using user-set field from extension settings
         '   
         ' 1.0 Read the extension settings
         ' 2.0 label the flag if needed 
         ' 
-        ' Bug Note: Since there are issues with finding visible label
-        '           elements (see notes further down) the workaround
-        '           shows labels as visible if they have been turned on
-        '           and then off in ArcMap.  So if you have turned labels
-        '           off they might still be in the annotation properties
-        '           and return as 'visible.'
+        ' Notes: (2009) issues with finding visible label elements (see notes further down) 
+        '           the workaround shows labels as visible if they have been turned on
+        '           and then off in ArcMap.  So if you have turned labels off they might 
+        '           still be in the annotation properties and return as 'visible.'
 
         Dim pMxDocument As IMxDocument = CType(My.ArcMap.Application.Document, IMxDocument)
         Dim pMap As IMap = pMxDocument.FocusMap
@@ -208,7 +207,7 @@ Public Class ClearBarriersAndLabels
         End If
 
         ' ------------------------------------
-        ' 2.0 un-Label the flag if needed
+        ' 2.0 un-Label
 
         Dim pAnnoLayerPropsColl As IAnnotateLayerPropertiesCollection
         'Dim pMapAnnoLayerPropsColl As IAnnotateLayerPropertiesCollection
@@ -242,7 +241,7 @@ Public Class ClearBarriersAndLabels
         Dim iStringPosit As Integer
         ' For each layer in the map
         '   If it's a feature layer
-        '     If it's the same layer as the new flag is being placed on
+        '     If it's the barrier layer
         '       For each layer in the BarrierID list
         '         If it matches this layer
         '           If the field is found in this layer
@@ -446,6 +445,12 @@ Public Class ClearBarriersAndLabels
                         End If
 
                         iStringPosit = InStr(sPreviousWhereClause, sSearchString)
+
+                        ' 2021 
+                        'MsgBox("Previous where clause: " & sPreviousWhereClause)
+                        'MsgBox("Search string: " & sSearchString)
+                        'MsgBox("String posit found: " & Convert.ToString(iStringPosit))
+
                         If iStringPosit <> 0 Then
                             bLabelMatch = True
 

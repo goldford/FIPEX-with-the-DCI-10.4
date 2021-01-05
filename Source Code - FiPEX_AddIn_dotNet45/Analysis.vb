@@ -1714,6 +1714,16 @@ Public Class Analysis
 
                     eFlowElements = esriFlowElements.esriFEJunctionsAndEdges
 
+                    ' check if user has hit 'close/cancel'
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                               bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                               iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                               pOriginaljuncFlagsList)
+                        Exit Sub
+                    End If
                     update_tracetype = "- trace type: " & sDirection & Environment.NewLine
                     backgroundworker1.ReportProgress(iProgress, update_string & update_flagstring & update_orderstring & update_tracetype)
 
@@ -1736,6 +1746,16 @@ Public Class Analysis
                     pIDAndType = GetBarrierID(iFCID, iFID, lBarrierIDs)
                     sOutID = pIDAndType.BarrID
 
+                    ' check if user has hit 'close/cancel'
+                    If m_bCancel = True Then
+                        backgroundworker1.CancelAsync()
+                        backgroundworker1.Dispose()
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                               bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                               iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                               pOriginaljuncFlagsList)
+                        Exit Sub
+                    End If
                     update_barrierstring = "- current barrier / node user label: " & sOutID & ", Net EID " & iEID.ToString & Environment.NewLine
                     backgroundworker1.ReportProgress(iProgress, update_string & update_flagstring & _
                                                      update_orderstring & update_tracetype & update_barrierstring)
@@ -1991,6 +2011,16 @@ Public Class Analysis
                     ' must use upstream trace if any of these options true
                     If bUpHab = True Or bDCI = True Or bDownHab = True Or bGLPKTables = True Then
 
+                        ' check if user has hit 'close/cancel'
+                        If m_bCancel = True Then
+                            backgroundworker1.CancelAsync()
+                            backgroundworker1.Dispose()
+                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                                   bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                                   iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                                   pOriginaljuncFlagsList)
+                            Exit Sub
+                        End If
                         update_tracetype = "- trace type: upstream" & Environment.NewLine
                         backgroundworker1.ReportProgress(iProgress, update_string & update_flagstring & _
                                                          update_orderstring & update_tracetype & update_barrierstring)
@@ -2691,6 +2721,16 @@ Public Class Analysis
                                 iExclusions = 0
                             End Try
                             If iExclusions > 0 Then
+                                ' check if user has hit 'close/cancel'
+                                If m_bCancel = True Then
+                                    backgroundworker1.CancelAsync()
+                                    backgroundworker1.Dispose()
+                                    ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                                           pOriginaljuncFlagsList)
+                                    Exit Sub
+                                End If
                                 backgroundworker1.ReportProgress(iProgress, update_string & update_flagstring & update_orderstring & _
                                                                  update_tracetype & update_barrierstring & "- excluding features" & _
                                                                  Environment.NewLine)
@@ -2778,6 +2818,16 @@ Public Class Analysis
 
                         ' ============================================================
                         ' =================== INTERSECT FEATURES =====================
+                        ' check if user has hit 'close/cancel'
+                        If m_bCancel = True Then
+                            backgroundworker1.CancelAsync()
+                            backgroundworker1.Dispose()
+                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                                   bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                                   iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                                   pOriginaljuncFlagsList)
+                            Exit Sub
+                        End If
                         backgroundworker1.ReportProgress(iProgress, update_string & update_flagstring & update_orderstring & _
                                                                  update_tracetype & update_barrierstring & "- intersecting features" & _
                                                                  Environment.NewLine)
@@ -2880,6 +2930,16 @@ Public Class Analysis
                 'End If ' orderloop = x
             Next ' orderloop
 
+            ' check if user has hit 'close/cancel'
+            If m_bCancel = True Then
+                backgroundworker1.CancelAsync()
+                backgroundworker1.Dispose()
+                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                       bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                       iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                       pOriginaljuncFlagsList)
+                Exit Sub
+            End If
             iProgress = 50
             update_string = update_string & update_flagstring & update_orderstring & update_tracetype & update_barrierstring
             backgroundworker1.ReportProgress(0, update_string)
@@ -4106,8 +4166,8 @@ Public Class Analysis
         ' refresh the view
         pActiveView.Refresh()
 
-        Dim showform = Windows.Forms.MessageBox.Show("Show results form?", "continue", Windows.Forms.MessageBoxButtons.YesNo)
-        If showform = Windows.Forms.DialogResult.No Then bPrintToResultsForm = False
+        'Dim showform = Windows.Forms.MessageBox.Show("Show results form?", "continue", Windows.Forms.MessageBoxButtons.YesNo)
+        'If showform = Windows.Forms.DialogResult.No Then bPrintToResultsForm = False
 
         Dim numbarrsnodes As String = CStr(pAllFlowEndBarriers.Count + pOriginaljuncFlagsList.Count)
         If bPrintToResultsForm = True Then
