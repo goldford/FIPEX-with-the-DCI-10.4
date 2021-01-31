@@ -2,12 +2,12 @@
   <Name>The Fish Passage Extension (FIPEX) with Dendritic Connectivity Index</Name>
   <AddInID>{4f0b3669-5a3e-472a-b14c-3a521c48e6c3}</AddInID>
   <Description>
-    FIPEX 10.4.2 (ArcMap 10.4+). 
+    FIPEX 10.4 (ArcMap 10.4+). 
     The Fish Passage Extension / Add-in for ArcMap. 
     A tool for analyzing the relative impact of barriers to fish passage in river systems. 
     It uses the 'geometric network' model and extends the tools provided in Utility Network Analyst.
   </Description>
-  <Version>10.4.2</Version>
+  <Version>10.4</Version>
   <Image>Images\FIPEX_DCI_Logo_2020_90x90a.jpg</Image>
   <Author>Greig Oldford</Author>
   <Company>Greig Oldford </Company>
