@@ -2923,7 +2923,6 @@ Public Class frmVisualizeDecisionsAndNet
         ' attempt to add the field
         ' if successful, add the field to the listbox, change the setting in the master list, and update label
 
-
         ' ================= Section 1. Check that fieldname is okay ==========================
         Dim sNewFieldName As String
         Dim reg As New Regex("^[A-Za-z0-9_]+$") ' checks if prefix contains allowed characters
@@ -3000,7 +2999,6 @@ Public Class frmVisualizeDecisionsAndNet
             MsgBox("The layer selected in listbox could not be found in the master list. Exiting.")
             Exit Sub
         End If
-
 
         ' ================= Section 4. Get corresponding map layer and fields ==========================
         Dim bFoundLayerInMap As Boolean = False
@@ -5127,12 +5125,11 @@ Public Class frmVisualizeDecisionsAndNet
             If pFeatureLayer.Valid = True Then ' or there will be an empty object ref
                 If pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryLine Or _
                 pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryPolyline Or _
-                pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryPolygon Then ' or there will be an empty object ref
+                pFeatureLayer.FeatureClass.ShapeType = esriGeometryType.esriGeometryPolygon Then
 
                     pFeatureSelection = CType(pFeatureLayer, IFeatureSelection)
                     pSelectionSet = pFeatureSelection.SelectionSet
 
-                    ' get the fields from the featureclass
                     pFields = pFeatureLayer.FeatureClass.Fields
                     k = 0
                     For k = 0 To lLayersFieldsCHECKED.Count - 1
@@ -5141,7 +5138,6 @@ Public Class frmVisualizeDecisionsAndNet
                             '+ " is " + Convert.ToString(pFeatureSelection.SelectionSet.Count))
                             If pFeatureSelection.SelectionSet.Count <> 0 Then
 
-                                ' DO TO THIS LATER NEED TO SAVE
                                 ' pFeatureLayer and Workspace
                                 ' List Object of Custom Object: pworkspace, pfeaturelayer, dPermField, pSelectionSet (for each workspace start editing)
                                 ' Can Predicate Search to get refined list of workspaces later

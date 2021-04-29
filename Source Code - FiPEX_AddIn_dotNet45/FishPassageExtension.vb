@@ -52,11 +52,10 @@ Public Class FishPassageExtension
     Public m_bNewDocument_HandlerLoaded As Boolean = False
     Public m_bOpenDocument_HandlerLoaded As Boolean = False
 
-
-
     Public Sub New()
         s_extension = Me
     End Sub
+
     Public Property ToolsEnabledProp() As Boolean
         ' used to tell tools whether they're enabled or disabled.  
         ' tied to the 

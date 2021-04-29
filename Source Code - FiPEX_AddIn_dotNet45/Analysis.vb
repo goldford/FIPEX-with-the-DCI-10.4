@@ -208,11 +208,11 @@ Public Class Analysis
         ' Command:       RunAnalysis
         ' Modified:      Sep 2020, G Oldford
         '
-        ' Description:   read settings from the extension stream, perform a network trace, 
-        '                intersect Trace results with desired polygon and non-network lines
-        '                exclude selected features that are not wanted
-        '                calculate habitat area sorted by habitat class,
-        '                output results in desired format. An option to repeat this process 
+        ' Description:   1/ read settings from the extension stream, perform a network trace, 
+        '                2/ intersect Trace results with desired polygon and non-network lines
+        '                3/ exclude selected features that are not wanted
+        '                4/ calculate habitat area sorted by habitat class,
+        '                5/ output results in desired format. An option to repeat this process 
         '                iteratively up or downstream of a startpoint is possible.  It then returns
         '                the network to the way it was originally.
         '
@@ -416,7 +416,6 @@ Public Class Analysis
         If m_FiPEx__1.m_bLoaded = True Then
 
             ' to do 2020: 'loadproperties should be a 'shared function' 
-
             Try
 
                 sDirection = Convert.ToString(m_FiPEx__1.pPropset.GetProperty("direction"))
@@ -596,7 +595,6 @@ Public Class Analysis
             System.Windows.Forms.MessageBox.Show(sMessage, "Parameters Missing")
             Exit Sub
         End If
-
 
         ' =============== SAVE ORIGINAL GEONet SETTINGS =========================
         ' check if user has hit 'close/cancel'
@@ -3398,48 +3396,50 @@ Public Class Analysis
                         End If
                     ElseIf bAdvConnectTab = True And bDistanceLim = True Then
                         If lAdv_DCI_Data_Object.Count > 1 Then
-                            If lAdv_DCI_Data_Object.Count > 100 Then
-                                MsgBox("River network too large for computation. Regrettably, the DCI with distance limits / decay cannot be computed for rivers or river sections this large. Please turn off distance limits / decay to and re-run. FIPEX code error 3f483. ")
-                                ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
-                                               bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
-                                               iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
-                                               pOriginaljuncFlagsList)
-                                Exit Sub
-                            Else
-                                DCI_ADV2020_ShellCall(pFWorkspace, _
-                                      lAdv_DCI_Data_Object, _
-                                      bDCISectional, _
-                                      bDistanceLim, _
-                                      dMaxDist, _
-                                      bDistanceDecay, sDDFunction)
-                                update_string = update_string & "- running: DCI w/ distance decay" & Environment.NewLine
-                                backgroundworker1.ReportProgress(iProgress, update_string)
-                                Windows.Forms.Application.DoEvents()
+                            ' If lAdv_DCI_Data_Object.Count > 100 Then
+                            'MsgBox("River network too large for computation. Regrettably, the DCI with distance limits / decay cannot be computed for rivers or river sections this large. Please turn off distance limits / decay to and re-run. FIPEX code error 3f483. ")
+                            'ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                            '              bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                            '              iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                            '              pOriginaljuncFlagsList)
+                            'Exit Sub
+                            'MsgBox("River network size override = on. Apr 15, 2021. Number of nodes: " & Str(lAdv_DCI_Data_Object.Count))
 
-                                UpdateResultsAdvDCI(lAdv_DCI_Data_Object.Count, dDCIp, dDCId, bNaturalY, "out_dd.txt")
+                            'Else
+                            DCI_ADV2020_ShellCall(pFWorkspace, _
+                                  lAdv_DCI_Data_Object, _
+                                  bDCISectional, _
+                                  bDistanceLim, _
+                                  dMaxDist, _
+                                  bDistanceDecay, sDDFunction)
+                            update_string = update_string & "- running: DCI w/ distance decay" & Environment.NewLine
+                            backgroundworker1.ReportProgress(iProgress, update_string)
+                            Windows.Forms.Application.DoEvents()
 
-                            End If
+                            UpdateResultsAdvDCI(lAdv_DCI_Data_Object.Count, dDCIp, dDCId, bNaturalY, "out_dd.txt")
 
-                        Else
-                            MsgBox("Debug2020: Error 204 in RunAnalysis. There must be more than 1 row in the advanced summary table object. Exiting")
-                            ' ========================= RESET BARRIERS & FLAGS ===========================
-                            '               Reset things the way the user had them
-                            ' check if user has hit 'close/cancel'
-                            If m_bCancel = True Then
-                                backgroundworker1.CancelAsync()
-                                backgroundworker1.Dispose()
-                                Exit Sub
-                            End If
+                            'End If
 
-                            update_string = update_string & "6) Resetting flags and barriers" & Environment.NewLine
-                            backgroundworker1.ReportProgress(iProgress + 10, update_string)
-                            ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
-                                               bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
-                                               iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
-                                               pOriginaljuncFlagsList)
-                            '' ====================== RESET BARRIERS & FLAGS  ===========================
+                    Else
+                        MsgBox("Debug2020: Error 204 in RunAnalysis. There must be more than 1 row in the advanced summary table object. Exiting")
+                        ' ========================= RESET BARRIERS & FLAGS ===========================
+                        '               Reset things the way the user had them
+                        ' check if user has hit 'close/cancel'
+                        If m_bCancel = True Then
+                            backgroundworker1.CancelAsync()
+                            backgroundworker1.Dispose()
                             Exit Sub
                         End If
+
+                        update_string = update_string & "6) Resetting flags and barriers" & Environment.NewLine
+                        backgroundworker1.ReportProgress(iProgress + 10, update_string)
+                        ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+                                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                           pOriginaljuncFlagsList)
+                        '' ====================== RESET BARRIERS & FLAGS  ===========================
+                        Exit Sub
+                    End If
                     Else
                         MsgBox("Debug2020: Error 210 in RunAnalysis. bAdvConnectTab must = True And bDistanceLim must = True to proceed with DCI. Exiting")
                         ' ========================= RESET BARRIERS & FLAGS ===========================
@@ -4142,7 +4142,7 @@ Public Class Analysis
 
         If lMetricsObject.Count > 50 Then
             Dim sMetricsCount As String = Convert.ToString(lMetricsObject.Count)
-            Dim result = Windows.Forms.MessageBox.Show("There are more than " & sMetricsCount & " barriers / junctions analyzed.  It may take some time to write to results form.  Continue?", "continue", Windows.Forms.MessageBoxButtons.YesNo)
+            Dim result = Windows.Forms.MessageBox.Show("There are more than " & sMetricsCount & " statistics to print.  It may take some time to write to results form.  Continue?", "continue", Windows.Forms.MessageBoxButtons.YesNo)
             If result = Windows.Forms.DialogResult.No Then
                 bPrintToResultsForm = False
             End If

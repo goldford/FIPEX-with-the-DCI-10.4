@@ -4,6 +4,8 @@ Imports ESRI.ArcGIS.Carto
 Imports ESRI.ArcGIS.Framework
 Imports ESRI.ArcGIS.ArcMapUI
 Imports ESRI.ArcGIS.esriSystem
+Imports ESRI.ArcGIS.EditorExt
+Imports ESRI.ArcGIS.NetworkAnalysis
 
 Public Class SharedSubs
     Public Shared Sub ResultsForm2020(ByRef pResultsForm3 As FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3,
@@ -1044,5 +1046,78 @@ Public Class SharedSubs
             Return (_Class = obj.UniqueHabClass)
         End Function
     End Class
+
+    Public Shared Function flagcheck2021(ByRef pBarriersList As IEnumNetEID, ByRef pEdgeFlags As IEnumNetEID, ByRef pJuncFlags As IEnumNetEID) As String
+        ' Function:     Flag Check
+        ' Author:       Greig Oldford
+        ' Date Created: March 26th, 2008
+        ' Date Translated: May 11 - 19, 2009 
+        ' Description:  This function will check to see if initially the flags are on barriers
+        '               or not. It should stop the analysis if some flags are on barriers and some
+        '               are not - it should be one or the other.
+        '               It will return one of three strings - "barrier", "nonbarr", or "error"
+        '
+        ' Notes:   March 27, 2008 -> Not currently checking for edge flags since there is no support for
+        '                      them yet.
+        '          Apr 28, 2021 -> Copied this function here from Analysis.vb, made public
+        Dim i As Integer
+        Dim m As Integer
+        Dim pFlagsOnBarrGEN As IEnumNetEIDBuilderGEN  ' list holds flags on barriers
+        Dim pFlagsNoBarrGEN As IEnumNetEIDBuilderGEN  ' list holds flag not on barriers
+        pFlagsOnBarrGEN = New EnumNetEIDArray
+        pFlagsNoBarrGEN = New EnumNetEIDArray
+
+        Dim pFlagsOnBarr As IEnumNetEID
+        Dim pFlagsNoBarr As IEnumNetEID
+        Dim flagBarrier As Boolean
+        Dim iEID As Integer
+
+        pJuncFlags.Reset()
+        i = 0
+
+        ' For each flag
+        For i = 0 To pJuncFlags.Count - 1
+
+            flagBarrier = False     ' assume flag is not on barrier
+            iEID = pJuncFlags.Next()  ' get the EID of flag
+            m = 0
+            pBarriersList.Reset()
+
+            ' For each barrier
+            For m = 0 To pBarriersList.Count - 1
+                'If endEID = pOriginalBarriersList(m) Then 'VB.NET
+                If iEID = pBarriersList.Next() Then
+                    flagBarrier = True
+                End If
+            Next
+
+            If flagBarrier = True Then  'put EID in flags on barrier list
+
+                ' THIS LIST COULD BE USED IN FUTURE TO FILTER BAD FLAGS OUT
+                ' I.E. - check which flags are on barriers and remove only those ones automatically.
+                pFlagsOnBarrGEN.Add(iEID)
+
+            Else   ' put EID in flags not on barrier list
+                pFlagsNoBarrGEN.Add(iEID)
+            End If
+        Next
+
+        ' QI to get "next" and "count"
+        pFlagsOnBarr = CType(pFlagsOnBarrGEN, IEnumNetEID)
+        pFlagsNoBarr = CType(pFlagsNoBarrGEN, IEnumNetEID)
+
+        If pFlagsOnBarr.Count = pJuncFlags.Count Then
+            flagcheck2021 = "barriers"
+            'return "barriers"? ' should be a return in VB.Net I think... but this works
+        ElseIf pFlagsNoBarr.Count = pJuncFlags.Count Then
+            flagcheck2021 = "nonbarr"
+        Else
+            MsgBox("Inconsistent flag placement." + vbCrLf + _
+            "Barrier flags: " & pFlagsOnBarr.Count & vbCrLf & _
+            " Non-barrier flags: " & pFlagsNoBarr.Count)
+            flagcheck2021 = "error"
+        End If
+    End Function
+
 End Class
 

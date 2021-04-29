@@ -46,7 +46,8 @@
         <Button id="FIPEX_AddIn_dotNet45_2020_cmdBulkSnap" class="cmdBulkSnap" message="Uses an edit session, a selection of points, and the settings in the snapping environment to snap points to the nearest lines.  " caption="Batch Snap Points to Lines" tip="Uses an edit session, a selection of points, and the settings in the snapping environment to snap points to the nearest lines.  " category="Add-In Controls" image="Images\cmdBulkSnap.png" onDemand="false">
           <Help heading="Bulk Snap">Uses an edit session, a selection of points, and the settings in the snapping environment to snap points to the nearest lines.  </Help>
         </Button>
-        </Commands>
+        <Button id="FIPEX_AddIn_dotNet45_2020_cmdOpenLabelHypergraphForm" onDemand="false" class="cmdOpenLabelHypergraphForm" message="Opens FIPEX 'Label Hypergraph' Menu." caption="Label Hypergraph Elements" tip="Add-in command tooltip." category="Add-In Controls" image="" />
+      </Commands>
       <Extensions>
         <Extension id="FIPEX_AddIn_dotNet45_2020_FishPassageExtension" class="FishPassageExtension" productName="The Fish Passage Extension Add-In" showInExtensionDialog="true" autoLoad="false">
           <Description>FIPEX 10.4.1 &#13;&#10;Copyright (c) 2020 G Oldford. &#13;&#10;The Fish Passage Extension is a tool for analyzing the impact of barriers 
@@ -64,6 +65,7 @@
             <Menu refID="FIPEX_AddIn_dotNet45_2020_FiPEx_Menu" />
             <Tool refID="FIPEX_AddIn_dotNet45_2020_PlaceFlagAndRunTool" />
             <Button refID="FIPEX_AddIn_dotNet45_2020_Analysis" />
+            <Button refID="FIPEX_AddIn_dotNet45_2020_cmdOpenLabelHypergraphForm" />
           </Items>
         </Toolbar>
       </Toolbars>
