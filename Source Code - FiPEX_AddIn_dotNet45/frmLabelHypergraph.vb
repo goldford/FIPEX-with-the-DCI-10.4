@@ -26,8 +26,11 @@ Public Class frmLabelHypergraph
 
     ' for saving / restoring original network
     Private m_pOriginalBarriersListSaved As IEnumNetEID
+    Private m_pNewBarriersList As IEnumNetEID ' with branch and source nodes
     Private m_pOriginalEdgeFlagsList As IEnumNetEID
     Private m_pOriginaljuncFlagsList As IEnumNetEID
+    Private m_pOriginalBarriersListGEN As IEnumNetEIDBuilderGEN
+
 
     Private Property bFoundEID As Boolean
 
@@ -48,6 +51,8 @@ Public Class frmLabelHypergraph
         End Try
     End Function
     Private Sub cmdRunLabel_Click(sender As Object, e As EventArgs) Handles cmdRunLabel.Click
+        ' kept this name because it's used in Analysis.vb
+
         ' 1/ expose EIDs for nodes as attribute
         ' 2/ label segmetns and subsegments
 
@@ -80,17 +85,22 @@ Public Class frmLabelHypergraph
         Prep2_CheckMapTOC(bContinue)
         If bContinue = False Then Exit Sub
 
-        ' Left off here Apr 28. TO DO 
-        ' (- add selection set save for editing att. tables to expose node EIDs)
+
         Prep3_FindBranchAndSourceJunctions(bContinue)
         If bContinue = False Then Exit Sub
-
        
-        ' Label Segments - use SelectAndUpdateFeaturesObject (see frmVisualizeDecisionsAndNet.vb)
+        ' Label Segments 
         ' upstream trace from all barriers / sinks one at a time (ignore branch nodes)
+        'May 20 - Tested on Wilmott Watershed - identified branches and sources rapidly. 
+        ' - next step, conduct traces, saving selection set object with corresponding labels
+        ' - review how this was done in old, unpublished tool for visualizing solutions. 
+        Dim pFeatureLayerAndSelectionSet As FeatureLayerAndSelectionSet = New FeatureLayerAndSelectionSet(Nothing, Nothing)
+        Dim lFeatureLayerAndSelSetLINE As List(Of FeatureLayerAndSelectionSet) = New List(Of FeatureLayerAndSelectionSet)
+        Labeling1_GetSelectionSetForSegments(pFeatureLayerAndSelectionSet, lFeatureLayerAndSelSetLINE)
 
         ' Label Sub-Segments
         ' downstream trace from all branches, source, barrier nodes, one at a time
+        'Label2_GetSelectionSetForSubSegments(pFeatureLayerAndSelectionSet, lFeatureLayerAndSelSetLINE)
 
     End Sub
     Private Sub Check1_Network(ByRef bContinue As Boolean)
@@ -250,12 +260,11 @@ Public Class frmLabelHypergraph
         Dim pTraceTasks As ITraceTasks
         Dim pNetworkAnalysisExtResults As INetworkAnalysisExtResults
         Dim pNetworkAnalysisExtBarriers As INetworkAnalysisExtBarriers
-        Dim pOriginalBarriersListGEN As IEnumNetEIDBuilderGEN
         Dim pOriginalEdgeFlagsListGEN As IEnumNetEIDBuilderGEN
         Dim pOriginaljuncFlagsListGEN As IEnumNetEIDBuilderGEN
         Dim pOriginalBarriersList As IEnumNetEID
 
-        Dim pOriginalBarriersListSavedGEN As IEnumNetEIDBuilderGEN
+        Dim pOriginalBarriersListSavedGEN, pNewBarriersListGEN As IEnumNetEIDBuilderGEN
         Dim iOriginalJunctionBarrierCount As Integer
         Dim bFlagDisplay As IFlagDisplay
         Dim bEID, i As Integer
@@ -273,15 +282,16 @@ Public Class frmLabelHypergraph
         ' QI the Flags and barriers
         pNetworkAnalysisExtFlags = CType(m_UtilityNetworkAnalysisExt, INetworkAnalysisExtFlags)
         pNetworkAnalysisExtBarriers = CType(m_UtilityNetworkAnalysisExt, INetworkAnalysisExtBarriers)
-        pOriginalBarriersListGEN = New EnumNetEIDArray
         pOriginalEdgeFlagsListGEN = New EnumNetEIDArray
         pOriginaljuncFlagsListGEN = New EnumNetEIDArray
+        m_pOriginalBarriersListGEN = New EnumNetEIDArray
 
         ' 2020 note - these saved' objects are for the 'advanced connectivity' 
         '             'saved' is so if user selects advanced connectivity table 
         '              this object will not be modified and can be user to restor
 
         pOriginalBarriersListSavedGEN = New EnumNetEIDArray
+        pNewBarriersListGEN = New EnumNetEIDArray ' a clone, updated later with branch junctions
         iOriginalJunctionBarrierCount = pNetworkAnalysisExtBarriers.JunctionBarrierCount
 
         ' ============================ SAVE ORIGINAL BARRIERS =================================
@@ -289,15 +299,17 @@ Public Class frmLabelHypergraph
             ' Use bFlagDisplay to retrieve EIDs of the barriers for later
             bFlagDisplay = CType(pNetworkAnalysisExtBarriers.JunctionBarrier(i), IFlagDisplay)
             bEID = pNetElements.GetEID(bFlagDisplay.FeatureClassID, bFlagDisplay.FID, bFlagDisplay.SubID, esriElementType.esriETJunction)
-            pOriginalBarriersListGEN.Add(bEID)
-            pOriginalBarriersListSavedGEN.Add(bEID)
+            m_pOriginalBarriersListGEN.Add(bEID)
+            pOriginalBarriersListSavedGEN.Add(bEID) ' I think this one is now redundant to pNewBarriersListGEN - GO May 2021
+            pNewBarriersListGEN.Add(bEID)
         Next
 
         ' QI to and get an array object that has 'count' and 'next' methods
-        pOriginalBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
+        pOriginalBarriersList = CType(m_pOriginalBarriersListGEN, IEnumNetEID)
         ' 2020: for branch connectivity feature - GO
         ' save the original list so it can be restored later
         m_pOriginalBarriersListSaved = CType(pOriginalBarriersListSavedGEN, IEnumNetEID)
+        m_pNewBarriersList = CType(pNewBarriersListGEN, IEnumNetEID)
 
         ' ============================ SAVE ORIGINAL FLAGS =================================
         i = 0
@@ -379,7 +391,57 @@ Public Class frmLabelHypergraph
     Private Sub Prep3_FindBranchAndSourceJunctions(ByRef bContinue As Boolean)
         lblPrep3.Text = "Searching for branch junctions and source nodes..."
 
+        ' this list should return m_pNewBarriersList which includes brances and sources
+        MsgBox("The barriers list before: " & (m_pNewBarriersList.Count).ToString)
+        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.FindBranchSourceJunctions(m_pOriginalBarriersListSaved,
+                                                                                      m_pNewBarriersList,
+                                                                                      m_pOriginaljuncFlagsList,
+                                                                                      m_pOriginalBarriersListGEN,
+                                                                                      m_UtilityNetworkAnalysisExt
+                                                                                      )
+        MsgBox("The barriers list after: " & (m_pNewBarriersList.Count).ToString)
+
         lblPrep3.Text = "Searching for branch junctions and source nodes... success"
+
+    End Sub
+    Private Sub Labeling1_GetSelectionSetForSegments(ByRef pFeatureLayerAndSelectionSet As FeatureLayerAndSelectionSet, _
+                                                     ByRef lFeatureLayerAndSelSetLINE As List(Of FeatureLayerAndSelectionSet))
+
+        lblAnalysis1.Text = "Getting segments as a selection set for labelling..."
+
+        ' need: m_pNewBarriersList
+
+        'FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.FindBranchSourceJunctions(
+        ' m_pOriginalBarriersListSaved,
+        ' m_pNewBarriersList,
+        'm_pOriginaljuncFlagsList,
+        'm_pOriginalBarriersListGEN,
+        'm_UtilityNetworkAnalysisExt()
+
+        ' perform iterative upstream traces (use breadth first search)
+
+        ' For each order
+        '   If this is the first iteration
+        '       For each original junction flag
+        '       Clear all flags
+        '       Get the element ID of the flag
+        '       Get the user ID's of the flag
+        '       Display the flag / Set as flag in geonet
+        '       Run the TraceFlowSolverSetup Sub (setup network)
+        '       Run the trace on all flags to get the set of barriers first
+        '       encountered.
+        '         If no results were returned
+        '         Create empty objects for returned edges and junctions
+        '       Make trace results a selection
+        '       Get the features stopping the trace 
+        '       Filter the features stopping the trace (no sinks/sources/non-barriers)
+        '       If the current flag is on a point with field that matches
+
+
+
+        MsgBox("Count of segments returned as selection set: " & (lFeatureLayerAndSelSetLINE.Count).ToString)
+
+        lblAnalysis1.Text = "Getting segments as a selection set for labelleing... success"
 
     End Sub
 End Class

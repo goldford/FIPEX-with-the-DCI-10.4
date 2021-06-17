@@ -4661,98 +4661,18 @@ Public Class frmVisualizeDecisionsAndNet
                                  ByVal dCPERM As Double, _
                                  ByRef pEnumLayer As IEnumLayer)
 
-        ' This intersect features sub was derived from the IntersectFeatures Sub in the Analaysis Class
+        ' This intersect features sub was derived from the IntersectFeatures Sub in the Analysis Class
         ' On August 24, 2012.  
         ' It was modified to 
         ' (a) not intersect features if they weren't included in lPolyLayersFieldsCHECKED or lLineLayersFieldsCHECKED
         ' i.e., if they weren't checked by the user in the listbox. 
         ' (b) not to read extension settings. 
 
-        'Read Extension Settings
-        ' ================== READ EXTENSION SETTINGS =================
-
-        'Dim bDBF As Boolean = False         ' Include DBF output default 'no'
-        'Dim pLLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        'Dim pPLayersFields As List(Of LayerToAdd) = New List(Of LayerToAdd)
-        'Dim iPolysCount As Integer = 0      ' number of polygon layers currently using
-        'Dim iLinesCount As Integer = 0      ' number of lines layers currently using
-        'Dim HabLayerObj As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
-        '' object to hold stats to add to list. 
-        'Dim pHabStatsObject_2 As New StatisticsObject_2(Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing)
         Dim m As Integer = 0
         Dim k As Integer = 0
         Dim j As Integer = 0
         Dim i As Integer = 0
 
-        'If m_FiPEx.m_bLoaded = True Then
-
-        '    ' Populate a list of the layers using and habitat summary fields.
-        '    ' match any of the polygon layers saved in stream to those in listboxes 
-        '    iPolysCount = Convert.ToInt32(m_FiPEx.pPropset.GetProperty("numPolys"))
-        '    If iPolysCount > 0 Then
-        '        For k = 0 To iPolysCount - 1
-        '            'sPolyLayer = m_FiPEx.pPropset.GetProperty("IncPoly" + k.ToString) ' get poly layer
-        '            HabLayerObj = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-        '            With HabLayerObj
-        '                .Layer = Convert.ToString(m_FiPEx.pPropset.GetProperty("IncPoly" + k.ToString)) ' get poly layer
-        '                .ClsField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyClassField" + k.ToString))
-        '                .QuanField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyQuanField" + k.ToString))
-        '                .UnitField = Convert.ToString(m_FiPEx.pPropset.GetProperty("PolyUnitField" + k.ToString))
-        '            End With
-
-        '            ' Load that object into the list
-        '            pPLayersFields.Add(HabLayerObj)  'what are the brackets about - this could be aproblem!!
-        '        Next
-        '    End If
-
-        '    ' Need to be sure that quantity field has been assigned for each
-        '    ' layer using. 
-        '    Dim iCount1 As Integer = pPLayersFields.Count
-
-        '    If iCount1 > 0 Then
-        '        For m = 0 To iCount1 - 1
-        '            If pPLayersFields.Item(m).QuanField = "Not set" Then
-        '                System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for polygon layer. Please choose a field in the options menu.", "Parameter Missing")
-        '                Exit Sub
-        '            End If
-        '        Next
-        '    End If
-
-        '    iLinesCount = Convert.ToInt32(m_FiPEx.pPropset.GetProperty("numLines"))
-        '    Dim HabLayerObj2 As New LayerToAdd(Nothing, Nothing, Nothing, Nothing) ' layer to hold parameters to send to property
-
-        '    ' match any of the line layers saved in stream to those in listboxes
-        '    If iLinesCount > 0 Then
-        '        For j = 0 To iLinesCount - 1
-        '            'sLineLayer = m_FiPEx.pPropset.GetProperty("IncLine" + j.ToString) ' get line layer
-        '            HabLayerObj2 = New LayerToAdd(Nothing, Nothing, Nothing, Nothing)
-        '            With HabLayerObj2
-        '                '.Layer = sLineLayer
-        '                .Layer = Convert.ToString(m_FiPEx.pPropset.GetProperty("IncLine" + j.ToString))
-        '                .ClsField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineClassField" + j.ToString))
-        '                .QuanField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineQuanField" + j.ToString))
-        '                .UnitField = Convert.ToString(m_FiPEx.pPropset.GetProperty("LineUnitField" + j.ToString))
-        '            End With
-        '            ' add to the module level list
-        '            pLLayersFields.Add(HabLayerObj2)
-        '        Next
-        '    End If
-
-        '    ' Need to be sure that quantity field has been assigned for each
-        '    ' layer using. 
-        '    iCount1 = pLLayersFields.Count
-        '    If iCount1 > 0 Then
-        '        For m = 0 To iCount1 - 1
-        '            If pLLayersFields.Item(m).QuanField = "Not set" Then
-        '                System.Windows.Forms.MessageBox.Show("No habitat quantity parameter set for river layer. Please choose a field in the options menu.", "Parameter Missing")
-        '                Exit Sub
-        '            End If
-        '        Next
-        '    End If
-        'Else
-        '    System.Windows.Forms.MessageBox.Show("Cannot read extension settings.", "Calculate Stats Error")
-        '    Exit Sub
-        'End If
 
         ' ====================================================================
         ' ////////////////////////////////////////////////////////////////////

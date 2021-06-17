@@ -34,6 +34,8 @@ Partial Class frmLabelHypergraph
         Me.lblPrep1 = New System.Windows.Forms.Label()
         Me.lblPrep2 = New System.Windows.Forms.Label()
         Me.lblPrep3 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.lblAnalysis1 = New System.Windows.Forms.Label()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -131,17 +133,37 @@ Partial Class frmLabelHypergraph
         'lblPrep3
         '
         Me.lblPrep3.AutoSize = True
-        Me.lblPrep3.Location = New System.Drawing.Point(22, 448)
+        Me.lblPrep3.Location = New System.Drawing.Point(22, 455)
         Me.lblPrep3.Name = "lblPrep3"
         Me.lblPrep3.Size = New System.Drawing.Size(55, 20)
         Me.lblPrep3.TabIndex = 10
         Me.lblPrep3.Text = "Prep 3"
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(426, 348)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(55, 20)
+        Me.Label3.TabIndex = 11
+        Me.Label3.Text = "Prep 3"
+        '
+        'lblAnalysis1
+        '
+        Me.lblAnalysis1.AutoSize = True
+        Me.lblAnalysis1.Location = New System.Drawing.Point(26, 491)
+        Me.lblAnalysis1.Name = "lblAnalysis1"
+        Me.lblAnalysis1.Size = New System.Drawing.Size(80, 20)
+        Me.lblAnalysis1.TabIndex = 12
+        Me.lblAnalysis1.Text = "Analysis 1"
         '
         'frmLabelHypergraph
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(9.0!, 20.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(906, 716)
+        Me.Controls.Add(Me.lblAnalysis1)
+        Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.lblPrep3)
         Me.Controls.Add(Me.lblPrep2)
         Me.Controls.Add(Me.lblPrep1)
@@ -171,4 +193,6 @@ Partial Class frmLabelHypergraph
     Friend WithEvents lblPrep1 As System.Windows.Forms.Label
     Friend WithEvents lblPrep2 As System.Windows.Forms.Label
     Friend WithEvents lblPrep3 As System.Windows.Forms.Label
+    Friend WithEvents Label3 As System.Windows.Forms.Label
+    Friend WithEvents lblAnalysis1 As System.Windows.Forms.Label
 End Class

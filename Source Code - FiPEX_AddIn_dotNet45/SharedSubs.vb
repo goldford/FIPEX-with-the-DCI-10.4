@@ -6,8 +6,790 @@ Imports ESRI.ArcGIS.ArcMapUI
 Imports ESRI.ArcGIS.esriSystem
 Imports ESRI.ArcGIS.EditorExt
 Imports ESRI.ArcGIS.NetworkAnalysis
+Imports ESRI.ArcGIS.Display
 
 Public Class SharedSubs
+
+    
+
+    Public Shared Sub DepthFirstSearch(ByRef pOriginalBarriersList As IEnumNetEID,
+                                       ByRef pOriginaljuncFlagsList As IEnumNetEID,
+                                       ByRef m_UNAExt As ESRI.ArcGIS.EditorExt.IUtilityNetworkAnalysisExt,
+                                       ByVal bRespectBranches As Boolean)
+        ' work in progress - May 2021
+        ' ######################### Depth first search ##############
+        ' Uses ArcMap UNA traces to perform DFS
+        ' Based on loops used in the analysis.vb function 
+        ' for each user-set flag
+        ' 
+        Dim stop_check As Boolean = False
+        Dim sDirection As String = "up"
+        Dim orderLoop As Integer = 0
+        Dim m, p, j, k As Integer
+        Dim iFCID, iFID, iEID, iSubID, iEID_p, bEID, bFCID, bFID, bSubID, sOutID, f_sOutID, f_siOutEID, keepEID, endEID As Integer
+        Dim sBarrierType, f_sType, sType, sFlagCheck As String
+        Dim flagOverBarrier As Boolean = False
+        Dim dBarrierPerm As Double
+        Dim bBranchJunction As Boolean
+        Dim pNextOriginalJuncFlagGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pNextOriginalJuncFlag, pFlowEndJunctions, pBarriersList, pNextTraceBarrierEIDs, pFlowEndJunctionsPer, pFlowEndEdgesPer As IEnumNetEID
+        Dim pFilteredBranchJunctionsList, pOriginalEdgeFlagsList, pFilteredSourceJunctionsList, pFlowEndEdges As IEnumNetEID
+        Dim pFirstJunctionBarriers, pFirstEdgeBarriers, pAllFlowEndBarriers, pResultEdges, pResultJunctions As IEnumNetEID
+        Dim pNoSourceFlowEnds As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pNoSourceFlowEndsTemp As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pNextTraceBarrierEIDGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pOriginalEdgeFlagsListGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pOriginalBarriersListGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pFilteredBranchJunctionsGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pFilteredSourceJunctionsGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pAllFlowEndBarriersGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pTotalResultsJunctionsGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pTotalResultsEdgesGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pEnumNetEIDBuilder As IEnumNetEIDBuilder
+        Dim pNetworkAnalysisExtResults As INetworkAnalysisExtResults
+        Dim pNetworkAnalysisExtBarriers As INetworkAnalysisExtBarriers
+        Dim pNetworkAnalysisExtFlags As INetworkAnalysisExtFlags
+        Dim lBarrierAndSinkEIDs As List(Of BarrAndBarrEIDAndSinkEIDs) = New List(Of BarrAndBarrEIDAndSinkEIDs)
+        Dim pBarrierAndSinkEIDs As New BarrAndBarrEIDAndSinkEIDs(Nothing, Nothing, Nothing, Nothing)
+        Dim lBarrierIDs As List(Of BarrierIDObj) = New List(Of BarrierIDObj)
+        Dim pNetElements As INetElements
+        Dim pFlagDisplay As IFlagDisplay
+        Dim pSymbol As ISymbol
+        Dim pJuncFlagDisplay As IJunctionFlagDisplay
+        Dim pFlagSymbol, pBarrierSymbol As ISimpleMarkerSymbol
+        Dim pSimpleMarkerSymbol As ISimpleMarkerSymbol = New SimpleMarkerSymbol
+        Dim pRgbColor As IRgbColor = New RgbColor
+        Dim pNetworkAnalysisExt As INetworkAnalysisExt
+        Dim pNetwork As INetwork
+        Dim pTraceFlowSolver As ITraceFlowSolver
+        Dim eFlowElements As esriFlowElements
+        Dim pIDAndType As New IDandType(Nothing, Nothing)
+        Dim bUpHab, bPathDownHab, bSourceJunction As Boolean
+        If bRespectBranches = True Then
+            bUpHab = False
+            bPathDownHab = True
+        Else
+            bUpHab = True
+            bPathDownHab = False
+        End If
+
+        pNetworkAnalysisExt = CType(m_UNAExt, INetworkAnalysisExt)
+        Dim pGeometricNetwork As IGeometricNetwork = pNetworkAnalysisExt.CurrentNetwork
+        pGeometricNetwork = pNetworkAnalysisExt.CurrentNetwork
+        pNetwork = pGeometricNetwork.Network
+        pNetElements = CType(pNetwork, INetElements)
+        Dim pMxDocument As IMxDocument = CType(My.ArcMap.Application.Document, IMxDocument)
+        Dim pMap As IMap = pMxDocument.FocusMap
+        Dim pActiveView As IActiveView = CType(pMap, IActiveView)
+
+        Do While stop_check = False
+
+            If orderLoop = 0 Then
+                pFlowEndJunctions = pNextOriginalJuncFlag
+            ElseIf orderLoop > 0 Then
+                If pFlowEndJunctions.Count = 0 Or pFlowEndJunctions Is Nothing Then
+                    stop_check = True
+                End If
+            End If
+
+            pNoSourceFlowEnds = New EnumNetEIDArray
+
+            ' ================ RUN TRACES ======================
+
+            pFlowEndJunctions.Reset()
+
+            For j = 0 To pFlowEndJunctions.Count - 1
+
+                ' this variable holds trace flow ends that are not sources
+                pNoSourceFlowEndsTemp = New EnumNetEIDArray
+                iEID = pFlowEndJunctions.Next()
+
+                ' ============ FILTER BARRIERS (eliminate barriers where flags will be) ===
+                ' For each of the original barriers
+                '   For each of the flow end junctions from the last trace
+                '     If the original barrier is NOT on a flow end junction 
+                '     Add it to a list to use in the upcoming trace.
+                ' DO NOT NEED TO DO THIS IN CASE THIS IS A 'NONBARR' ANALYSIS
+                ' AND ORDERLOOP = 0.  LOGIC THO?
+
+                p = 0
+                'reset / initialize OriginalBarriers list
+                pBarriersList.Reset()
+                ' clear the previous list
+                pNextTraceBarrierEIDGEN = New EnumNetEIDArray
+
+                For p = 0 To pBarriersList.Count - 1
+                    bEID = pBarriersList.Next()
+                    flagOverBarrier = False
+
+                    ' If the EID of the end-of-flow junctions do not equal that of the barriers set in the last trace then keep
+                    ' that barrier for the next trace.
+                    If bEID = iEID Then
+                        flagOverBarrier = True
+                    End If
+
+                    ' For each barrier from the previous trace, add it to list for  next trace if it doesn't overlap with one of the
+                    ' flags for the next trace
+                    If Not flagOverBarrier Then
+                        ' add the barrier to a list of barriers to use in the next trace
+                        pNextTraceBarrierEIDGEN.Add(bEID)
+                    End If
+                Next
+
+                'QI to get 'next' and 'count'
+                pNextTraceBarrierEIDs = CType(pNextTraceBarrierEIDGEN, IEnumNetEID)
+                ' ====================== END FILTER BARRIERS =============================
+
+                ' ========================== SET BARRIERS  ===============================
+                m = 0
+                pNextTraceBarrierEIDs.Reset()
+                pNetworkAnalysisExtBarriers.ClearBarriers()
+
+                For m = 0 To pNextTraceBarrierEIDs.Count - 1
+                    bEID = pNextTraceBarrierEIDs.Next()
+                    pNetElements.QueryIDs(bEID, esriElementType.esriETJunction, _
+                                          bFCID, bFID, bSubID)
+
+                    ' Display the barriers as a JunctionFlagDisplay type
+                    pFlagDisplay = New JunctionFlagDisplay
+                    pSymbol = CType(pBarrierSymbol, ISymbol)
+                    With pFlagDisplay
+                        .FeatureClassID = bFCID
+                        .FID = bFID
+                        .Geometry = pGeometricNetwork.GeometryForJunctionEID(bEID)
+                        .Symbol = pSymbol
+                    End With
+
+                    ' Add the flags to the logical network
+                    pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
+                    pNetworkAnalysisExtBarriers.AddJunctionBarrier(pJuncFlagDisplay)
+                Next
+                ' ========================== END SET BARRIERS ===========================
+
+                ' ========================== SET FLAG ====================================
+                pNetworkAnalysisExtFlags.ClearFlags()
+                pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, _
+                                      iFCID, iFID, iSubID)
+
+                ' Display the flags as a JunctionFlagDisplay type
+                pFlagDisplay = New JunctionFlagDisplay
+                pSymbol = CType(pFlagSymbol, ISymbol)
+                With pFlagDisplay
+                    .FeatureClassID = iFCID
+                    .FID = iFID
+                    .Geometry = pGeometricNetwork.GeometryForJunctionEID(iEID)
+                    .Symbol = pSymbol
+                End With
+
+                ' Add the flags to the logical network
+                pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
+                pNetworkAnalysisExtFlags.AddJunctionFlag(pJuncFlagDisplay)
+
+                ' =======================================================================
+                ' ====================== RUN TRACE IN DIRECTION OF ANALYSIS ====================
+                '                            TO GET FLOW END ELEMENTS
+                'prepare the network solver
+                pTraceFlowSolver = TraceFlowSolverSetup()
+                If pTraceFlowSolver Is Nothing Then
+                    System.Windows.Forms.MessageBox.Show("Could not set up the network. Check that there is a network loaded.", _
+                                                         "TraceFlowSolver setup error.")
+                    ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pBarriersList, pNetElements, bFCID, _
+                                       bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+                                       iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+                                       pOriginaljuncFlagsList)
+                    Exit Sub
+                End If
+
+                eFlowElements = esriFlowElements.esriFEJunctionsAndEdges
+
+                'Return the features stopping the trace
+                If sDirection = "up" Then
+                    pTraceFlowSolver.FindFlowEndElements(esriFlowMethod.esriFMUpstream, eFlowElements, _
+                                                         pFlowEndJunctionsPer, pFlowEndEdgesPer)
+                Else
+                    pTraceFlowSolver.FindFlowEndElements(esriFlowMethod.esriFMDownstream, _
+                                                         eFlowElements, pFlowEndJunctionsPer, _
+                                                         pFlowEndEdgesPer)
+                End If
+                ' ========================== END RUN TRACE  =============================
+
+                ' =================== GET BARRIER ID AND METRICS ========================
+                ' Gets the ID of the current flag?
+                pIDAndType = New IDandType(Nothing, Nothing)
+
+                ' is this needed? GO- 2021
+                pIDAndType = GetBarrierID(iFCID, iFID, lBarrierIDs)
+                sOutID = pIDAndType.BarrID
+
+                '  set branch junction  permeability = 1
+                bBranchJunction = False
+
+                pFilteredBranchJunctionsList.Reset()
+                For p = 0 To pFilteredBranchJunctionsList.Count - 1
+                    iEID_p = pFilteredBranchJunctionsList.Next()
+                    If iEID = iEID_p Then
+                        bBranchJunction = True
+                        Exit For
+                    End If
+                Next
+
+                bSourceJunction = False
+                pFilteredSourceJunctionsList.Reset()
+                For p = 0 To pFilteredSourceJunctionsList.Count - 1
+                    iEID_p = pFilteredSourceJunctionsList.Next()
+                    If iEID = iEID_p Then
+                        bSourceJunction = True
+                        Exit For
+                    End If
+                Next
+
+                ' track whether it's a branch or source junction
+                If bBranchJunction = True Then
+                    sType = "Branch Junction"
+                ElseIf bSourceJunction = True Then
+                    sType = "Source Junction"
+                Else
+                    sType = pIDAndType.BarrIDType
+                End If
+
+                If sType <> "Sink" And orderLoop = 0 And sFlagCheck = "nonbarr" Then
+
+                    sType = "Flag - Node"
+
+                    '2020 Note (Edge case fix): must add 'Flag - Node' type to 'barrier' list
+                    ' during 'advanced analysis' with dd. otherwise the downstream path trace
+                    ' from the next upstream nodes will pass the flag (if flag is not a 'sink').
+                    ' the resulting connectivity table for R DCI will be wrong.
+                    ' Fix here is thus to add the node to list of barriers temporarily to halt trace. 
+                    ' This means that the 'path downstream' now does not proceed all the way to the 
+                    ' network sink anymore. 
+                    ' don't worry about modifying pOriginalBarriersList because the barriers are 
+                    ' saved in pOriginalBarriersListSaved
+
+                    pBarriersList.Reset()
+                    pOriginalBarriersListGEN = New EnumNetEIDArray
+
+                    For p = 0 To pBarriersList.Count - 1
+                        iEID_p = pBarriersList.Next()
+                        pOriginalBarriersListGEN.Add(iEID_p)
+                    Next
+                    pOriginalBarriersListGEN.Add(iEID)
+                    pBarriersList = Nothing
+                    pBarriersList = CType(pOriginalBarriersListGEN, IEnumNetEID)
+
+                ElseIf sType <> "Sink" And orderLoop = 0 And sFlagCheck = "barrier" Then
+                    sType = "Flag - barrier"
+                End If
+
+                If bBranchJunction = True Then
+                    sBarrierType = "Branch Junction"
+                ElseIf bSourceJunction = True Then
+                    sBarrierType = "Source Junction"
+                Else
+                    sBarrierType = "Barrier"
+                End If
+
+                ' Will save this sOutID and sType for later use, if this is orderloop zero (flag)
+                ' because will need to insert the DCI Metric at the end of this flag loop
+                ' else if it's a barrier in a greater order loop we're visiting, then keep
+                ' track of their id's for later use.  
+                If orderLoop = 0 Then
+                    f_sOutID = sOutID
+                    f_siOutEID = iEID
+                    f_sType = sType
+                Else
+                    pBarrierAndSinkEIDs = New BarrAndBarrEIDAndSinkEIDs(f_siOutEID, iEID, _
+                                                                        sOutID, sBarrierType)
+                    lBarrierAndSinkEIDs.Add(pBarrierAndSinkEIDs)
+                End If
+
+
+                ' Before the next stage, save the iFID variable because it may 
+                ' get reset in FILTER FLOW END ELEMENTS and it is used to label 
+                ' sinks in the form output
+                Dim sFID As String = iFID.ToString
+
+                ' =======================================================================
+                ' =============== FILTER FLOW END ELEMENTS (no sources) =================
+                ' Filter first flow end elements so that only barriers are included
+                ' 
+                ' 1) For each flow-stopping element 
+                '   2) For each original barrier set by the user
+                '     3) If there is a match 
+                '       4) If they have not already been encountered before
+                '         (need this check in case trace was on indeterminate flow - 
+                '          to avoid infinite looping)
+                '         5)Add them to a list to use as FLAGS later
+                'If this is orderloop zero
+                ' then it's okay to reset the 
+                pAllFlowEndBarriers = CType(pAllFlowEndBarriersGEN, IEnumNetEID)
+                pFlowEndJunctionsPer.Reset()
+                p = 0
+
+                For p = 0 To pFlowEndJunctionsPer.Count - 1
+
+                    keepEID = False 'initialize
+                    endEID = pFlowEndJunctionsPer.Next()
+                    m = 0
+                    pBarriersList.Reset()
+                    For m = 0 To pBarriersList.Count - 1
+                        If endEID = pBarriersList.Next() Then
+                            keepEID = True ' set true if found
+                            pAllFlowEndBarriers.Reset()
+                            For k = 0 To pAllFlowEndBarriers.Count - 1
+                                If endEID = pAllFlowEndBarriers.Next() Then
+                                    keepEID = False ' set false if already on master list
+                                End If
+                            Next
+                        End If
+                    Next
+
+                    If keepEID = True Then
+                        pAllFlowEndBarriersGEN.Add(endEID) ' This variable does not get reset - used
+                        ' to crosscheck in case of infinite loop problem
+                        pNoSourceFlowEnds.Add(endEID) 'This variable gets reset each order loop
+
+                        'NoSourceFlowEnds will have to be changed to NoSourceJncFlowEnds in the future
+                        ' and NoSourceEdgFlowEnds to differentiate
+                        pNoSourceFlowEndsTemp.Add(endEID) ' This is a temporary variable.
+                    End If
+                Next 'flowend element
+
+                ' must use upstream trace if any of these options true
+                If bUpHab = True Then
+
+                    pTraceFlowSolver.FindFlowElements(esriFlowMethod.esriFMUpstream, eFlowElements, _
+                                                      pResultJunctions, pResultEdges)
+
+                    If pResultJunctions Is Nothing Then
+                        ' junctions were not returned -- create an empty enumeration
+                        pEnumNetEIDBuilder = New EnumNetEIDArray
+                        pEnumNetEIDBuilder.Network = pNetworkAnalysisExt.CurrentNetwork.Network
+                        pEnumNetEIDBuilder.ElementType = esriElementType.esriETJunction
+                        pResultJunctions = CType(pEnumNetEIDBuilder, IEnumNetEID)
+                    End If
+
+                    If pResultEdges Is Nothing Then
+                        ' edges were not returned -- create an empty enumeration
+                        pEnumNetEIDBuilder = New EnumNetEIDArray
+                        pEnumNetEIDBuilder.Network = pNetworkAnalysisExt.CurrentNetwork.Network
+                        pEnumNetEIDBuilder.ElementType = esriElementType.esriETEdge
+                        pResultEdges = CType(pEnumNetEIDBuilder, IEnumNetEID)
+                    End If
+
+                    If bUpHab = True Then
+                        ' Get results as selection
+                        pNetworkAnalysisExtResults.CreateSelection(pResultJunctions, pResultEdges)
+
+                        ' ================== SAVE FOR HIGHLIGHTING =====================
+                        ' Get results to display as highlights at end of sub
+                        pResultJunctions.Reset()
+                        k = 0
+                        For k = 0 To pResultJunctions.Count - 1
+                            pTotalResultsJunctionsGEN.Add(pResultJunctions.Next())
+                        Next
+                        pResultEdges.Reset()
+                        For k = 0 To pResultEdges.Count - 1
+                            pTotalResultsEdgesGEN.Add(pResultEdges.Next())
+                        Next
+
+                    End If '  If bUpHab = True 
+
+                End If
+
+                If bPathDownHab = True Then
+
+                    pMap.ClearSelection() ' clear selection
+                    ' perform downstream trace
+                    pTraceFlowSolver.FindFlowElements(esriFlowMethod.esriFMDownstream, eFlowElements, pResultJunctions, pResultEdges)
+
+                    If pResultJunctions Is Nothing Then
+                        ' junctions were not returned -- create an empty enumeration
+                        pEnumNetEIDBuilder = New EnumNetEIDArray
+                        pEnumNetEIDBuilder.Network = pNetworkAnalysisExt.CurrentNetwork.Network
+                        pEnumNetEIDBuilder.ElementType = esriElementType.esriETJunction
+                        pResultJunctions = CType(pEnumNetEIDBuilder, IEnumNetEID)
+                    End If
+
+                    If pResultEdges Is Nothing Then
+                        ' edges were not returned -- create an empty enumeration
+                        pEnumNetEIDBuilder = New EnumNetEIDArray
+                        pEnumNetEIDBuilder.Network = pNetworkAnalysisExt.CurrentNetwork.Network
+                        pEnumNetEIDBuilder.ElementType = esriElementType.esriETEdge
+                        pResultEdges = CType(pEnumNetEIDBuilder, IEnumNetEID)
+                    End If
+
+                    ' ======================== SAVE FOR HIGHLIGHTING  =======================
+                    ' Get results to display as highlights at end of sub
+                    pResultJunctions.Reset()
+                    k = 0
+                    For k = 0 To pResultJunctions.Count - 1
+                        pTotalResultsJunctionsGEN.Add(pResultJunctions.Next())
+                    Next
+                    pResultEdges.Reset()
+                    For k = 0 To pResultEdges.Count - 1
+                        pTotalResultsEdgesGEN.Add(pResultEdges.Next())
+                    Next
+
+                    ' Get results as selection
+                    pNetworkAnalysisExtResults.CreateSelection(pResultJunctions, pResultEdges)
+
+                End If ' Downstream Path Habitat desired
+
+                pNetworkAnalysisExtFlags.ClearFlags()   ' clear the flags
+
+            Next 'flag
+            ' ================= END RUN TRACE ON ONE FLAG AT A TIME =================
+
+            ' change the flowEndJunctions to an array that no longer has sources, or non-barriers.
+            pFlowEndJunctions = New EnumNetEIDArray
+            pFlowEndJunctions = CType(pNoSourceFlowEnds, IEnumNetEID)
+
+            ' Store the first flow end elements
+            ' 2012- THESE VARS MAY NOT BE USED ANYMORE
+            If orderLoop = 0 And sFlagCheck = "nonbarr" Then
+                pFirstJunctionBarriers = pFlowEndJunctions
+            ElseIf orderLoop = 0 And sFlagCheck = "barriers" Then
+                pFirstJunctionBarriers = pOriginaljuncFlagsList
+            End If
+
+            pFirstEdgeBarriers = pFlowEndEdges
+
+            ' Clear the barriers.
+            pNetworkAnalysisExtBarriers.ClearBarriers()
+
+        Loop ' 
+
+    End Sub
+
+
+    Public Shared Sub FindBranchSourceJunctions(ByRef pOriginalBarriersListSaved As IEnumNetEID,
+                                                ByRef pNewBarriersList As IEnumNetEID,
+                                                ByRef pOriginaljuncFlagsList As IEnumNetEID,
+                                                ByRef pNewBarriersListGEN As IEnumNetEIDBuilderGEN,
+                                                ByRef m_UtilityNetworkAnalysisExt As ESRI.ArcGIS.EditorExt.IUtilityNetworkAnalysisExt)
+
+        ' return an object that can be used to select and assign values to attributes
+        ' ######################### FIND ALL BRANCH JUNCTIONS ##############
+        ' Created Aug 2020
+        ' Ported over to Sharessubs May  2021
+        ' Purpose: testing, debugging of finding all junctions representing 
+        '          a branch _in addition_ to the junctions representing 
+        '          sinks or barriers. Create list of junctions that will 
+        '          be treated like 'barriers' for purpose of connectivity 
+        '          table generation; amend list of original junction barriers.
+        '          the 'original' in object name should be changed since the
+        '          actual originally set barriers are stored in pOriginalBarriersListSaved
+        ' Logic: 
+        ' If 'Advanced Connectivity is checked' 
+        ' Clear All Flags and Barriers
+        ' For Each Original Flag
+        ' Set Flag 
+        ' Trace Upstream and find neighbour junction
+        ' If more than one upstream immediate junction 
+        ' Save current flag junction EID
+        ' Move flag to next 'order' and repeat above
+        'MsgBox("Debug2020: bAdvConnectTab is set " & Str(bAdvConnectTab))
+        Dim pNetTopology As INetTopology
+        Dim iEdges, fEID, iFCID, iFID, iSubID As Integer
+        Dim iEdgeEID As Integer = 0
+        Dim iFromEID As Integer = 0 ' referring to dig. direction
+        Dim iToEID As Integer = 0
+        Dim iThisEID As Integer = 0
+        Dim iNextEID As Integer = 0
+        Dim iEID_j As Integer = 0
+        Dim iEID_p As Integer = 0
+        Dim iEID_k As Integer = 0
+        Dim iLastEID As Integer = 0
+        Dim iActualFromEID As Integer = 0 ' for actual flow direction
+        Dim iActualToEID As Integer = 0
+        Dim iFlowDir As Integer = 0 ' esriFlowDirection 
+        Dim bOrientation As Boolean = False
+        Dim bUpstream As Boolean = False
+        Dim bMatch As Boolean = False
+        Dim bBranchJunction As Boolean = False
+        Dim bSourceJunction As Boolean = False
+        Dim iUpstreamEdges As Integer = 0
+        Dim pAdjacentEdges, pBranchJunctions, pSourceJunctions, pFilteredBranchJunctionsList, pFilteredSourceJunctionsList As IEnumNetEID
+        Dim pAdjacentEdgesGEN, pBranchJunctionsGEN, pSourceJunctionsGEN As IEnumNetEIDBuilderGEN
+        Dim pFilteredBranchJunctionsGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+        Dim pFilteredSourceJunctionsGEN As IEnumNetEIDBuilderGEN = New EnumNetEIDArray
+
+        ' next junctions upstream direction
+        Dim pNextJunctions, pJunctions As IEnumNetEID
+        Dim pJunctionsGEN, pNextJunctionsGEN As IEnumNetEIDBuilderGEN
+        Dim iUpstreamJunctionCount As Integer = 0
+        Dim pUtilityNetwork As IUtilityNetwork ' need to get flow direction relative to dig. direction
+        Dim pForwardStar As IForwardStar
+        Dim pForwardStarGEN As IForwardStarGEN
+        Dim pNetEdge As INetworkEdge
+        Dim iNetEdgeDirection, sUserID As Integer ' the direction of flow relative to digitized direction
+
+        ' May 2021
+        Dim pNetwork As INetwork
+        Dim pBarriersListWithBranches As IEnumNetEIDBuilderGEN
+        Dim pNetElements As INetElements
+        Dim pNetworkAnalysisExt As INetworkAnalysisExt
+        pNetworkAnalysisExt = CType(m_UtilityNetworkAnalysisExt, INetworkAnalysisExt)
+        Dim pGeometricNetwork As IGeometricNetwork = pNetworkAnalysisExt.CurrentNetwork
+        pGeometricNetwork = pNetworkAnalysisExt.CurrentNetwork
+        pNetwork = pGeometricNetwork.Network
+        pNetElements = CType(pNetwork, INetElements)
+        Dim pIDAndType As New IDandType(Nothing, Nothing)
+
+        pOriginaljuncFlagsList.Reset()
+        pBranchJunctionsGEN = New EnumNetEIDArray
+        pSourceJunctionsGEN = New EnumNetEIDArray
+
+        ' for each flag the user has set 
+        For i = 0 To pOriginaljuncFlagsList.Count - 1
+
+            pNetTopology = CType(pNetwork, INetTopology)
+            fEID = pOriginaljuncFlagsList.Next()
+
+            ' get user label for result form
+            pNetElements.QueryIDs(fEID, esriElementType.esriETJunction, iFCID, iFID, iSubID)
+            ' Not sure this is needed GO May 2021
+            'pIDAndType = GetBarrierID(iFCID, iFID, lBarrierIDs)
+
+            'MsgBox("Flag EID: " & fEID.ToString & " iSubID: " & iSubID.ToString & " iFID " & iFID.ToString & " User ID? " & pIDAndType.BarrID.ToString)
+
+            '' check if user has hit 'close/cancel'
+            'If m_bCancel = True Then
+            '    backgroundworker1.CancelAsync()
+            '    backgroundworker1.Dispose()
+            '    ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+            '                           bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+            '                           iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+            '                           pOriginaljuncFlagsList)
+            '    Exit Sub
+            'End If
+
+            'update_string = update_string & " - network search for branches (advanced analysis)" & Environment.NewLine
+            'backgroundworker1.ReportProgress(IProgress, update_string)
+
+            '' check if user has hit 'close/cancel'
+            'If m_bCancel = True Then
+            '    ResetFlagsBarriers(pNetworkAnalysisExtBarriers, pOriginalBarriersList, pNetElements, bFCID, _
+            '                          bFID, bSubID, pBarrierSymbol, pGeometricNetwork, iFCID, iFID, _
+            '                          iSubID, pNetworkAnalysisExtFlags, pOriginalEdgeFlagsList, pFlagSymbol, _
+            '                          pOriginaljuncFlagsList)
+            '    Exit Sub
+            'End If
+
+            ' Use Do loop until no upstream neighbours are found
+            pJunctionsGEN = New EnumNetEIDArray
+            pJunctionsGEN.Add(fEID) ' initialize this object before first loop
+            pJunctions = CType(pJunctionsGEN, IEnumNetEID)
+            iUpstreamJunctionCount = pJunctions.Count ' initialize for first loop
+            pUtilityNetwork = CType(pGeometricNetwork.Network, IUtilityNetwork)
+            pForwardStarGEN = pUtilityNetwork.CreateForwardStar(True, Nothing, Nothing, Nothing, Nothing)
+            pForwardStar = CType(pForwardStarGEN, IForwardStar)
+
+            Do Until iUpstreamJunctionCount = 0
+
+                pJunctions.Reset()
+                pNextJunctionsGEN = New EnumNetEIDArray
+
+                For j = 0 To pJunctions.Count - 1
+                    iThisEID = pJunctions.Next()
+                    iUpstreamEdges = 0
+
+                    'pForwardStar.FindAdjacent(0, iThisEID, iEdges)
+                    iEdges = pNetTopology.GetAdjacentEdgeCount(iThisEID)
+                    'MsgBox("Debug2020: # edge neighbours found for node EID " & Str(iThisEID) & "using pForwardStar: " & Str(iEdges))
+
+                    If iEdges > 0 Then
+                        'If pNetTopology.GetAdjacentEdgeCount(iThisEID) > 0 Then
+                        'pEnumNetEIDBuilder.Add(lEID)
+                        'MsgBox("Debug2020: neighbours found for flag " & Str(fEID))
+                        ' if edge count is greater than 2 (one uo one down)
+                        ' add current junction to list of branch junctions
+                        ' for each edge find adjacent junctions
+                        'iEdges = pNetTopology.GetAdjacentEdgeCount(iThisEID)
+                        'MsgBox("Debug2020: # edge neighbours found for node EID " & Str(iThisEID) & "using pNetTopology: " & Str(iEdges))
+
+                        For k = 0 To iEdges - 1
+
+                            iEdgeEID = 0
+                            iFromEID = 0
+                            iToEID = 0
+
+                            'MsgBox("Debug2020: # This junction  EID: " & Str(iThisEID))
+                            'MsgBox("Debug2020: edgeEID initialized to: " & Str(iEdgeEID))
+                            pNetTopology.GetAdjacentEdge(iThisEID, k, iEdgeEID, True)
+                            'MsgBox("Debug2020: neighbour edge EID found using pNetTopology: " & Str(iEdgeEID))
+
+                            'pForwardStar.QueryAdjacentEdge(k, iEdgeEID, bOrientation, Nothing)
+                            ' MsgBox("Debug2020: neighbour edge EID found using pForwardStar: " & Str(iEdgeEID))
+                            'MsgBox("Debug2020: is neighbour edge " & Str(iEdgeEID) & " found using pForwardStar upstream? " & Str(bOrientation))
+
+                            ' Problem is that bOrientation (and other nettopology directions) are simply digitization direction
+                            ' no way easily to determine the flow direction of the edges
+                            ' need to:
+                            ' get the adjacent edge
+                            ' determine digitization direction relative to iThisEID
+                            ' determine flow direction relative to digization direction
+                            ' is it upstream?
+
+                            ' IUtilityNetworkGEN.GetFlowDirection(EID) should get flow direction but it is relative to digitization
+                            ' https://desktop.arcgis.com/en/arcobjects/latest/net/webframe.htm#esriFlowDirection.htm
+                            ' 1 = with digitization direction, 2 = against digitization direction
+                            'pUtilityNetwork.
+                            'iToEID = iThisEID
+                            'MsgBox("Debug2020: # The initialized next junction EID: " & Str(iNextJunctionEID))
+                            pNetTopology.GetFromToJunctionEIDs(iEdgeEID, iFromEID, iToEID)
+                            'MsgBox("Debug2020: # The returned 'to' node using PNetTopology for edge " & Str(iEdgeEID) & " :" & Str(iToEID))
+                            'MsgBox("Debug2020: # The returned 'from' node using PNetTopology for edge " & Str(iEdgeEID) & " :" & Str(iFromEID))
+                            'pForwardStar.QueryAdjacentJunction(k, iFromEID, Nothing)
+                            'MsgBox("Debug2020: # The neighbour node using pForwardStar for edge " & Str(iEdgeEID) & " :" & Str(iFromEID))
+
+                            iFlowDir = pUtilityNetwork.GetFlowDirection(iEdgeEID)
+                            'MsgBox("Debug2020: # The esriflowdirection for edge " & Str(iEdgeEID) & " :" & Str(iFlowDir))
+
+                            If iFromEID = iThisEID Then
+                                iNextEID = iToEID
+                                If iFlowDir = 1 Then
+                                    'MsgBox("Debug2020: Edge " & Str(iEdgeEID) & " is downstream of node " & Str(iThisEID))
+                                    bUpstream = False
+                                ElseIf iFlowDir = 2 Then
+                                    'MsgBox("Debug2020: Edge " & Str(iEdgeEID) & " is upstream of node " & Str(iThisEID))
+                                    bUpstream = True
+                                Else
+                                    MsgBox("Debug2020: Edge flow direction is unitialized or indeterminate. For Distance-limited analysis all edges must have determinate flow direction. ")
+                                    MsgBox("Debug2020: # The esriflowdirection for edge EID " & Str(iEdgeEID) & " :" & Str(iFlowDir))
+                                    'pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, _
+                                    '  iFCID, _
+                                    '  iFID, _
+                                    '  iSubID)
+                                    bUpstream = False
+                                End If
+
+                            ElseIf iToEID = iThisEID Then
+                                iNextEID = iFromEID
+                                If iFlowDir = 1 Then
+                                    bUpstream = True
+                                ElseIf iFlowDir = 2 Then
+                                    bUpstream = False
+                                Else
+                                    bUpstream = False
+                                End If
+                            Else
+                                MsgBox("Debug2020: No match?? iThisEID: " & Str(iThisEID) & " iFromEID: " & Str(iFromEID) & "iToEID: " & Str(iToEID))
+                            End If
+
+                            ' add the upstream EID to a list of EIDs unless we are 
+                            ' Note here would be the place to identify braids, if that is desired
+                            '    Do this after this loop by checking if any duplicates in list of 
+                            '    upstream EIDs
+                            If bUpstream = True Then
+                                pNextJunctionsGEN.Add(iNextEID)
+                                iUpstreamEdges = iUpstreamEdges + 1
+                            End If
+                        Next
+
+                    End If ' upstream edges > 0
+                    ' Add to list of branching junctions
+
+                    If iUpstreamEdges > 1 Then
+                        pBranchJunctionsGEN.Add(iThisEID)
+                        ' going to add this EID to list and remove duplicates later
+                        'pOriginalBarriersListGEN.Add(iThisEID)
+                    ElseIf iUpstreamEdges = 0 Then
+                        pSourceJunctionsGEN.Add(iThisEID)
+                    End If
+
+                    'iLastEID = iThisEID ' track last loops EID 
+
+                Next 'junction in 'order
+                pNextJunctions = Nothing
+                pNextJunctions = CType(pNextJunctionsGEN, IEnumNetEID)
+                pNextJunctions.Reset()
+
+                ' not sure it's necessary to redeclare an empty object for junctions but will do
+                pJunctionsGEN = New EnumNetEIDArray
+                pJunctions = Nothing
+                pJunctions = CType(pJunctionsGEN, IEnumNetEID)
+                pJunctions = pNextJunctions
+                pNextJunctionsGEN = New EnumNetEIDArray
+                iUpstreamJunctionCount = pJunctions.Count()
+
+            Loop
+
+            ' merge the original barriers list and the branch junction list
+            ' careful because the original barriers list likely has other objects
+            ' linked to it that contain permeability, ID, etc etc
+            ' remove duplicates
+
+        Next ' original junction flag or sink
+
+
+        ' For each pBranchJunctions add it to the original barrier list generator
+        pBranchJunctions = CType(pBranchJunctionsGEN, IEnumNetEID)
+
+        pBranchJunctions.Reset()
+        For j = 0 To pBranchJunctions.Count - 1
+            iEID_j = pBranchJunctions.Next()
+
+            ' make sure it's not a duplicate 
+            '(if user has placed flag on branch junction, then omit the branch junction)
+            pNewBarriersList.Reset()
+            bMatch = False
+
+            For k = 0 To pNewBarriersList.Count - 1
+                iEID_k = pNewBarriersList.Next()
+                If iEID_j = iEID_k Then
+                    bMatch = True
+                End If
+            Next
+            If bMatch = False Then
+                ' add branch junction to user-set barrier list 
+                ' this list arrives pre-populated with the user set barriers - GO May 2021
+                pNewBarriersListGEN.Add(iEID_j)
+                ' store filtered (no user-set barrier) branch junction for later
+                pFilteredBranchJunctionsGEN.Add(iEID_j)
+
+            End If
+        Next
+
+        pFilteredBranchJunctionsList = Nothing
+        pFilteredBranchJunctionsList = CType(pFilteredBranchJunctionsGEN, IEnumNetEID)
+        pFilteredBranchJunctionsList.Reset()
+        pSourceJunctions = CType(pSourceJunctionsGEN, IEnumNetEID)
+        pSourceJunctions.Reset()
+
+        For j = 0 To pSourceJunctions.Count - 1
+            iEID_j = pSourceJunctions.Next()
+
+            ' make sure it's not a duplicate 
+            '(if user has placed flag on branch junction, then omit the branch junction)
+            pNewBarriersList.Reset()
+            bMatch = False
+
+            For k = 0 To pNewBarriersList.Count - 1
+                iEID_k = pNewBarriersList.Next()
+                If iEID_j = iEID_k Then
+                    bMatch = True
+
+                End If
+            Next
+            If bMatch = False Then
+                ' add branch junction to user-set barrier list 
+                pNewBarriersListGEN.Add(iEID_j)
+                ' store filtered (no user-set barrier) branch junction for later
+                pFilteredSourceJunctionsGEN.Add(iEID_j)
+
+            End If
+        Next
+
+        pFilteredSourceJunctionsList = Nothing
+        pFilteredSourceJunctionsList = CType(pFilteredSourceJunctionsGEN, IEnumNetEID)
+        pFilteredSourceJunctionsList.Reset()
+        pNewBarriersList = Nothing
+        pNewBarriersList = CType(pNewBarriersListGEN, IEnumNetEID)
+
+
+    End Sub
     Public Shared Sub ResultsForm2020(ByRef pResultsForm3 As FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3,
                                       ByRef lSinkIDandTypes As List(Of SinkandTypes),
                                       ByRef lHabStatsList As List(Of StatisticsObject_2),
@@ -1118,6 +1900,456 @@ Public Class SharedSubs
             flagcheck2021 = "error"
         End If
     End Function
+    Public Shared Function TraceFlowSolverSetup() As ITraceFlowSolver
+        ' Prepares the network for tracing
+        ' duplicated in 2021 from private function in analysis.vb
 
+        Dim pNetworkAnalysisExt As INetworkAnalysisExt
+        Dim pGeometricNetwork As IGeometricNetwork
+        Dim pUtilityNetwork As IUtilityNetwork
+        Dim pNetSolver As INetSolver
+        Dim pNetworkAnalysisExtBarriers As INetworkAnalysisExtBarriers
+        Dim pNetworkAnalysisExtFlags As INetworkAnalysisExtFlags
+        Dim pEdgeElementBarriers As INetElementBarriers     ' Should these next two be INetElementBarriersGEN?
+        Dim pJunctionElementBarriers As INetElementBarriers
+        Dim pSelectionSetBarriers As ISelectionSetBarriers
+        Dim pFeatureLayer As IFeatureLayer
+        Dim pFlagDisplay As IFlagDisplay
+        Dim pEdgeFlagDisplay As IEdgeFlagDisplay
+        Dim pEdgeFlags() As IEdgeFlag
+        Dim pJunctionFlags() As IJunctionFlag
+        Dim pNetFlag As INetFlag
+        Dim pEdgeFlag As IEdgeFlag
+        'Dim pTraceFlowSolver As ITraceFlowSolver
+        Dim pTraceTasks As ITraceTasks
+        Dim pNetworkAnalysisExtWeightFilter As INetworkAnalysisExtWeightFilter
+        Dim pNetSchema As INetSchema
+        Dim pNetWeight As INetWeight
+        Dim eWeightFilterType As esriWeightFilterType
+        Dim pNetSolverWeights As INetSolverWeights
+        Dim pTraceFlowSolver As ITraceFlowSolver
+
+        ' Must change from Object type in VB.Net to Variant in VB6
+        Dim lngFromValues() As Object
+        Dim lngToValues() As Object
+
+        Dim lngFeatureLayerCount As Integer
+        Dim lngEdgeFlagCount As Integer
+        Dim lngJunctionFlagCount As Integer
+        Dim binFeatureLayerDisabled As Boolean
+        Dim binApplyNotOperator As Boolean
+        Dim lngFilterRangeCount As Integer
+        Dim i As Integer
+
+        ' copied these module level vars just as a test - GO May 2021
+        ' should be reverted to local vars
+        Dim m_FiPEx__1 As FishPassageExtension
+        Dim m_UNAExt As ESRI.ArcGIS.EditorExt.IUtilityNetworkAnalysisExt
+        Dim m_pNetworkAnalysisExt As INetworkAnalysisExt
+
+        If m_FiPEx__1 Is Nothing Then
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+        End If
+        If m_UNAExt Is Nothing Then
+            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+        End If
+        'Dim FiPEx__1 As FishPassageExtension = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetExtension
+        'Dim pUNAExt As IUtilityNetworkAnalysisExt = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetUNAExt
+        If m_pNetworkAnalysisExt Is Nothing Then
+            m_pNetworkAnalysisExt = CType(m_UNAExt, INetworkAnalysisExt)
+        End If
+
+        ' Get reference to the current network through Utility Network interface
+        pNetworkAnalysisExt = CType(m_UNAExt, INetworkAnalysisExt)
+
+        ' Assign a reference to the current geometric network via a local variable
+        pGeometricNetwork = pNetworkAnalysisExt.CurrentNetwork
+
+        ' Assign the network to local IUtilityNetwork variable
+        ' however, do it through GeometricNetwork which returns
+        ' a QI for utilitynetwork using INetwork.... ?
+
+        ' Not all members of IUtilityNetwork be directly calleable
+        ' With VB.NET and it has been recommended to use IUtilityNetworkGEN
+        ' instead...
+
+        pUtilityNetwork = CType(pGeometricNetwork.Network, IUtilityNetwork)
+
+        ' initialize the trace flow solver and set the network
+        pNetSolver = New TraceFlowSolver
+        pNetSolver.SourceNetwork = pUtilityNetwork
+
+        ' Get barriers for the network
+        ' QI for the interface using the IUtilityNetworkAnalysisExt
+        pNetworkAnalysisExtBarriers = CType(m_UNAExt, INetworkAnalysisExtBarriers)
+        ' Get the element barriers
+        pNetworkAnalysisExtBarriers.CreateElementBarriers(pJunctionElementBarriers, pEdgeElementBarriers)
+        ' Get the selection set barriers
+        pNetworkAnalysisExtBarriers.CreateSelectionBarriers(pSelectionSetBarriers)
+        ' set the barriers for the network solver
+        pNetSolver.ElementBarriers(esriElementType.esriETEdge) = pEdgeElementBarriers
+        pNetSolver.ElementBarriers(esriElementType.esriETJunction) = pJunctionElementBarriers
+        pNetSolver.SelectionSetBarriers = pSelectionSetBarriers
+
+
+        ' set the barriers for the network solver
+        ' for each feature determine if it is enabled.
+        ' if it is disabled notify network solver
+        ' determine the number of feature layers belonging to network
+        lngFeatureLayerCount = pNetworkAnalysisExt.FeatureLayerCount
+        For i = 0 To lngFeatureLayerCount - 1
+            ' get the next feature layer and determine if it is disabled
+            ' assign the feature layer to a local IFeatureLayer variable
+            pFeatureLayer = pNetworkAnalysisExt.FeatureLayer(i)
+            ' determine if the feature layer is disabled
+            binFeatureLayerDisabled = pNetworkAnalysisExtBarriers.GetDisabledLayer(pFeatureLayer)
+            ' if it is disabled then notify the network solver
+            If binFeatureLayerDisabled Then
+                pNetSolver.DisableElementClass(pFeatureLayer.FeatureClass.FeatureClassID)
+            End If
+        Next
+
+        ' set up the weight filters for the network
+        ' QI for the INetworkAnalysisEctWeightFilter interface using
+        ' the UtilityNetworkAnalysisExt
+        pNetworkAnalysisExtWeightFilter = CType(m_UNAExt, INetworkAnalysisExtWeightFilter)
+        ' QI for the INetSolverWeights interace using the INetSolver
+        pNetSolverWeights = CType(pNetSolver, INetSolverWeights)
+        ' QI for the INetSchema interface using IUtilityNetwork
+        pNetSchema = CType(pUtilityNetwork, INetSchema)
+
+        With pNetworkAnalysisExtWeightFilter
+
+            ' Create the junction weight filter
+            lngFilterRangeCount = pNetworkAnalysisExtWeightFilter.FilterRangeCount(esriElementType.esriETJunction)
+            ' If there are any weight filters
+            If lngFilterRangeCount > 0 Then
+                ' get a NetWeight object from the INetSchema interface
+                pNetWeight = pNetSchema.WeightByName(.JunctionWeightFilterName)
+                ' get the type and Not operator status from the InetworkAnalysisExtWeightFileter interface
+                .GetFilterType(esriElementType.esriETJunction, eWeightFilterType, binApplyNotOperator)
+                ' redimension the weight filter ranges arrays and get the ranges
+                ReDim lngFromValues(0 To lngFilterRangeCount - 1)
+                ReDim lngToValues(0 To lngFilterRangeCount - 1)
+                For i = 0 To lngFilterRangeCount - 1
+                    .GetFilterRange(esriElementType.esriETJunction, i, lngFromValues(i), lngToValues(i))
+                Next
+                ' add the filter ranges to the network solver
+                pNetSolverWeights.SetFilterRanges(esriElementType.esriETJunction, lngFilterRangeCount, lngFromValues(0), lngToValues(0))
+
+            End If
+
+
+            ' create the edge weight filters
+            lngFilterRangeCount = pNetworkAnalysisExtWeightFilter.FilterRangeCount(esriElementType.esriETEdge)
+            If lngFilterRangeCount > 0 Then
+
+                ' get the type and Not operator status from the INetworkAnalysisExtWeightFilter interface
+                .GetFilterType(esriElementType.esriETEdge, eWeightFilterType, binApplyNotOperator)
+
+                ' get a NetWeight object from the INetSchema interface
+                pNetWeight = pNetSchema.WeightByName(.FromToEdgeWeightFilterName)
+                ' add the weight filter to the network solver
+                pNetSolverWeights.FromToEdgeFilterWeight = pNetWeight
+
+                ' get a NetWeight object from the INetScema interface
+                pNetWeight = pNetSchema.WeightByName(.ToFromEdgeWeightFilterName)
+                ' add the weight filter to the network solver
+                pNetSolverWeights.ToFromEdgeFilterWeight = pNetWeight
+
+                'get the filter ranges and apply them to the network solver
+                ReDim lngFromValues(0 To lngFilterRangeCount - 1)
+                ReDim lngToValues(0 To lngFilterRangeCount - 1)
+                For i = 0 To lngFilterRangeCount - 1
+                    .GetFilterRange(esriElementType.esriETEdge, i, lngFromValues(i), lngToValues(i))
+                Next
+
+                pNetSolverWeights.SetFilterType(esriElementType.esriETEdge, eWeightFilterType, binApplyNotOperator)
+                pNetSolverWeights.SetFilterRanges(esriElementType.esriETEdge, lngFilterRangeCount, lngFromValues(0), lngToValues(0))
+
+            End If
+
+        End With
+
+
+        ' assign the flags to the Network Solver
+        ' get the edge flags
+        ' QI for the ITraceFlowSolver interface using INetSolver Interface
+        pTraceFlowSolver = CType(pNetSolver, ITraceFlowSolver)
+        ' QI for the INetworkAnalysisExtFlags interface using the IUtilitNetworkAnalysisExt
+        pNetworkAnalysisExtFlags = CType(m_UNAExt, INetworkAnalysisExtFlags)
+        ' determine the number of edge flags on the current network
+        lngEdgeFlagCount = pNetworkAnalysisExtFlags.EdgeFlagCount
+
+        ' if there are edge flags then
+        If Not lngEdgeFlagCount = 0 Then
+            ' Redimension the array to hold the correct number of edge flags
+            ReDim pEdgeFlags(0 To lngEdgeFlagCount - 1)
+            For i = 0 To lngEdgeFlagCount - 1
+                ' assign a local variable for IFlagDisplay and IEdgeFlagDisplay variables
+                pFlagDisplay = CType(pNetworkAnalysisExtFlags.EdgeFlag(i), IFlagDisplay)
+                pEdgeFlagDisplay = CType(pFlagDisplay, IEdgeFlagDisplay)
+
+                ' co-create(?)a new EdgeFlag Object
+                pNetFlag = New EdgeFlag
+                pEdgeFlag = CType(pNetFlag, IEdgeFlag)
+                ' assign the properties of the EdgeFlagDisplay object to he EdgeFlag Object
+                ' I think this is where you could determine the distance along the line
+                ' an edge flag is. 
+                pEdgeFlag.Position = Convert.ToSingle(pEdgeFlagDisplay.Percentage)
+                pNetFlag.UserClassID = pFlagDisplay.FeatureClassID
+                pNetFlag.UserID = pFlagDisplay.FID
+                pNetFlag.UserSubID = pFlagDisplay.SubID
+                ' add the new EdgeFlag object to the array
+                pEdgeFlags(i) = CType(pNetFlag, IEdgeFlag)
+            Next
+            ' add the edge flags to the network solver
+            'pTraceFlowSolver.PutEdgeOrigins(lngEdgeFlagCount, pEdgeFlags(0))
+        End If
+
+
+        ' Get the junction flags
+        ' determine the number of junction flags on the network
+        lngJunctionFlagCount = pNetworkAnalysisExtFlags.JunctionFlagCount
+        ' only execute this if there are juntion flags
+        If Not lngJunctionFlagCount = 0 Then
+            ' redimension the array to hold the correct number of junction flags
+            ReDim pJunctionFlags(0 To lngJunctionFlagCount - 1)
+            For i = 0 To lngJunctionFlagCount - 1
+
+                ' assign to a local IFlagDisplay variable
+                pFlagDisplay = CType(pNetworkAnalysisExtFlags.JunctionFlag(i), IFlagDisplay)
+                ' co-create a new JunctionFlag object
+                pNetFlag = New JunctionFlag
+                ' assign the properties of the JunctionFlagDisplay object to the JunctionFlag object
+                pNetFlag.UserClassID = pFlagDisplay.FeatureClassID
+                pNetFlag.UserID = pFlagDisplay.FID
+                pNetFlag.UserSubID = pFlagDisplay.SubID
+                ' add the new junction flag to the array of junction flags
+                pJunctionFlags(i) = CType(pNetFlag, IJunctionFlag)
+            Next
+            'add the junction flags to the network solver
+            ' This function is not calleable from VB.NET:
+            'pTraceFlowSolver.PutJunctionOrigins(lngJunctionFlagCount, pJunctionFlags(0))
+            ' So we use this function
+            Dim pTraceFlowSolverGEN As ITraceFlowSolverGEN
+            pTraceFlowSolverGEN = CType(pNetSolver, ITraceFlowSolverGEN)
+            pTraceFlowSolverGEN.PutJunctionOrigins(pJunctionFlags)
+
+        End If
+
+        ' set the option for tracing on indeterminate flow
+        ' QI for the ITraceTasksinterface using IUtilityNetworkAnlysisExt
+        pTraceTasks = CType(m_UNAExt, ITraceTasks)
+        'pTraceFlowSolver.TraceIndeterminateFlow = pTraceTasks.TraceIndeterminateFlow
+        pTraceFlowSolver.TraceIndeterminateFlow = True
+        pTraceTasks.TraceIndeterminateFlow = True
+
+        ' pass the traceFlowSolver object back to the network solver
+        TraceFlowSolverSetup = pTraceFlowSolver
+
+    End Function
+
+    Public Shared Sub ResetFlagsBarriers(ByRef pNetworkAnalysisExtBarriers As INetworkAnalysisExtBarriers, _
+                                  ByRef pOriginalBarriersList As IEnumNetEID, _
+                                  ByRef pNetElements As INetElements, _
+                                  ByVal bFCID As Integer, _
+                                  ByVal bFID As Integer, _
+                                  ByVal bSubID As Integer, _
+                                  ByRef pBarrierSymbol As ISimpleMarkerSymbol, _
+                                  ByRef pGeometricNetwork As IGeometricNetwork, _
+                                  ByVal iFCID As Integer, _
+                                  ByVal iFID As Integer, _
+                                  ByVal iSubID As Integer, _
+                                  ByRef pNetworkAnalysisExtFlags As INetworkAnalysisExtFlags, _
+                                  ByRef pOriginalEdgeFlagsList As IEnumNetEID, _
+                                  ByRef pFlagSymbol As ISimpleMarkerSymbol, _
+                                  ByRef pOriginaljuncFlagsList As IEnumNetEID
+                                  )
+        ' created 2020 by G Oldford
+        ' duplicated 2021 - duplicate of private sub in analysis.vb
+
+        Dim bEID, iEID, m As Integer
+        Dim pFlagDisplay As IFlagDisplay
+        Dim pSymbol As ISymbol
+        Dim pJuncFlagDisplay As IJunctionFlagDisplay
+        Dim pEdgeFlagDisplay As IEdgeFlagDisplay
+
+        pNetworkAnalysisExtBarriers.ClearBarriers()
+
+        ' ========================= RESET BARRIERS ===========================
+        '               Reset things the way the user had them
+
+        m = 0
+        pOriginalBarriersList.Reset()
+        For m = 0 To pOriginalBarriersList.Count - 1
+            bEID = pOriginalBarriersList.Next()
+            pNetElements.QueryIDs(bEID, esriElementType.esriETJunction, bFCID, bFID, bSubID)
+
+            ' Display the barriers as a JunctionFlagDisplay type
+            pFlagDisplay = New JunctionFlagDisplay
+            pSymbol = CType(pBarrierSymbol, ISymbol)
+            With pFlagDisplay
+                .FeatureClassID = bFCID
+                .FID = bFID
+                .Geometry = pGeometricNetwork.GeometryForJunctionEID(bEID)
+                .Symbol = pSymbol
+            End With
+
+            ' Add the flags to the logical network
+            pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
+            pNetworkAnalysisExtBarriers.AddJunctionBarrier(pJuncFlagDisplay)
+        Next
+        ' ====================== END RESET BARRIERS ===========================
+        'MsgBox("Debug:62")
+        ' Clear current flags
+        pNetworkAnalysisExtFlags.ClearFlags()
+
+        ' ======================== RESET FLAGS ================================
+        ' restore all EDGE flags
+        m = 0
+        pOriginalEdgeFlagsList.Reset()
+        For m = 0 To pOriginalEdgeFlagsList.Count - 1
+
+            iEID = pOriginalEdgeFlagsList.Next()
+            ' Query the corresponding user ID's to the element ID
+            pNetElements.QueryIDs(iEID, esriElementType.esriETEdge, iFCID, iFID, iSubID)
+
+            ' Display the flags as a JunfctionFlagDisplay type
+            pFlagDisplay = New EdgeFlagDisplay
+            pSymbol = CType(pFlagSymbol, ISymbol)
+            With pFlagDisplay
+                .FeatureClassID = iFCID
+                .FID = iFID
+                .Geometry = pGeometricNetwork.GeometryForEdgeEID(iEID)
+                .Symbol = pSymbol
+            End With
+
+            ' Add the flags to the logical network
+            pEdgeFlagDisplay = CType(pFlagDisplay, IEdgeFlagDisplay)
+            pNetworkAnalysisExtFlags.AddEdgeFlag(pEdgeFlagDisplay)
+        Next
+
+        ' restore all JUNCTION Flags
+        m = 0
+        pOriginaljuncFlagsList.Reset()
+        For m = 0 To pOriginaljuncFlagsList.Count - 1
+
+            iEID = pOriginaljuncFlagsList.Next()
+            ' Query the corresponding user ID's to the element ID
+            pNetElements.QueryIDs(iEID, esriElementType.esriETJunction, iFCID, iFID, iSubID)
+
+            ' Display the flags as a JunfctionFlagDisplay type
+            pFlagDisplay = New JunctionFlagDisplay
+            pSymbol = CType(pFlagSymbol, ISymbol)
+            With pFlagDisplay
+                .FeatureClassID = iFCID
+                .FID = iFID
+                .Geometry = pGeometricNetwork.GeometryForJunctionEID(iEID)
+                .Symbol = pSymbol
+            End With
+
+            ' Add the flags to the logical network
+            pJuncFlagDisplay = CType(pFlagDisplay, IJunctionFlagDisplay)
+            pNetworkAnalysisExtFlags.AddJunctionFlag(pJuncFlagDisplay)
+
+        Next
+
+
+        ' =========================== END RESET FLAGS =====================
+    End Sub
+
+    Public Shared Function GetBarrierID(ByVal iFCID As Integer, ByVal iFID As Integer, ByVal lBarrierIDs As List(Of BarrierIDObj)) As IDandType
+        ' copied from analysis.vb May 2021 - GO
+
+        ' =============== FLAG ON POINT WITH BNUMBER? =========================
+        'returns user-set ID or Object ID
+        ' This section checks whether there is a BNumber Field
+        ' In which case it will use this field to identify the 
+        ' barrier in the output.
+        ' 1.0 For each layer in the table of contents
+        '   2.0 If the layer is a FeatureLayer
+        '     3.0 If the layer ClassID matches the layer of the CURRENT FLAG
+        '     3.1 Get the field values for the feature
+        '       4.0 For each of the Barrier IDs in the list
+        '         5.0 If the layer in the BarrierID list matches the layer in the TOC
+        '         5.1 Get the name of the field
+        '           6.0 If the field has something in it
+        '             7.0 Set the ID of the flag (sOID) equal to that value
+        '
+        Dim bCheck As Boolean
+        Dim j, k As Integer
+
+        Dim pDoc As IDocument = My.ArcMap.Application.Document
+        Dim pMxDoc As IMxDocument = CType(pDoc, IMxDocument)
+        Dim pMap As IMap = pMxDoc.FocusMap
+        Dim pFLayer As IFeatureLayer
+        Dim pFeatureClass As IFeatureClass
+        Dim pFeature As IFeature
+        Dim pFields As IFields
+        Dim sBarrierIDField As String
+        Dim iBarrierIds, iOID As Integer
+        Dim sOutID As String
+        Dim q As Integer
+        Dim sAncillaryRole As String
+
+        bCheck = False
+        For j = 0 To pMap.LayerCount - 1
+            If pMap.Layer(j).Valid = True Then
+                If TypeOf pMap.Layer(j) Is IFeatureLayer Then
+                    pFLayer = CType(pMap.Layer(j), IFeatureLayer)
+                    If pFLayer.FeatureClass.FeatureClassID = iFCID Then
+
+                        pFeatureClass = pFLayer.FeatureClass
+                        pFeature = pFeatureClass.GetFeature(iFID)
+                        pFields = pFeature.Fields
+                        iBarrierIds = lBarrierIDs.Count
+
+                        For k = 0 To iBarrierIds - 1
+                            If lBarrierIDs.Item(k).Layer = pFLayer.Name Then
+                                sBarrierIDField = lBarrierIDs.Item(k).Field
+                                If pFields.FindField(sBarrierIDField) <> -1 Then
+                                    Try
+                                        sOutID = Convert.ToString(pFeature.Value(pFields.FindField(sBarrierIDField)))
+                                    Catch ex As Exception
+                                        MsgBox("Could not convert barrier ID to string.")
+                                        sOutID = "Unknown"
+                                    End Try
+                                    bCheck = True
+                                End If ' names match
+                            End If
+                        Next ' barrierIDField
+                        If bCheck = False Then ' names don't match - set to default field
+                            'sOutID = Convert.ToString(pFeature.Value(pFields.FindField("OBJECTID")))
+                            ' If the layer has an ancillaryRole, check to see if the feature
+                            q = pFields.FindField("AncillaryRole")
+                            If Not q = -1 Then
+                                sAncillaryRole = Convert.ToString(pFeature.Value(q))
+                                If sAncillaryRole = "2" Then
+                                    sOutID = "Sink"
+                                    iOID = pFeature.OID.ToString ' Added Feb 18, 2012
+                                End If
+                            Else
+                                sOutID = pFeature.OID.ToString
+                            End If
+                        End If
+                    End If ' feature class in map equals feature class of flag
+                End If
+            End If
+        Next
+
+        Dim pIDAndType As New IDandType(Nothing, Nothing)
+
+        If sOutID = "Sink" Then
+            pIDAndType.BarrID = iOID.ToString
+            pIDAndType.BarrIDType = sOutID
+        Else
+            pIDAndType.BarrID = sOutID
+            pIDAndType.BarrIDType = "Barrier"
+        End If
+
+        GetBarrierID = pIDAndType
+
+    End Function
 End Class
 
