@@ -38,6 +38,7 @@ to add additional functionality for FIPEX to work with the GLPK and Gurobi
 optimisation software.  
 
 * 2014 - Upgraded to be compatible with ArcGIS 10.1 and above by G Oldford
+* 2020 - Updates to the newer R 3.6.1 and ArcMap versions (10.4+), added new DCI functions, revised DCI code
 
 --> Installation Instructions and System Requirements <--
 
