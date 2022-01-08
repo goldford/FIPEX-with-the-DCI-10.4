@@ -626,26 +626,32 @@ Public Class EIDCPermAndDir
         Me.Dir = dir
     End Sub
 End Class
-
 Public Class SelectAndUpdateFeaturesObject
     'Custom Object: pworkspace, pfeaturelayer, iCPermFieldIndex, pSelectionSet, dCPerm
     ' For use in Visualize Decisions and Network algorithm
+    ' only one of the 'value' fields is meant to be populated in each object
     Public pWorkspace As ESRI.ArcGIS.Geodatabase.IWorkspace
     Public pFeatureLayer As ESRI.ArcGIS.Carto.IFeatureLayer
-    Public iCPermFieldIndex As Integer
+    Public iFieldIndex As Integer
     Public pSelectionSet As ESRI.ArcGIS.Geodatabase.ISelectionSet
-    Public dCPerm As Double
+    Public dValue As Double
+    Public iValue As Integer
+    Public sValue As String
 
     Public Sub New(ByVal pworkspace As ESRI.ArcGIS.Geodatabase.IWorkspace, _
                    ByVal pfeaturelayer As ESRI.ArcGIS.Carto.IFeatureLayer, _
-                   ByVal icpermfieldindex As Integer, _
+                   ByVal ifieldindex As Integer, _
                    ByVal pselectionset As ESRI.ArcGIS.Geodatabase.ISelectionSet, _
-                   ByVal dcperm As Double)
+                   ByVal dvalue As Double,
+                   ByVal ivalue As Integer,
+                   ByVal svalue As String)
         Me.pWorkspace = pworkspace
         Me.pFeatureLayer = pfeaturelayer
-        Me.iCPermFieldIndex = icpermfieldindex
+        Me.iFieldIndex = ifieldindex
         Me.pSelectionSet = pselectionset
-        Me.dCPerm = dcperm
+        Me.dValue = dvalue
+        Me.iValue = ivalue
+        Me.sValue = svalue
     End Sub
 
 End Class
@@ -717,6 +723,25 @@ Public Class DecisionCountObject
         Me.dPercGap = _dPercGap
         Me.iDecisionCount = _iDecisionCount
         Me.dTimeUsed = _dTimeUsed
+    End Sub
+
+End Class
+Public Class EID_and_FeatureIDs
+    ' Custom Object: EID, FCID, FID, SubID
+    Public gEID As Integer
+    Public gFCID As Integer
+    Public gFID As Integer
+    Public gSubID As Integer
+    ' note these fields returned by pNetElements.QueryIDs given an EID as input.
+    ' UserClassID and UserID correspond to the FeatureClassID and OID of the feature.
+    ' The UserSubID is the ID of the subelement of the feature.
+
+
+    Public Sub New(ByVal geid As Integer, gfcid As Integer, gfid As Integer, gsubid As Integer)
+        Me.gEID = geid
+        Me.gFCID = gfcid
+        Me.gFID = gfid
+        Me.gSubID = gsubid
     End Sub
 
 End Class

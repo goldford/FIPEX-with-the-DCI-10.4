@@ -4786,11 +4786,8 @@ Public Class frmVisualizeDecisionsAndNet
         Dim pSpatialFilter As ISpatialFilter
         Dim pFeatureSelectionPOLY As IFeatureSelection
         Dim pSelectionSetPOLY As ISelectionSet
-        Dim pSelectAndUpdateFeaturesObject As SelectAndUpdateFeaturesObject = New SelectAndUpdateFeaturesObject(Nothing, _
-                                                                                                                             Nothing, _
-                                                                                                                             Nothing, _
-                                                                                                                             Nothing, _
-                                                                                                                             Nothing)
+        Dim pSelectAndUpdateFeaturesObject As SelectAndUpdateFeaturesObject = New SelectAndUpdateFeaturesObject(Nothing, Nothing, Nothing, _
+                                                                                                                Nothing, Nothing, Nothing, Nothing)
 
         ' loop through polygons layer in list
         For i = 0 To lFeatureLayerAndCPermFieldPOLY.Count - 1
@@ -4886,7 +4883,7 @@ Public Class frmVisualizeDecisionsAndNet
                                                                                    pFeatureLayerPoly, _
                                                                                    iCPERMFieldIndex, _
                                                                                    pSelectionSetPOLY, _
-                                                                                   dCPERM)
+                                                                                   dCPERM, Nothing, Nothing)
                 m_lSelectAndUpdateFeaturesObject.Add(pSelectAndUpdateFeaturesObject)
             End If
         Next ' polygon layer 
@@ -5026,11 +5023,8 @@ Public Class frmVisualizeDecisionsAndNet
         Dim i, j, k, m As Integer
         Dim pWorkspaceA As ESRI.ArcGIS.Geodatabase.IWorkspace
         Dim pSelectionSetA As ISelectionSet
-        Dim pSelectAndUpdateFeaturesObject As SelectAndUpdateFeaturesObject = New SelectAndUpdateFeaturesObject(Nothing, _
-                                                                                                                                     Nothing, _
-                                                                                                                                     Nothing, _
-                                                                                                                                     Nothing, _
-                                                                                                                                     Nothing)
+        Dim pSelectAndUpdateFeaturesObject As SelectAndUpdateFeaturesObject = New SelectAndUpdateFeaturesObject(Nothing, Nothing, Nothing, _
+                                                                                                                Nothing, Nothing, Nothing, Nothing)
         ' Created by Greig Oldford
         ' August 25, 2012
         ' purpose - get selection set for the checked layers and store them in a master list for later.
@@ -5076,7 +5070,7 @@ Public Class frmVisualizeDecisionsAndNet
                                                                                                    pFeatureLayer, _
                                                                                                    iFieldIndex, _
                                                                                                    pSelectionSetA, _
-                                                                                                   dCPERM)
+                                                                                                   dCPERM, Nothing, Nothing)
                                 m_lSelectAndUpdateFeaturesObject.Add(pSelectAndUpdateFeaturesObject)
 
                             End If ' bError is false
@@ -6368,8 +6362,8 @@ Public Class frmVisualizeDecisionsAndNet
 
                     pSelectionSet2 = CType(lRefinedSelectAndUpdateFeaturesObject(j).pSelectionSet, ISelectionSet2)
                     pFeatureLayer = lRefinedSelectAndUpdateFeaturesObject(j).pFeatureLayer
-                    iCPermFieldIndex = lRefinedSelectAndUpdateFeaturesObject(j).iCPermFieldIndex
-                    dCPerm = lRefinedSelectAndUpdateFeaturesObject(j).dCPerm
+                    iCPermFieldIndex = lRefinedSelectAndUpdateFeaturesObject(j).iFieldIndex
+                    dCPerm = lRefinedSelectAndUpdateFeaturesObject(j).dValue
 
                     Try
                         pSelectionSet2.Update(Nothing, True, pFeatureCursor)
