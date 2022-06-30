@@ -1,17 +1,17 @@
 ﻿<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>The Fish Passage Extension (FIPEX) with Dendritic Connectivity Index</Name>
-  <AddInID>{4f0b3669-5a3e-472a-b14c-3a521c48e6c3}</AddInID>
+  <AddInID>{4f0b3669-5a3e-472a-b14c-3a521c48e6c4}</AddInID>
   <Description>
-    FIPEX 10.4 (ArcMap 10.4+). 
+    FIPEX 10.4.2 (ArcMap 10.4+). 
     The Fish Passage Extension / Add-in for ArcMap. 
     A tool for analyzing the relative impact of barriers to fish passage in river systems. 
     It uses the 'geometric network' model and extends the tools provided in Utility Network Analyst.
   </Description>
-  <Version>10.4</Version>
+  <Version>10.4.2</Version>
   <Image>Images\FIPEX_DCI_Logo_2020_90x90a.jpg</Image>
   <Author>Greig Oldford</Author>
   <Company>Greig Oldford </Company>
-  <Date>05/01/2021</Date>
+  <Date>01/02/2022</Date>
   <Targets>
     <Target name="Desktop" version="10.4" />
   </Targets>
@@ -46,11 +46,11 @@
         <Button id="FIPEX_AddIn_dotNet45_2020_cmdBulkSnap" class="cmdBulkSnap" message="Uses an edit session, a selection of points, and the settings in the snapping environment to snap points to the nearest lines.  " caption="Batch Snap Points to Lines" tip="Uses an edit session, a selection of points, and the settings in the snapping environment to snap points to the nearest lines.  " category="Add-In Controls" image="Images\cmdBulkSnap.png" onDemand="false">
           <Help heading="Bulk Snap">Uses an edit session, a selection of points, and the settings in the snapping environment to snap points to the nearest lines.  </Help>
         </Button>
-        <Button id="FIPEX_AddIn_dotNet45_2020_cmdOpenLabelHypergraphForm" onDemand="false" class="cmdOpenLabelHypergraphForm" message="Opens FIPEX 'Label Hypergraph' Menu." caption="Label Hypergraph Elements" tip="Add-in command tooltip." category="Add-In Controls" image="" />
+        <Button id="FIPEX_AddIn_dotNet45_2020_cmdOpenLabelHypergraphForm" onDemand="false" class="cmdOpenLabelHypergraphForm" message="Opens FIPEX 'Label Hypergraph' Menu." caption="Label Elements" tip="Add-in command tooltip." category="Add-In Controls" image="" />
       </Commands>
       <Extensions>
         <Extension id="FIPEX_AddIn_dotNet45_2020_FishPassageExtension" class="FishPassageExtension" productName="The Fish Passage Extension Add-In" showInExtensionDialog="true" autoLoad="false">
-          <Description>FIPEX 10.4.1 &#13;&#10;Copyright (c) 2020 G Oldford. &#13;&#10;The Fish Passage Extension is a tool for analyzing the impact of barriers 
+          <Description>FIPEX 10.4.2 &#13;&#10;Copyright (c) 2022 G Oldford. &#13;&#10;The Fish Passage Extension is a tool for analyzing the impact of barriers 
           &#13;&#10;on connectivity of river systems.&#13;&#10;FIPEX extends the ArcGIS Geometric Network Model and the &#13;&#10;tools provided in Utility Network Analyst. 
         </Description>
         </Extension>
@@ -65,7 +65,6 @@
             <Menu refID="FIPEX_AddIn_dotNet45_2020_FiPEx_Menu" />
             <Tool refID="FIPEX_AddIn_dotNet45_2020_PlaceFlagAndRunTool" />
             <Button refID="FIPEX_AddIn_dotNet45_2020_Analysis" />
-            <Button refID="FIPEX_AddIn_dotNet45_2020_cmdOpenLabelHypergraphForm" />
           </Items>
         </Toolbar>
       </Toolbars>
@@ -78,6 +77,7 @@
             <Item refID="esriEditorExt.UtilityNetworkPullDown" subtype="3" />
             <Button refID="FIPEX_AddIn_dotNet45_2020_ClearBarriersAndLabels" />
             <Button refID="FIPEX_AddIn_dotNet45_2020_ClearFlagsAndLabels" />
+            <Button refID="FIPEX_AddIn_dotNet45_2020_cmdOpenLabelHypergraphForm" />
           </Items>
         </Menu>
       </Menus>

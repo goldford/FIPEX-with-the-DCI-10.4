@@ -43,17 +43,18 @@ Partial Class frmLabelHypergraph
         'Label1
         '
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(446, 9)
+        Me.Label1.Location = New System.Drawing.Point(318, 9)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(448, 47)
+        Me.Label1.Size = New System.Drawing.Size(448, 62)
         Me.Label1.TabIndex = 0
-        Me.Label1.Text = "Hypergraph Labelling:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Label River ""Segments"" and ""Sub-segments""" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10)
+        Me.Label1.Text = "Hypergraph Labelling:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Label River ""Segments"" and ""Sub-segments"" (Alpha - test)" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & _
+    ""
         '
         'Label2
         '
-        Me.Label2.Location = New System.Drawing.Point(437, 71)
+        Me.Label2.Location = New System.Drawing.Point(514, 71)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(457, 595)
+        Me.Label2.Size = New System.Drawing.Size(380, 595)
         Me.Label2.TabIndex = 1
         Me.Label2.Text = resources.GetString("Label2.Text")
         '
@@ -70,7 +71,7 @@ Partial Class frmLabelHypergraph
         '
         'cmdRunLabel
         '
-        Me.cmdRunLabel.Location = New System.Drawing.Point(113, 198)
+        Me.cmdRunLabel.Location = New System.Drawing.Point(123, 209)
         Me.cmdRunLabel.Name = "cmdRunLabel"
         Me.cmdRunLabel.Size = New System.Drawing.Size(151, 56)
         Me.cmdRunLabel.TabIndex = 3
@@ -80,7 +81,7 @@ Partial Class frmLabelHypergraph
         'lblCheck1
         '
         Me.lblCheck1.AutoSize = True
-        Me.lblCheck1.Location = New System.Drawing.Point(22, 271)
+        Me.lblCheck1.Location = New System.Drawing.Point(12, 275)
         Me.lblCheck1.Name = "lblCheck1"
         Me.lblCheck1.Size = New System.Drawing.Size(67, 20)
         Me.lblCheck1.TabIndex = 4
@@ -89,7 +90,7 @@ Partial Class frmLabelHypergraph
         'lblCheck2
         '
         Me.lblCheck2.AutoSize = True
-        Me.lblCheck2.Location = New System.Drawing.Point(22, 305)
+        Me.lblCheck2.Location = New System.Drawing.Point(12, 309)
         Me.lblCheck2.Name = "lblCheck2"
         Me.lblCheck2.Size = New System.Drawing.Size(67, 20)
         Me.lblCheck2.TabIndex = 5
@@ -98,7 +99,7 @@ Partial Class frmLabelHypergraph
         'lblCheck3
         '
         Me.lblCheck3.AutoSize = True
-        Me.lblCheck3.Location = New System.Drawing.Point(22, 337)
+        Me.lblCheck3.Location = New System.Drawing.Point(12, 341)
         Me.lblCheck3.Name = "lblCheck3"
         Me.lblCheck3.Size = New System.Drawing.Size(67, 20)
         Me.lblCheck3.TabIndex = 6
@@ -107,7 +108,7 @@ Partial Class frmLabelHypergraph
         'lblCheck4
         '
         Me.lblCheck4.AutoSize = True
-        Me.lblCheck4.Location = New System.Drawing.Point(22, 368)
+        Me.lblCheck4.Location = New System.Drawing.Point(12, 372)
         Me.lblCheck4.Name = "lblCheck4"
         Me.lblCheck4.Size = New System.Drawing.Size(67, 20)
         Me.lblCheck4.TabIndex = 7
@@ -116,7 +117,7 @@ Partial Class frmLabelHypergraph
         'lblPrep1
         '
         Me.lblPrep1.AutoSize = True
-        Me.lblPrep1.Location = New System.Drawing.Point(22, 403)
+        Me.lblPrep1.Location = New System.Drawing.Point(12, 407)
         Me.lblPrep1.Name = "lblPrep1"
         Me.lblPrep1.Size = New System.Drawing.Size(55, 20)
         Me.lblPrep1.TabIndex = 8
@@ -125,7 +126,7 @@ Partial Class frmLabelHypergraph
         'lblPrep2
         '
         Me.lblPrep2.AutoSize = True
-        Me.lblPrep2.Location = New System.Drawing.Point(22, 434)
+        Me.lblPrep2.Location = New System.Drawing.Point(12, 438)
         Me.lblPrep2.Name = "lblPrep2"
         Me.lblPrep2.Size = New System.Drawing.Size(55, 20)
         Me.lblPrep2.TabIndex = 9
@@ -134,7 +135,7 @@ Partial Class frmLabelHypergraph
         'lblPrep3
         '
         Me.lblPrep3.AutoSize = True
-        Me.lblPrep3.Location = New System.Drawing.Point(22, 465)
+        Me.lblPrep3.Location = New System.Drawing.Point(12, 469)
         Me.lblPrep3.Name = "lblPrep3"
         Me.lblPrep3.Size = New System.Drawing.Size(55, 20)
         Me.lblPrep3.TabIndex = 10
@@ -143,7 +144,7 @@ Partial Class frmLabelHypergraph
         'lblAnalysis1
         '
         Me.lblAnalysis1.AutoSize = True
-        Me.lblAnalysis1.Location = New System.Drawing.Point(22, 498)
+        Me.lblAnalysis1.Location = New System.Drawing.Point(12, 502)
         Me.lblAnalysis1.Name = "lblAnalysis1"
         Me.lblAnalysis1.Size = New System.Drawing.Size(61, 20)
         Me.lblAnalysis1.TabIndex = 12
@@ -152,7 +153,7 @@ Partial Class frmLabelHypergraph
         'lblAnalysis2
         '
         Me.lblAnalysis2.AutoSize = True
-        Me.lblAnalysis2.Location = New System.Drawing.Point(22, 533)
+        Me.lblAnalysis2.Location = New System.Drawing.Point(12, 537)
         Me.lblAnalysis2.Name = "lblAnalysis2"
         Me.lblAnalysis2.Size = New System.Drawing.Size(61, 20)
         Me.lblAnalysis2.TabIndex = 15
@@ -161,7 +162,7 @@ Partial Class frmLabelHypergraph
         'lblAnalysis3
         '
         Me.lblAnalysis3.AutoSize = True
-        Me.lblAnalysis3.Location = New System.Drawing.Point(22, 572)
+        Me.lblAnalysis3.Location = New System.Drawing.Point(12, 576)
         Me.lblAnalysis3.Name = "lblAnalysis3"
         Me.lblAnalysis3.Size = New System.Drawing.Size(61, 20)
         Me.lblAnalysis3.TabIndex = 16

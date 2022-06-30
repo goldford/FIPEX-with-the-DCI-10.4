@@ -11,8 +11,8 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyTitle("The Fish Passage Extension for ArcMap w/ DCI")> 
 <Assembly: AssemblyDescription("Analyze river systems and assess impacts of barriers to fish passage.")> 
 <Assembly: AssemblyCompany("G Oldford")>
-<Assembly: AssemblyProduct("FIPEX")>
-<Assembly: AssemblyCopyright("Copyright © 2020 Greig Oldford")>
+<Assembly: AssemblyProduct("FIPEX+DCI")> 
+<Assembly: AssemblyCopyright("Copyright © 2022 Greig Oldford")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(True)> 
