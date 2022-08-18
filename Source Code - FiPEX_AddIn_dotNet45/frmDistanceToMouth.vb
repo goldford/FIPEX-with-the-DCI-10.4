@@ -27,10 +27,10 @@ Public Class frmDistanceToMouth
         pMap = m_MxDoc.FocusMap
 
         If m_FiPEx Is Nothing Then
-            m_FiPEx = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
         If m_UNAExt Is Nothing Then
-            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         End If
         If m_pNetworkAnalysisExt Is Nothing Then
             m_pNetworkAnalysisExt = CType(m_UNAExt, INetworkAnalysisExt)

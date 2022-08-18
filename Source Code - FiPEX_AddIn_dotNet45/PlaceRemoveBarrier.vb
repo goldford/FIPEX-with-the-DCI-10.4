@@ -35,10 +35,10 @@ Public Class PlaceRemoveBarrier
         ' upgrade at version 10
         ' protected override void OnUpdate()
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
         If m_UNAExt Is Nothing Then
-            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         End If
         'Dim FiPEx__1 As FishPassageExtension = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetExtension
         'Dim pUNAExt As IUtilityNetworkAnalysisExt = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetUNAExt
@@ -155,10 +155,10 @@ Public Class PlaceRemoveBarrier
     Protected Overrides Sub OnMouseDown(ByVal arg As MouseEventArgs)
 
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
         If m_UNAExt Is Nothing Then
-            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         End If
         If m_pNetworkAnalysisExt Is Nothing Then
             m_pNetworkAnalysisExt = CType(m_UNAExt, INetworkAnalysisExt)
@@ -343,7 +343,7 @@ Public Class PlaceRemoveBarrier
         Dim pMap As IMap = pMxDocument.FocusMap
         Dim pMxApp As IMxApplication = CType(My.ArcMap.ThisApplication, IMxApplication)
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
 
 
@@ -692,7 +692,7 @@ Public Class PlaceRemoveBarrier
         '           and return as 'visible.'
 
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
 
         Dim pMxDocument As IMxDocument = CType(My.ArcMap.Document, IMxDocument)

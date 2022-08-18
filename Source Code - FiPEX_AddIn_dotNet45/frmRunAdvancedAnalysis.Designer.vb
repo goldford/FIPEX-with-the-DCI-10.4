@@ -288,7 +288,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'PictureBox4
         '
-        Me.PictureBox4.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox4.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
         Me.PictureBox4.Location = New System.Drawing.Point(33, 35)
         Me.PictureBox4.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox4.Name = "PictureBox4"
@@ -882,7 +882,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'PictureBox3
         '
-        Me.PictureBox3.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox3.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
         Me.PictureBox3.Location = New System.Drawing.Point(33, 35)
         Me.PictureBox3.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox3.Name = "PictureBox3"
@@ -1084,7 +1084,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'PictureBox2
         '
-        Me.PictureBox2.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox2.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
         Me.PictureBox2.Location = New System.Drawing.Point(33, 35)
         Me.PictureBox2.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox2.Name = "PictureBox2"
@@ -1279,7 +1279,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'PictureBox1
         '
-        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
         Me.PictureBox1.Location = New System.Drawing.Point(33, 35)
         Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox1.Name = "PictureBox1"
@@ -1305,7 +1305,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'PictureBox8
         '
-        Me.PictureBox8.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.orderdiagram
+        Me.PictureBox8.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.orderdiagram
         Me.PictureBox8.Location = New System.Drawing.Point(59, 343)
         Me.PictureBox8.Name = "PictureBox8"
         Me.PictureBox8.Size = New System.Drawing.Size(677, 347)
@@ -1415,7 +1415,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'PictureBox5
         '
-        Me.PictureBox5.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox5.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
         Me.PictureBox5.Location = New System.Drawing.Point(33, 35)
         Me.PictureBox5.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox5.Name = "PictureBox5"
@@ -1698,7 +1698,7 @@ Partial Class frmRunAdvancedAnalysis
         '
         'PictureBox6
         '
-        Me.PictureBox6.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
+        Me.PictureBox6.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.FIPEX_DCI_Logo_2020_90x90a
         Me.PictureBox6.Location = New System.Drawing.Point(33, 35)
         Me.PictureBox6.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.PictureBox6.Name = "PictureBox6"

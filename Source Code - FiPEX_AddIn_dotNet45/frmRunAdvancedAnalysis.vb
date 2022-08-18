@@ -2100,7 +2100,7 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         Dim lLayerToAdd As New List(Of LineLayerToAdd)
 
         If m_LLayerToAdd IsNot Nothing Then
-            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChooseLineHabParam(m_sLineLayer, m_LLayerToAdd)
+            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.ChooseLineHabParam(m_sLineLayer, m_LLayerToAdd)
                 If MyForm.Form_Initialize(m_app) Then
                     MyForm.ShowDialog()
                     m_LLayerToAdd = MyForm.m_LayerToAdd
@@ -2137,7 +2137,7 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         Dim lLayerToAdd As New List(Of PolyLayerToAdd)
 
         If m_PLayerToAdd IsNot Nothing Then
-            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.ChoosePolyHabParam(m_sPolyLayer, m_PLayerToAdd)
+            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.ChoosePolyHabParam(m_sPolyLayer, m_PLayerToAdd)
                 If MyForm.Form_Initialize(m_app) Then
                     MyForm.ShowDialog()
                     m_PLayerToAdd = MyForm.m_LayerToAdd
@@ -2720,7 +2720,7 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         Dim lBarrierIDs As New List(Of BarrierIDObj)
 
         If m_BarrierIDObj IsNot Nothing Then
-            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmChooseBarrID(m_sBarrierIDLayer, m_BarrierIDObj) 'm_sPOlyLayer was here!
+            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmChooseBarrID(m_sBarrierIDLayer, m_BarrierIDObj) 'm_sPOlyLayer was here!
                 If MyForm.Form_Initialize(m_app) Then
                     MyForm.ShowDialog()
                     m_BarrierIDObj = MyForm.m_BarrierIDObj2
@@ -2747,7 +2747,7 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         Dim lBarrierIDs As New List(Of BarrierIDObj)
 
         If m_BarrierIDObj IsNot Nothing Then
-            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmChooseBarrierPerm(m_sBarrierIDLayer, m_BarrierIDObj)
+            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmChooseBarrierPerm(m_sBarrierIDLayer, m_BarrierIDObj)
                 If MyForm.Form_Initialize(m_app) Then
                     MyForm.ShowDialog()
                     m_BarrierIDObj = MyForm.m_BarrierIDObj3
@@ -2829,7 +2829,7 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
         Dim lBarrierIDs As New List(Of BarrierIDObj)
 
         If m_BarrierIDObj IsNot Nothing Then
-            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmChooseNaturalYN(m_sBarrierIDLayer, m_BarrierIDObj)
+            Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmChooseNaturalYN(m_sBarrierIDLayer, m_BarrierIDObj)
                 If MyForm.Form_Initialize(m_app) Then
                     MyForm.ShowDialog()
                     m_BarrierIDObj = MyForm.m_BarrierIDObj4
@@ -2988,16 +2988,16 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             rdoHabArea.Enabled = True
 
             If rdoNatExp1.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.NatExp1DD
             End If
             If rdoCircle.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.CircleDD
             End If
             If rdoSigmoid.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.SigmoidDD
             End If
             If rdoLinear.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.LinearDD
             End If
         Else
             cmdDCIModelDir.Enabled = False
@@ -3163,16 +3163,16 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
                 rdoCircle.Enabled = True
                 rdoSigmoid.Enabled = True
                 If rdoNatExp1.Checked = True Then
-                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.NatExp1DD
                 End If
                 If rdoCircle.Checked = True Then
-                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.CircleDD
                 End If
                 If rdoSigmoid.Checked = True Then
-                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.SigmoidDD
                 End If
                 If rdoLinear.Checked = True Then
-                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+                    PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.LinearDD
                 End If
             Else
                 rdoLinear.Enabled = False
@@ -3215,7 +3215,7 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
 
     Private Sub RadioButton1_CheckedChanged(sender As Object, e As EventArgs) Handles rdoLinear.CheckedChanged
         If rdoLinear.Checked = True Then
-            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.LinearDD
         End If
     End Sub
 
@@ -3235,16 +3235,16 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             End If
 
             If rdoNatExp1.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.NatExp1DD
             End If
             If rdoCircle.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.CircleDD
             End If
             If rdoSigmoid.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.SigmoidDD
             End If
             If rdoLinear.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.LinearDD
             End If
         Else
             rdoCircle.Enabled = False
@@ -3275,19 +3275,19 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
 
     Private Sub rdoNatExp1_CheckedChanged(sender As Object, e As EventArgs) Handles rdoNatExp1.CheckedChanged
         If rdoNatExp1.Checked = True Then
-            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.NatExp1DD
         End If
     End Sub
 
     Private Sub rdoCircle_CheckedChanged(sender As Object, e As EventArgs) Handles rdoCircle.CheckedChanged
         If rdoCircle.Checked = True Then
-            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.CircleDD
         End If
     End Sub
 
     Private Sub rdoSigmoid_CheckedChanged(sender As Object, e As EventArgs) Handles rdoSigmoid.CheckedChanged
         If rdoSigmoid.Checked = True Then
-            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+            PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.SigmoidDD
         End If
     End Sub
 
@@ -3313,16 +3313,16 @@ m_PLayersFields.Item(i).HabQuanField, m_PLayersFields.Item(i).HabClsField, m_PLa
             rdoCircle.Enabled = True
             rdoSigmoid.Enabled = True
             If rdoNatExp1.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.NatExp1DD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.NatExp1DD
             End If
             If rdoCircle.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.CircleDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.CircleDD
             End If
             If rdoSigmoid.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.SigmoidDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.SigmoidDD
             End If
             If rdoLinear.Checked = True Then
-                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.LinearDD
+                PictureBox7.Image = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.LinearDD
             End If
         Else
             rdoLinear.Enabled = False

@@ -4455,10 +4455,10 @@ Public Class frmVisualizeDecisionsAndNet
         Dim i As Integer
 
         If m_FiPEx Is Nothing Then
-            m_FiPEx = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
         If m_UtilityNetworkAnalysisExt Is Nothing Then
-            m_UtilityNetworkAnalysisExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            m_UtilityNetworkAnalysisExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         End If
         'Dim FiPEx__1 As FishPassageExtension = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetExtension
         'Dim pUNAExt As IUtilityNetworkAnalysisExt = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetUNAExt

@@ -227,7 +227,7 @@ Public Class frmVisualizeDecisions
         Dim pUNAExt As IUtilityNetworkAnalysisExt
 
         Try
-            pUNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            pUNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         Catch ex As Exception
             MsgBox("Trouble getting Utility Network Analyst Extension")
             Exit Sub

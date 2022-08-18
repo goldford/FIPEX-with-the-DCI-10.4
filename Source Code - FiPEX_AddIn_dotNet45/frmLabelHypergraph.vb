@@ -357,7 +357,7 @@ Public Class frmLabelHypergraph
         ' ============================ FLAG CONSISTENCY CHECK ==============================
         ' Check for consistency that flags are all on barriers or all on non-barriers.
         Dim sFlagCheck As String
-        sFlagCheck = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.flagcheck2021(m_pOriginalBarriersListSaved, m_pOriginalEdgeFlagsList, m_pOriginaljuncFlagsList)
+        sFlagCheck = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.SharedSubs.flagcheck2021(m_pOriginalBarriersListSaved, m_pOriginalEdgeFlagsList, m_pOriginaljuncFlagsList)
 
         If sFlagCheck = "error" Then
             MsgBox("Inconsistent flags - some are on edges.  Please Set flags only on network junctions.")
@@ -395,7 +395,7 @@ Public Class frmLabelHypergraph
             lblPrep2.Text = "Checking TOC... could not set all layers as selectable."
             Exit Sub
         End Try
-      
+
         lblPrep2.Text = "Checking TOC... success."
 
     End Sub
@@ -412,7 +412,7 @@ Public Class frmLabelHypergraph
         pBranchListGEN = New EnumNetEIDArray
 
         'MsgBox("The barriers list before: " & (m_pNewBarriersList.Count).ToString)
-        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.FindBranchSourceJunctions(m_pOriginalBarriersListSaved,
+        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.SharedSubs.FindBranchSourceJunctions(m_pOriginalBarriersListSaved,
                                                                                       m_pNewBarriersList,
                                                                                       m_pOriginaljuncFlagsList,
                                                                                       m_pOriginalBarriersListGEN,
@@ -436,7 +436,7 @@ Public Class frmLabelHypergraph
         lblPrep3.Text = "Searching for branch junctions and source nodes... success"
 
     End Sub
-    
+
     Private Sub Labeling1_FIPEX_NodeEIDs(ByRef bContinue As Boolean)
 
         lblAnalysis1.Text = "Getting segments as a selection set for labelling..."
@@ -445,7 +445,7 @@ Public Class frmLabelHypergraph
         Dim sValueType As String = "integer" ' can't change w/o edits to createattribute field
 
 
-        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.LabelFIPEXEIDs(m_pNewBarriersList, m_pOriginaljuncFlagsList, _
+        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.SharedSubs.LabelFIPEXEIDs(m_pNewBarriersList, m_pOriginaljuncFlagsList, _
                                                                            m_UtilityNetworkAnalysisExt, sFieldName, sValueType)
 
         lblAnalysis1.Text = "Getting segments as a selection set for labelleing... success"
@@ -461,12 +461,12 @@ Public Class frmLabelHypergraph
         ' perform iterative upstream traces (use breadth first search)
         Dim sType As String = "segment" ' can be segment or subsegment
         Dim sFieldName As String = "FIPEX_segEID"
-        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.BreadthFirstSearch(m_pOriginalBarriersListSaved, _
+        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.SharedSubs.BreadthFirstSearch(m_pOriginalBarriersListSaved, _
                                                                              m_pOriginaljuncFlagsList,
                                                                              m_UtilityNetworkAnalysisExt,
                                                                              sType, sFieldName, bContinue)
 
-        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.ResetFlagsBarriers(m_pOriginalBarriersListSaved, m_pOriginalEdgeFlagsList, _
+        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.SharedSubs.ResetFlagsBarriers(m_pOriginalBarriersListSaved, m_pOriginalEdgeFlagsList, _
                                                                                m_pOriginaljuncFlagsList, m_UtilityNetworkAnalysisExt)
 
         If bContinue = True Then
@@ -486,12 +486,12 @@ Public Class frmLabelHypergraph
         Dim sType As String = "subsegment" ' can be segment or subsegment
         Dim sFieldName As String = "FIPEX_SubsegEID"
 
-        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.BreadthFirstSearch(m_pNewBarriersList, _
+        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.SharedSubs.BreadthFirstSearch(m_pNewBarriersList, _
                                                                              m_pOriginaljuncFlagsList,
                                                                              m_UtilityNetworkAnalysisExt,
                                                                              sType, sFieldName, bContinue)
 
-        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.SharedSubs.ResetFlagsBarriers(m_pOriginalBarriersListSaved, m_pOriginalEdgeFlagsList, _
+        FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.SharedSubs.ResetFlagsBarriers(m_pOriginalBarriersListSaved, m_pOriginalEdgeFlagsList, _
                                                                                m_pOriginaljuncFlagsList, m_UtilityNetworkAnalysisExt)
         If bContinue = True Then
             lblAnalysis3.Text = "Labelling Subsegments... success"

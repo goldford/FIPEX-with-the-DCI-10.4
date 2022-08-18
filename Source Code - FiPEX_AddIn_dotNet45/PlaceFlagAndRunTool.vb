@@ -43,10 +43,10 @@ Public Class PlaceFlagAndRunTool
         ' protected override void OnUpdate()
         If bToolRunning = False Then
             If m_FiPEx__1 Is Nothing Then
-                m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+                m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
             End If
             If m_UNAExt Is Nothing Then
-                m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+                m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
             End If
             'Dim FiPEx__1 As FishPassageExtension = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetExtension
             'Dim pUNAExt As IUtilityNetworkAnalysisExt = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetUNAExt
@@ -80,7 +80,7 @@ Public Class PlaceFlagAndRunTool
             e.Cancel = True
         End If
 
-        ProgressForm = New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmAnalysisProgress()
+        ProgressForm = New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmAnalysisProgress()
         If ProgressForm.Form_Initialize() Then
             ProgressForm.ShowDialog()
         End If
@@ -175,10 +175,10 @@ Public Class PlaceFlagAndRunTool
         ' Clear the results of previous trace tasks
         ' Clear the flags in the network
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
         If m_UNAExt Is Nothing Then
-            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         End If
         If m_pNetworkAnalysisExt Is Nothing Then
             m_pNetworkAnalysisExt = CType(m_UNAExt, INetworkAnalysisExt)
@@ -1905,7 +1905,7 @@ Public Class PlaceFlagAndRunTool
         ' refresh the view
         pActiveView.Refresh()
 
-        Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3
+        Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmResults_3
         pResultsForm3.Show()
         Dim numbarrsnodes As String = CStr(pOriginaljuncFlagsList.Count)
         SharedSubs.ResultsForm2020(pResultsForm3, lSinkIDandTypes, lHabStatsList, lMetricsObject,
@@ -1928,7 +1928,7 @@ Public Class PlaceFlagAndRunTool
 
         backgroundworker2.Dispose()
         backgroundworker2.CancelAsync()
-        
+
     End Sub
     Private Sub LabelFlag(ByVal iFCID As Integer, ByVal iFID As Integer)
 

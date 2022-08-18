@@ -155,7 +155,7 @@ Partial Class frmCalculateOverlap
         '
         'PictureBox1
         '
-        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.Resources.Resources.FiPEx_LOGOv3b_90x90
+        Me.PictureBox1.Image = Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.Resources.Resources.FiPEx_LOGOv3b_90x90
         Me.PictureBox1.Location = New System.Drawing.Point(32, 31)
         Me.PictureBox1.Name = "PictureBox1"
         Me.PictureBox1.Size = New System.Drawing.Size(90, 90)

@@ -82,7 +82,7 @@ Public Class FishPassageExtension
         ' map application
         If s_extension Is Nothing Then
             Dim extID As UID = New UIDClass()
-            extID.Value = "FIPEX_AddIn_dotNet45_2020_FishPassageExtension"
+            extID.Value = "FIPEX_AddIn_dotNet45_2022_FishPassageExtension"
             My.ArcMap.Application.FindExtensionByCLSID(extID)
         End If
         Return s_extension

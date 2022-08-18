@@ -68,10 +68,10 @@ Public Class Analysis
         ' upgrade at version 10
         ' protected override void OnUpdate()
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
         If m_UNAExt Is Nothing Then
-            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         End If
         'Dim FiPEx__1 As FishPassageExtension = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetExtension
         'Dim pUNAExt As IUtilityNetworkAnalysisExt = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetUNAExt
@@ -108,7 +108,7 @@ Public Class Analysis
         Dim bKeepGoing As Boolean = False
         My.ArcMap.Application.CurrentTool = Nothing
         Dim FiPEx__1 As FishPassageExtension = FishPassageExtension.GetExtension
-        Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmRunAdvancedAnalysis
+        Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmRunAdvancedAnalysis
 
             If MyForm.Form_Initialize(My.ArcMap.Application) Then
                 MyForm.TabPage4.BringToFront()
@@ -182,7 +182,7 @@ Public Class Analysis
     End Sub
     Private Sub ShowProgressForm()
         ' User clicks 'Run' then continue to main analysis sub
-        ProgressForm = New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmAnalysisProgress()
+        ProgressForm = New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmAnalysisProgress()
         If ProgressForm.Form_Initialize() Then
             ProgressForm.ShowDialog()
             If ProgressForm.m_bPauseMe = True Then
@@ -226,7 +226,7 @@ Public Class Analysis
         ProgressForm = Nothing
 
         ' 2020 - the progress form is now embedded in results form
-        Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3
+        Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmResults_3
 
         ' create a new background worker
         If Not backgroundworker1.IsBusy = True Then
@@ -6789,7 +6789,7 @@ Public Class Analysis
 
     Private Sub UpdateSummaryTable(ByRef lRefinedHabStatsList As List(Of StatisticsObject_2),
                                    ByRef iHabRowCount As Integer,
-                                   ByRef pResultsForm3 As FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3,
+                                   ByRef pResultsForm3 As FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmResults_3,
                                    ByRef iMaxRowIndex As Integer,
                                    ByRef iBarrIndex As Integer,
                                    ByRef bColorSwitcher As Boolean,
@@ -11780,10 +11780,10 @@ Public Class Analysis
         Dim i As Integer
 
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
         If m_UNAExt Is Nothing Then
-            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         End If
         'Dim FiPEx__1 As FishPassageExtension = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetExtension
         'Dim pUNAExt As IUtilityNetworkAnalysisExt = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetUNAExt

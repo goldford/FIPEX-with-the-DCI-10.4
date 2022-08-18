@@ -64,9 +64,9 @@ Namespace My
     Friend Module MySettingsProperty
         
         <Global.System.ComponentModel.Design.HelpKeywordAttribute("My.Settings")>  _
-        Friend ReadOnly Property Settings() As Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.MySettings
+        Friend ReadOnly Property Settings() As Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.MySettings
             Get
-                Return Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.My.MySettings.Default
+                Return Global.FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.My.MySettings.Default
             End Get
         End Property
     End Module

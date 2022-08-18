@@ -838,7 +838,7 @@ Public Class SharedSubs
 
     End Sub
 
-    Public Shared Sub ResultsForm2020(ByRef pResultsForm3 As FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3,
+    Public Shared Sub ResultsForm2020(ByRef pResultsForm3 As FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmResults_3,
                                       ByRef lSinkIDandTypes As List(Of SinkandTypes),
                                       ByRef lHabStatsList As List(Of StatisticsObject_2),
                                       ByRef lMetricsObject As List(Of MetricsObject),
@@ -859,7 +859,7 @@ Public Class SharedSubs
         ' col 10 - units
 
         ' Output Form (will replace dockable window)
-        'Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmResults_3
+        'Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmResults_3
         Dim iSinkRowIndex As Integer
 
 
@@ -972,7 +972,7 @@ Public Class SharedSubs
         ' ============== EXCLUSIONS 2020 ==============
         Dim e_FiPEx__1 As FishPassageExtension
         If e_FiPEx__1 Is Nothing Then
-            e_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            e_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
 
         Dim iExclusions, j As Integer
@@ -1120,7 +1120,7 @@ Public Class SharedSubs
         '            update the necessary tables within this function
         Dim e_FiPEx__1 As FishPassageExtension
         If e_FiPEx__1 Is Nothing Then
-            e_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            e_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
 
         Dim pUID As New UID
@@ -1996,10 +1996,10 @@ Public Class SharedSubs
         Dim m_pNetworkAnalysisExt As INetworkAnalysisExt
 
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
         If m_UNAExt Is Nothing Then
-            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetUNAExt
+            m_UNAExt = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetUNAExt
         End If
         'Dim FiPEx__1 As FishPassageExtension = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetExtension
         'Dim pUNAExt As IUtilityNetworkAnalysisExt = FiPEX_AddIn_dotNet35_2.FishPassageExtension.GetUNAExt

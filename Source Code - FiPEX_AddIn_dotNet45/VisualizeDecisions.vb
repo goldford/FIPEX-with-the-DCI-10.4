@@ -9,9 +9,9 @@
         Protected Overrides Sub OnClick()
             My.ArcMap.Application.CurrentTool = Nothing
             If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
-        Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.frmVisualizeDecisions
+        Using MyForm As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmVisualizeDecisions
             If MyForm.Form_Initialize(My.ArcMap.Application) Then
                 MyForm.ShowDialog()
             End If
@@ -20,7 +20,7 @@
 
     Protected Overrides Sub OnUpdate()
         If m_FiPEx__1 Is Nothing Then
-            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2020.FishPassageExtension.GetExtension()
+            m_FiPEx__1 = FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.FishPassageExtension.GetExtension()
         End If
     End Sub
     End Class
