@@ -44,7 +44,6 @@ C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\Source Code - FiPEX_Ad
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\Source Code - FiPEX_AddIn_dotNet45\bin\Debug\ESRI.ArcGIS.GlobeCore.xml
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\Source Code - FiPEX_AddIn_dotNet45\bin\Debug\ESRI.ArcGIS.3DAnalyst.xml
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\Source Code - FiPEX_AddIn_dotNet45\bin\Debug\ESRI.ArcGIS.Animation.xml
-C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\Source Code - FiPEX_AddIn_dotNet45\obj\Debug\FiPEX_AddIn_DISTRO_2022.vbprojResolveAssemblyReference.cache
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\Source Code - FiPEX_AddIn_dotNet45\obj\Debug\FiPEX_AddIn_DISTRO_2022.vbproj.ResolveComReference.cache
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\Source Code - FiPEX_AddIn_dotNet45\obj\Debug\FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.ChoosePolyHabParam.resources
 C:\Users\Greig\Documents\GitHub\FIPEX_v10x_ArcMap_10.4_up\Source Code - FiPEX_AddIn_dotNet45\obj\Debug\FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.ChooseLineHabParam.resources

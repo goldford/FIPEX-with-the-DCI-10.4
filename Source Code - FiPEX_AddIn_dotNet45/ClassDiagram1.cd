@@ -1,2 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram /> 
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.Analysis">
+    <Position X="0.5" Y="0.5" Width="3" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.Analysis.FindLayerAndBarrEIDAndSinkEIDPredicate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Analysis.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.Analysis.FindBarrierEIDPredicate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Analysis.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.Analysis.RefineHabStatsListPredicate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Analysis.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.Analysis.FindLayerAndBarrEIDPredicate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Analysis.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.Analysis.FindStatsClassPredicate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Analysis.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.Analysis.FindBarriersBySinkEIDPredicate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Analysis.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.Analysis.FindBarrierMetricsBySinkEIDPredicate" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Analysis.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>gEBQRAZIUEAAQSIJALKGgQMjLkQgoMAAQQAsASmChAA=</HashCode>
+      <FileName>Analysis.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

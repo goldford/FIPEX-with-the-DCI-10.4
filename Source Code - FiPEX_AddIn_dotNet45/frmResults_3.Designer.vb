@@ -121,9 +121,9 @@ Partial Class frmResults_3
         Me.lblOrder.Location = New System.Drawing.Point(752, 34)
         Me.lblOrder.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblOrder.Name = "lblOrder"
-        Me.lblOrder.Size = New System.Drawing.Size(171, 22)
+        Me.lblOrder.Size = New System.Drawing.Size(147, 22)
         Me.lblOrder.TabIndex = 6
-        Me.lblOrder.Text = "Order of Analysis:"
+        Me.lblOrder.Text = "Analysis depth:"
         '
         'lblNumBarriers
         '

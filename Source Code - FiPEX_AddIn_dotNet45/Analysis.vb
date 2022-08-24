@@ -1595,7 +1595,7 @@ Public Class Analysis
                     iProgress = iProgress + 1
                 End If
 
-                update_orderstring = "- current order: " & orderLoop.ToString & Environment.NewLine
+                update_orderstring = "- current depth: " & orderLoop.ToString & Environment.NewLine
                 backgroundworker1.ReportProgress(iProgress, update_string & update_flagstring & update_orderstring)
                 pFlowEndJunctions.Reset()
 
