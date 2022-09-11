@@ -117,15 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Label30.Text" xml:space="preserve">
-    <value>Output options allow optionally writing to tables (in addition to writing 
-to screen) during 'advanced' analysis. DBF files are a format written by 
-ArcMap and are stored in a Geodatabase. They may be exported as-is 
-and read by Microsoft Excel or exported as CSV / TXT. Outputting to 
-tables is required for DCI calculations. The 'tables prefix' is used as a prefix 
-in output file names. Users may also choose to exporta connectivity table 
-(required for DCI).   </value>
-  </data>
   <data name="Label28.Text" xml:space="preserve">
     <value>Exclusion options determine which features are included in the 
 calculations habitat quantity or habitat quality.
@@ -143,6 +134,15 @@ which barriers impede connectivity (currently the DCI calculations assume
 this to be bi-directional connectivity - probability of moving back-and-forth). 
 The Natural T/F field is used to indicate whether a barrier is natural or 
 not (field values must be 'T' or 'F')</value>
+  </data>
+  <data name="Label30.Text" xml:space="preserve">
+    <value>Output options allow optionally writing to tables (in addition to writing 
+to screen) during 'advanced' analysis. DBF files are a format written by 
+ArcMap and are stored in a Geodatabase. They may be exported as-is 
+and read by Microsoft Excel or exported as CSV / TXT. Outputting to 
+tables is required for DCI calculations. The 'tables prefix' is used as a prefix 
+in output file names. Users may also choose to exporta connectivity table 
+(required for DCI).   </value>
   </data>
   <data name="Label31.Text" xml:space="preserve">
     <value>Advanced options apply to iterative network traces used during the 

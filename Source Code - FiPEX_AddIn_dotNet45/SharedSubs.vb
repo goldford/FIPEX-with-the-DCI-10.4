@@ -864,14 +864,14 @@ Public Class SharedSubs
 
 
         ' Set up the table - create columns 
-        pResultsForm3.DataGridView1.Columns.Add("SinkID", "Sink User ID")             '0
+        pResultsForm3.DataGridView1.Columns.Add("SinkID", "Sink User ID")            '0
         pResultsForm3.DataGridView1.Columns.Add("SinkEID", "Sink Net EID")           '1
-        pResultsForm3.DataGridView1.Columns.Add("SinkNodeType", "Sink Node Type") '2
-        pResultsForm3.DataGridView1.Columns.Add("BarrierID", "Barrier User ID")       '3
+        pResultsForm3.DataGridView1.Columns.Add("SinkNodeType", "Sink Node Type")    '2
+        pResultsForm3.DataGridView1.Columns.Add("BarrierID", "Barrier User ID")      '3
         pResultsForm3.DataGridView1.Columns.Add("BarrierEID", "Barrier Net EID")     '4
         pResultsForm3.DataGridView1.Columns.Add("Stat", "Statistic")                 '5
-        pResultsForm3.DataGridView1.Columns.Add("TraceType", "Trace Type")       '6
-        pResultsForm3.DataGridView1.Columns.Add("TraceSubtype", "Trace Subtype") '7
+        pResultsForm3.DataGridView1.Columns.Add("TraceType", "Trace Type")           '6
+        pResultsForm3.DataGridView1.Columns.Add("TraceSubtype", "Trace Subtype")     '7
         pResultsForm3.DataGridView1.Columns.Add("class", "class")               '8
         pResultsForm3.DataGridView1.Columns.Add("value", "value")               '9
         pResultsForm3.DataGridView1.Columns.Add("units", "units")               '10
@@ -1028,6 +1028,8 @@ Public Class SharedSubs
                     End Try
 
                     If sTempVal IsNot Nothing Then
+                        'MsgBox(sTempVal)
+                        'MsgBox(plExclusions(x).Value)
                         If sTempVal = plExclusions(x).Value Then
                             bExclude = True
                         End If
@@ -1136,7 +1138,7 @@ Public Class SharedSubs
         Dim vVar As Object
         Dim pSelectionSet As ISelectionSet
         Dim sTemp As String
-        Dim sUnit As String
+        Dim sUnit, sUnit_L As String
 
         ' K REPRESENTS NUMBER OF POSSIBLE HABITAT CLASSES
         '  rows, columns.  ROWS SHOULD BE SET BY NUMBER OF SUMMARY FIELDS
@@ -1262,6 +1264,36 @@ Public Class SharedSubs
                             sUnit = "n/a"
                         End If
 
+                        ' Get the Units of measure, if any
+                        sUnit_L = lLineLayersFields(j).LengthUnits
+                        If sUnit_L = "Metres" Then
+                            sUnit_L = "m"
+                        ElseIf sUnit_L = "Kilometres" Then
+                            sUnit_L = "km"
+                        ElseIf sUnit_L = "Square Metres" Then
+                            sUnit_L = "m^2"
+                        ElseIf sUnit_L = "Feet" Then
+                            sUnit_L = "ft"
+                        ElseIf sUnit_L = "Miles" Then
+                            sUnit_L = "mi"
+                        ElseIf sUnit_L = "Square Miles" Then
+                            sUnit_L = "mi^2"
+                        ElseIf sUnit_L = "Hectares" Then
+                            sUnit_L = "ha"
+                        ElseIf sUnit_L = "Acres" Then
+                            sUnit_L = "ac"
+                        ElseIf sUnit_L = "Hectometres" Then
+                            sUnit_L = "hm"
+                        ElseIf sUnit_L = "Dekametres" Then
+                            sUnit_L = "dm"
+                        ElseIf sUnit_L = "Square Kilometres" Then
+                            sUnit_L = "km^2"
+                        ElseIf sUnit_L = "None" Then
+                            sUnit_L = "none"
+                        Else
+                            sUnit_L = "n/a"
+                        End If
+
                         'MsgBox("Debug 2020: Check for the habitat class field for line layer. Is it <none> or 'not set'?: " & lLineLayersFields(j).HabClsField)
 
                         Try
@@ -1275,7 +1307,7 @@ Public Class SharedSubs
                         ' if we find class field being used then use an intermediate object pHabStatisticsObject
                         ' then use a list of these objects (lHabStatsMatrix) to keep track of total habitat by class
                         iClassCheckTemp = pFields.FindField(lLineLayersFields(j).HabClsField)
-                        If iClassCheckTemp <> -1 And lLineLayersFields(j).HabClsField <> "<None>" _
+                        If iClassCheckTemp <> -1 And lLineLayersFields(j).HabClsField <> "<None>" And lLineLayersFields(j).HabClsField <> "not set" _
                             And lLineLayersFields(j).HabClsField <> "Not set" And lLineLayersFields(j).HabClsField <> "<none>" Then
 
                             ' Reset the stats objects
@@ -1304,7 +1336,7 @@ Public Class SharedSubs
                                     ' 2020 - do not add if feature is to be excluded
                                     bExclude = False
                                     SharedSubs.exclusions2020(bExclude, pFeature, pFeatureLayer)
-
+                                    'MsgBox(bExclude)
                                     If bExclude = False Then
                                         ' =========================================
                                         ' ============ HABITAT STATS ==============
@@ -1407,9 +1439,12 @@ Public Class SharedSubs
                                         .LengthOrHabitat = "habitat"
                                         .HabitatDimension = "length"
                                         .TotalImmedPath = sHabTypeKeyword
+                                        ' GO - 2022-09-09
                                         .UniqueClass = CStr(lHabStatsMatrix(k).UniqueHabClass)
+                                        '.UniqueClass = CStr(lHabStatsMatrix(j).UniqueHabClass)
                                         .ClassName = CStr(lLineLayersFields(j).HabClsField)
                                         .Quantity = lHabStatsMatrix(k).HabQuantity
+                                        '.Quantity = lHabStatsMatrix(j).HabQuantity
                                         .Unit = sUnit
                                     End With
                                     lHabStatsList.Add(pHabStatsObject_2)
@@ -1447,6 +1482,7 @@ Public Class SharedSubs
                                                                           Nothing, Nothing, Nothing, Nothing, _
                                                                           Nothing, Nothing, Nothing, Nothing, _
                                                                           Nothing, Nothing, Nothing)
+
                             With pHabStatsObject_2
                                 .Layer = pFeatureLayer.Name
                                 .LayerID = pFeatureLayer.FeatureClass.FeatureClassID
@@ -1462,7 +1498,7 @@ Public Class SharedSubs
                                 .UniqueClass = "not set"
                                 .ClassName = CStr(lLineLayersFields(j).HabClsField)
                                 .Quantity = dTotalLength
-                                .Unit = sUnit
+                                .Unit = sUnit_L
                             End With
                             lHabStatsList.Add(pHabStatsObject_2)
 
@@ -1577,7 +1613,7 @@ Public Class SharedSubs
                                 .UniqueClass = "not set"
                                 .ClassName = CStr(lLineLayersFields(j).HabClsField)
                                 .Quantity = dTotalLength
-                                .Unit = sUnit
+                                .Unit = sUnit_L
                             End With
                             lHabStatsList.Add(pHabStatsObject_2)
 

@@ -2994,7 +2994,7 @@ Public Class Analysis
                     End If
                     update_string = update_string & "- table: DCI Analysis" & Environment.NewLine
                     backgroundworker1.ReportProgress(iProgress, update_string)
-                    sDCITableName = TableName("DCI_" + sAnalysisCode, pFWorkspace, sPrefix)
+                    sDCITableName = TableName("DCI_input_" + sAnalysisCode, pFWorkspace, sPrefix)
                     PrepDCIOutTable(sDCITableName, pFWorkspace)
 
                 End If

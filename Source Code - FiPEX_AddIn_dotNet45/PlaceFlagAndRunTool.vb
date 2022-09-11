@@ -1168,6 +1168,24 @@ Public Class PlaceFlagAndRunTool
                 sHabDir = "upstream"
                 Call SharedSubs.calculateStatistics_2020(lHabStatsList, pLLayersFields, pPLayersFields,
                                                          sOutID, iEID, sType, sOutID, iEID, sHabType, sHabDir)
+
+                ' 2022 debug
+                'Dim stat1 As Integer = 0
+                'Dim msgstr1 As String
+                'MsgBox("What 2023")
+                'For stat1 = 0 To lHabStatsList.Count - 1
+                ' msgstr1 = Convert.ToString(lHabStatsList(stat1).bEID) & "," & _
+                '     Convert.ToString(lHabStatsList(stat1).LengthOrHabitat) & "," & _
+                '     Convert.ToString(lHabStatsList(stat1).Direction) & "," & _
+                '     Convert.ToString(lHabStatsList(stat1).TotalImmedPath) & "," & _
+                '     Convert.ToString(lHabStatsList(stat1).UniqueClass) & "," & _
+                '     Convert.ToString(lHabStatsList(stat1).Quantity) & "," & _
+                '     Convert.ToString(lHabStatsList(stat1).Unit) & "," & _
+                '     Convert.ToString(lHabStatsList(stat1).HabitatDimension) & "," & _
+                ' Convert.ToString(lHabStatsList(stat1).Layer)
+                ' MsgBox(msgstr1)
+                ' Next
+
                 ' ============== END HABITAT STATS ==================
                 ' ==================================================
 
@@ -1908,6 +1926,14 @@ Public Class PlaceFlagAndRunTool
         Dim pResultsForm3 As New FiPEX_ArcMap_10p4_up_AddIn_dotNet45_2022.frmResults_3
         pResultsForm3.Show()
         Dim numbarrsnodes As String = CStr(pOriginaljuncFlagsList.Count)
+
+        ' temp debug 2020
+        ' print all stats
+        'Dim st1 As Integer = 0
+        'For st1 = 0 To lHabStatsList.Count - 1
+        ' MsgBox(lHabStatsList(st1))
+        ' Next
+
         SharedSubs.ResultsForm2020(pResultsForm3, lSinkIDandTypes, lHabStatsList, lMetricsObject,
                                        BeginTime, numbarrsnodes, iOrderNum, sDirection)
         ' ============== END WRITE TO OUTPUT SUMMARY TABLE =================
